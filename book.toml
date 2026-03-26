@@ -3,7 +3,7 @@ title = "The Rust Mastery Handbook"
 authors = ["Lavkus Kumar and contributors"]
 language = "en"
 src = "src"
-description = "A deep, first-principles systems handbook for Rust, aimed at readers who want design-level understanding and open-source contribution readiness."
+description = "A long-form Rust systems engineering handbook for ownership reasoning, compiler mental models, architecture insight, and open-source contribution readiness."
 
 [build]
 build-dir = "book"

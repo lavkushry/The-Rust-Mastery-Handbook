@@ -7,14 +7,32 @@ A long-form Rust systems engineering handbook for developers who want more than 
 
 This repository publishes a multi-part Rust learning handbook built with mdBook, with chapterized content, visual diagrams, printable PDF export, and a contributor-oriented documentation workflow.
 
+## Start Here
+
+- Read online: https://lavkushry.github.io/The-Rust-Mastery-Handbook/
+- Build locally: [Getting Started](docs/getting-started.md)
+- Export PDF: [Installation](docs/installation.md) and [Troubleshooting](docs/troubleshooting.md)
+- Contribute: [CONTRIBUTING.md](CONTRIBUTING.md), [Contribution Ladder](docs/contribution-ladder.md), [Good First Issues](docs/good-first-issues.md)
+
+## Choose Your Path
+
+- You know programming but are new to Rust:
+  Start at [docs/getting-started.md](docs/getting-started.md), then read [src/00_title_and_toc.md](src/00_title_and_toc.md) and continue in order from Part 1.
+- You are a systems/backend engineer moving into Rust:
+  Start with [docs/use-cases.md](docs/use-cases.md), then prioritize Parts 3, 5, 6, and 8 for ownership depth, concurrency, systems topics, and contribution readiness.
+- You want to contribute to this handbook:
+  Start with [CONTRIBUTING.md](CONTRIBUTING.md), [docs/review-checklist.md](docs/review-checklist.md), and [docs/good-first-issues.md](docs/good-first-issues.md).
+
 ## Table of Contents
 
 - [The Rust Mastery Handbook](#the-rust-mastery-handbook)
   - [Table of Contents](#table-of-contents)
   - [Why This Exists](#why-this-exists)
+  - [Rust Handbook for Systems Engineers](#rust-handbook-for-systems-engineers)
   - [Who This Project Is For](#who-this-project-is-for)
   - [Key Features](#key-features)
   - [How It Works](#how-it-works)
+  - [Why This Handbook Is Different](#why-this-handbook-is-different)
   - [Quick Start (Under 5 Minutes)](#quick-start-under-5-minutes)
   - [Installation](#installation)
     - [1) Install mdBook](#1-install-mdbook)
@@ -32,7 +50,7 @@ This repository publishes a multi-part Rust learning handbook built with mdBook,
   - [Publishing and Deployment](#publishing-and-deployment)
   - [Docs and Support](#docs-and-support)
   - [Screenshots and Visual Assets](#screenshots-and-visual-assets)
-  - [Why Choose This Handbook](#why-choose-this-handbook)
+  - [Contribution Paths](#contribution-paths)
   - [Roadmap](#roadmap)
   - [Contributing](#contributing)
   - [Security](#security)
@@ -44,6 +62,15 @@ This repository publishes a multi-part Rust learning handbook built with mdBook,
 Most Rust learning material is excellent for language onboarding, but often too shallow for engineers who need to reason about real-world codebases, architecture tradeoffs, and contribution pathways.
 
 The Rust Mastery Handbook is designed to bridge that gap by connecting first-principles Rust concepts to practical systems engineering and open-source contribution patterns.
+
+## Rust Handbook for Systems Engineers
+
+Search intent this repository serves well:
+
+- Rust handbook for professional developers
+- Rust systems programming learning path
+- Rust ownership and lifetimes mental model guide
+- Rust architecture and contributor-readiness resource
 
 ## Who This Project Is For
 
@@ -71,6 +98,13 @@ High-level flow:
 2. Build and preview with mdBook.
 3. Optionally export PDFs for publication bundles.
 4. Push to main to trigger Pages deployment.
+
+## Why This Handbook Is Different
+
+- Teaches problem framing and invariants before syntax memorization
+- Connects language concepts to real repository navigation and contribution work
+- Balances conceptual depth with buildable, maintainable docs workflows
+- Treats contributors as long-term collaborators, not drive-by patch submitters
 
 ## Quick Start (Under 5 Minutes)
 
@@ -219,6 +253,9 @@ Recommended pre-PR checks:
 - Troubleshooting: [docs/troubleshooting.md](docs/troubleshooting.md)
 - Support policy: [docs/support-policy.md](docs/support-policy.md)
 - Versioning policy: [docs/versioning-policy.md](docs/versioning-policy.md)
+- Editorial style guide: [docs/editorial-style-guide.md](docs/editorial-style-guide.md)
+- Review checklist: [docs/review-checklist.md](docs/review-checklist.md)
+- Release checklist: [docs/release-checklist.md](docs/release-checklist.md)
 
 ## Screenshots and Visual Assets
 
@@ -226,12 +263,20 @@ This project currently uses inline SVG chapter visuals and does not yet include 
 
 See [docs/social-preview-spec.md](docs/social-preview-spec.md) and [docs/oss-growth-roadmap.md](docs/oss-growth-roadmap.md) for concrete asset recommendations.
 
-## Why Choose This Handbook
+## Contribution Paths
 
-- Focuses on reasoning and engineering tradeoffs, not only syntax walkthroughs
-- Explicitly connects learning to open-source contribution readiness
-- Provides practical drills and chapter-level progression for retention
-- Maintains a source-first publishing workflow suitable for community contributions
+- Typo, grammar, and clarity fixes in a single chapter
+- Internal link and navigation quality improvements
+- Diagram accessibility and alt-text improvements
+- Build and publishing workflow reliability improvements
+- Scoped content expansion proposals with acceptance criteria
+
+Contribution entry points:
+
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [docs/good-first-issues.md](docs/good-first-issues.md)
+- [docs/contribution-ladder.md](docs/contribution-ladder.md)
+- [docs/maintainer-playbook.md](docs/maintainer-playbook.md)
 
 ## Roadmap
 

@@ -10,12 +10,29 @@ To avoid making incorrect legal assumptions, a license should not be guessed.
 
 Repository maintainers should choose and commit an explicit license file.
 
+## Current Blockers
+
+- no explicit decision on content license for handbook text and diagrams
+- no explicit decision on code/tooling license for scripts and workflows
+- no published guidance on whether dual licensing is preferred
+
 Common options for documentation-focused projects include:
 
 - MIT
 - Apache-2.0
 - CC BY 4.0 (for content-heavy docs)
 - Dual-license combinations
+
+## Maintainer-Friendly Recommendation Framework
+
+If you want broad reuse with low friction:
+
+- consider MIT or Apache-2.0 for code assets
+- consider CC BY 4.0 for handbook prose and diagrams
+
+If you prefer a single license across all assets:
+
+- choose one permissive option and document tradeoffs explicitly
 
 ## Recommended Next Step
 

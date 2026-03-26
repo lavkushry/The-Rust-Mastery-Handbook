@@ -44,8 +44,8 @@ body.pdf-export a.header::before {
 
 body.pdf-export p,
 body.pdf-export li {
-  font-size: 10.5pt;
-  line-height: 1.5;
+  font-size: 10.1pt;
+  line-height: 1.42;
 }
 
 body.pdf-export h1,
@@ -59,18 +59,18 @@ body.pdf-export h4 {
 }
 
 body.pdf-export h1 {
-  font-size: 24pt;
-  margin-top: 1.6rem;
+  font-size: 22pt;
+  margin-top: 1.35rem;
 }
 
 body.pdf-export h2 {
-  font-size: 16pt;
-  margin-top: 1.25rem;
+  font-size: 15pt;
+  margin-top: 1.05rem;
 }
 
 body.pdf-export h3 {
-  font-size: 12.5pt;
-  margin-top: 1rem;
+  font-size: 12pt;
+  margin-top: 0.85rem;
 }
 
 body.pdf-export h1.pdf-part-title,
@@ -85,7 +85,11 @@ body.pdf-export blockquote,
 body.pdf-export .visual-figure,
 body.pdf-export .chapter-hero,
 body.pdf-export .part-spread,
-body.pdf-export .annotated-code {
+ body.pdf-export .annotated-code,
+ body.pdf-export .concept-card,
+ body.pdf-export .memory-hook-panel,
+ body.pdf-export .flashcard,
+ body.pdf-export .cheat-sheet-panel {
   break-inside: avoid-page;
   page-break-inside: avoid;
 }
@@ -108,7 +112,7 @@ body.pdf-export pre code {
 body.pdf-export table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 9.5pt;
+  font-size: 9.1pt;
 }
 
 body.pdf-export th,
@@ -129,12 +133,66 @@ body.pdf-export blockquote {
 body.pdf-export .chapter-hero,
 body.pdf-export .part-spread {
   margin-top: 0;
+  padding: 9mm 8mm !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 2px solid color-mix(in srgb, var(--chapter-accent, #023e8a) 55%, white 45%);
+  box-shadow: none !important;
 }
 
 body.pdf-export .visual-figure__title,
 body.pdf-export .chapter-hero__title,
 body.pdf-export .part-spread__title {
   font-family: "JetBrains Mono", "Space Mono", "IBM Plex Mono", monospace !important;
+}
+
+body.pdf-export .chapter-hero::before,
+body.pdf-export .part-spread::before {
+  display: none !important;
+}
+
+body.pdf-export .chapter-hero__title,
+body.pdf-export .part-spread__title,
+body.pdf-export .chapter-hero__hook,
+body.pdf-export .part-spread__hook,
+body.pdf-export .chapter-hero__eyebrow,
+body.pdf-export .part-spread__eyebrow,
+body.pdf-export .chapter-hero__pill,
+body.pdf-export .part-spread__pill {
+  color: #111827 !important;
+}
+
+body.pdf-export .chapter-hero__pill,
+body.pdf-export .part-spread__pill {
+  border-color: color-mix(in srgb, var(--chapter-accent, #023e8a) 40%, white 60%) !important;
+  background: color-mix(in srgb, var(--chapter-accent, #023e8a) 6%, white 94%) !important;
+}
+
+body.pdf-export .visual-figure {
+  margin: 0.95rem 0 1.35rem;
+  border-color: #d1d5db !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+body.pdf-export .visual-figure--dark {
+  background: #f8fafc !important;
+  border-color: #d1d5db !important;
+}
+
+body.pdf-export .visual-figure__header {
+  padding: 0.7rem 0.9rem 0.2rem;
+}
+
+body.pdf-export .visual-figure__body {
+  padding: 0.45rem 0.75rem 0.75rem;
+}
+
+body.pdf-export .diagram-grid,
+body.pdf-export .concept-card-row,
+body.pdf-export .flashcard-grid,
+body.pdf-export .caption-grid {
+  gap: 0.7rem;
 }
 
 body.pdf-export .visual-figure__caption,
@@ -151,10 +209,66 @@ body.pdf-export .part-spread svg {
   height: auto;
 }
 
+body.pdf-export .concept-card {
+  box-shadow: none !important;
+  background: color-mix(in srgb, var(--chapter-accent, #023e8a) 5%, white 95%) !important;
+}
+
+body.pdf-export .annotated-code {
+  box-shadow: none !important;
+  border-color: #d1d5db !important;
+}
+
+body.pdf-export .annotated-code__panel {
+  background: #f8fafc !important;
+  color: #111827 !important;
+}
+
+body.pdf-export .annotated-code__notes {
+  background: #ffffff !important;
+}
+
+body.pdf-export .memory-hook-panel {
+  padding: 0.7rem;
+  background: #fffdf8 !important;
+}
+
+body.pdf-export .flashcard-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body.pdf-export .flashcard {
+  box-shadow: none !important;
+  border-color: #d1d5db !important;
+}
+
+body.pdf-export .flashcard__front {
+  background: color-mix(in srgb, var(--chapter-accent, #023e8a) 16%, white 84%) !important;
+  color: #111827 !important;
+}
+
+body.pdf-export .flashcard__index {
+  color: #4b5563 !important;
+}
+
+body.pdf-export .flashcard__answer-label {
+  color: #111827 !important;
+}
+
+body.pdf-export .cheat-sheet-panel {
+  padding: 0.55rem;
+  box-shadow: none !important;
+  background: #ffffff !important;
+}
+
+body.pdf-export .cheat-sheet-table {
+  font-size: 8.9pt;
+}
+
 body.pdf-export hr {
   border: 0;
   border-top: 1px solid #d1d5db;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
 }
 
 body.pdf-export ul,
@@ -163,11 +277,11 @@ body.pdf-export ol {
 }
 
 body.pdf-export .pdf-cover {
-  min-height: 245mm;
+  min-height: 236mm;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 6mm 0 0;
+  padding: 4mm 0 0;
   break-after: page;
   page-break-after: always;
 }
@@ -184,20 +298,20 @@ body.pdf-export .pdf-cover__spine {
   width: 42mm;
   height: 6px;
   background: #c08457;
-  margin: 0 0 14mm;
+  margin: 0 0 10mm;
 }
 
 body.pdf-export .pdf-cover__title {
-  margin: 0 0 8mm;
-  font-size: 30pt;
+  margin: 0 0 6mm;
+  font-size: 27pt;
   line-height: 1.08;
 }
 
 body.pdf-export .pdf-cover__subtitle {
   max-width: 150mm;
-  margin: 0 0 10mm;
+  margin: 0 0 8mm;
   color: #374151;
-  font-size: 17pt;
+  font-size: 15.5pt;
   font-weight: 600;
   line-height: 1.25;
 }
@@ -206,17 +320,17 @@ body.pdf-export .pdf-cover__purpose {
   max-width: 150mm;
   margin: 0;
   color: #374151;
-  font-size: 11pt;
-  line-height: 1.55;
+  font-size: 10.2pt;
+  line-height: 1.48;
 }
 
 body.pdf-export .pdf-cover__meta {
   display: flex;
   justify-content: space-between;
   gap: 12mm;
-  margin-top: 12mm;
-  padding-top: 6mm;
+  margin-top: 9mm;
+  padding-top: 5mm;
   border-top: 1px solid #d1d5db;
   color: #6b7280;
-  font-size: 9pt;
+  font-size: 8.4pt;
 }

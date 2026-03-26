@@ -9,6 +9,17 @@ This repository is a documentation-first mdBook project. High-quality contributi
 - accompanied by clear rationale
 - aligned with the book's first-principles teaching style
 
+## Contribution Paths
+
+Choose one path and keep scope tight:
+
+- Typo and grammar fixes
+- Chapter clarity improvements
+- Diagram and accessibility improvements
+- Broken links and structure fixes
+- Build/docs tooling improvements
+- Content expansion proposals
+
 ## Quick Start for Contributors
 
 1. Fork and clone the repository.
@@ -18,15 +29,15 @@ This repository is a documentation-first mdBook project. High-quality contributi
 cargo install mdbook --locked
 ```
 
-3. Build and preview locally:
+1. Build and preview locally:
 
 ```bash
 mdbook build
 mdbook serve --open
 ```
 
-4. Create a branch and make your change.
-5. Open a pull request with a clear summary.
+1. Create a branch and make your change.
+2. Open a pull request with a clear summary.
 
 ## Local Development Setup
 
@@ -82,6 +93,16 @@ Please follow these rules:
 - Avoid adding claims that are not verifiable.
 - Keep headings and link text descriptive.
 
+## What a High-Quality PR Looks Like
+
+A strong PR in this repository usually has:
+
+- one clear objective
+- a small file footprint unless intentionally large
+- reader-facing rationale (what got clearer, safer, or easier)
+- verification notes for build and rendering
+- no unrelated cleanup mixed into the change
+
 ## Validation Before Opening a PR
 
 Run:
@@ -101,6 +122,11 @@ Manual checks:
 - changed pages render as expected in local preview
 - internal links work
 - no accidental structural edits in SUMMARY unless intentional
+
+If you changed contributor or maintainer policy docs, also sanity-check:
+
+- docs/review-checklist.md
+- docs/release-checklist.md
 
 ## Commit Guidance
 
@@ -123,6 +149,11 @@ Before submitting:
 - I linked relevant issue(s), if any.
 - I avoided unrelated refactors.
 
+Recommended extras for content changes:
+
+- I linked affected chapters or docs pages.
+- I explained how the change improves reader understanding.
+
 ## How to Propose Large Changes
 
 For significant edits (major restructuring, pedagogical approach changes, navigation changes):
@@ -137,6 +168,10 @@ For significant edits (major restructuring, pedagogical approach changes, naviga
 - If you are no longer available, leave a short update.
 - Maintainers may reassign stale claimed issues so work can continue.
 
+Suggested convention:
+
+- If no progress update is posted after 7 days, maintainers may reopen issue ownership.
+
 ## Good First Contributions
 
 Good first contributions for this repository include:
@@ -148,6 +183,8 @@ Good first contributions for this repository include:
 - FAQ and troubleshooting improvements
 
 See docs/good-first-issues.md for curated ideas.
+
+If unsure where to begin, start with link integrity, glossary clarity, or diagram accessibility.
 
 ## Documentation Contribution Path
 
@@ -166,6 +203,13 @@ Maintainers and reviewers are expected to:
 - explain requested changes clearly
 - prefer iterative improvements over perfect-first-pass demands
 - keep feedback focused on correctness, clarity, and reader value
+
+Reviewer baseline for content PRs:
+
+- technical accuracy
+- handbook voice consistency
+- clear progression from problem to explanation
+- links and structure integrity
 
 ## Response-Time Guidance
 

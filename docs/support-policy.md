@@ -23,6 +23,11 @@ Maintainers prioritize:
 2. GitHub Issues for reproducible bugs and focused feature requests
 3. SECURITY.md process for vulnerabilities
 
+Support routing setup references:
+
+- docs/discussions-seed.md
+- docs/manual-github-settings-checklist.md
+
 ## Response Expectations
 
 Best effort targets:

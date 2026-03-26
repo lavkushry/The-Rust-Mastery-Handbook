@@ -44,6 +44,14 @@ body {
 #mdbook-content main li {
   font-size: 1.02rem;
   line-height: 1.75;
+  text-wrap: pretty;
+}
+
+#mdbook-content main > p,
+#mdbook-content main > ul,
+#mdbook-content main > ol,
+#mdbook-content main > blockquote {
+  max-width: 74ch;
 }
 
 #mdbook-content main h1,
@@ -81,6 +89,28 @@ body {
 #mdbook-content main pre,
 #mdbook-content main code {
   font-family: var(--font-code);
+}
+
+#mdbook-content main p code,
+#mdbook-content main li code,
+#mdbook-content main td code,
+#mdbook-content main th code {
+  padding: 0.12rem 0.38rem;
+  border: 1px solid color-mix(in srgb, var(--chapter-accent, var(--compiler)) 24%, white 76%);
+  border-radius: 0.42rem;
+  background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 9%, white 91%);
+  color: #111827;
+  font-size: 0.9em;
+}
+
+#mdbook-content main :target {
+  scroll-margin-top: 5.5rem;
+}
+
+#mdbook-content main a:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
 }
 
 #mdbook-content main pre {
@@ -630,6 +660,20 @@ blockquote.callout--zero-cost .callout__label {
   .chapter-hero,
   .part-spread {
     padding: 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

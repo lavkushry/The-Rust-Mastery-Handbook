@@ -229,14 +229,19 @@ For contribution standards and review flow, see [CONTRIBUTING.md](CONTRIBUTING.m
 This project is documentation-first. Validation is currently based on build correctness and rendered output checks.
 
 ```bash
+npm ci
 mdbook build
+node --test scripts/*.test.mjs
 ```
 
 Recommended pre-PR checks:
 
 - Ensure the book builds without errors
+- Ensure Node-based script tests pass
 - Verify updated pages render correctly in local preview
 - Verify links and headings in edited sections
+
+For repeatable release checks, use [docs/jules-regression-playbook.md](docs/jules-regression-playbook.md).
 
 ## Publishing and Deployment
 
@@ -254,6 +259,7 @@ Recommended pre-PR checks:
 - Support policy: [docs/support-policy.md](docs/support-policy.md)
 - Versioning policy: [docs/versioning-policy.md](docs/versioning-policy.md)
 - Editorial style guide: [docs/editorial-style-guide.md](docs/editorial-style-guide.md)
+- Rust resource atlas: [docs/rust-resource-atlas.md](docs/rust-resource-atlas.md)
 - Review checklist: [docs/review-checklist.md](docs/review-checklist.md)
 - Release checklist: [docs/release-checklist.md](docs/release-checklist.md)
 
@@ -301,7 +307,12 @@ Please report vulnerabilities according to [SECURITY.md](SECURITY.md).
 
 ## License
 
-No final license file is committed yet. See [docs/license-decision-note.md](docs/license-decision-note.md) before reusing content.
+The Rust Mastery Handbook is dual-licensed:
+
+- Handbook content, chapters, and inline diagrams in `src/` are licensed under CC BY 4.0.
+- Code snippets, scripts, and build tooling are licensed under MIT.
+
+See the [LICENSE](LICENSE) file for complete details.
 
 ## Maintainers
 

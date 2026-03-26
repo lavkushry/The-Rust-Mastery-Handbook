@@ -295,8 +295,9 @@
             <path d="M96 78 H 142" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%)" stroke-width="8" stroke-linecap="round"></path>
           </svg>
         </div>
-        <div class="memory-hook-panel__body">${next.outerHTML}</div>
+        <div class="memory-hook-panel__body"></div>
       `;
+      panel.querySelector(".memory-hook-panel__body").appendChild(next.cloneNode(true));
 
       next.replaceWith(panel);
     });
@@ -333,13 +334,16 @@
         card.innerHTML = `
           <div class="flashcard__front">
             <div class="flashcard__index">Card ${index + 1}</div>
-            <p class="flashcard__question">${cells[0].innerHTML}</p>
+            <p class="flashcard__question"></p>
           </div>
           <div class="flashcard__back">
             <div class="flashcard__answer-label">Answer</div>
-            <p class="flashcard__answer">${cells[1].innerHTML}</p>
+            <p class="flashcard__answer"></p>
           </div>
         `;
+        // Use textContent to safely inject content from table cells
+        card.querySelector(".flashcard__question").textContent = cells[0].textContent;
+        card.querySelector(".flashcard__answer").textContent = cells[1].textContent;
         deck.appendChild(card);
       });
 

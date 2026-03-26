@@ -168,6 +168,7 @@ try {
         }
 
         if (!main.querySelector(".pdf-cover")) {
+          // Hardened cover generation (avoids innerHTML)
           const visibleTitle = main.querySelector("h1")?.textContent?.trim() ?? title;
           const visibleSubtitle = main.querySelector("h2")?.textContent?.trim() ?? "";
           const cover = document.createElement("section");

@@ -1,5 +1,4 @@
 /book/
 /.pdf-tools/
 /dist/
-node_modules/
-.pdf-tools/node_modules
+node_modules

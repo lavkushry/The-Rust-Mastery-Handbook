@@ -81,10 +81,8 @@ const jobs = allFormats
       },
     ];
 
-const bookToml = existsSync(bookTomlPath)
-  ? await readFile(bookTomlPath, "utf8")
-  : "";
-const customCss = existsSync(cssPath) ? await readFile(cssPath, "utf8") : "";
+const bookToml = await readFile(bookTomlPath, "utf8").catch(() => "");
+const customCss = await readFile(cssPath, "utf8").catch(() => "");
 
 const bookTitleMatch = bookToml.match(/^title\s*=\s*"(.+)"$/m);
 const descriptionMatch = bookToml.match(/^description\s*=\s*"(.+)"$/m);
@@ -118,47 +116,46 @@ if (existsSync(path.join(toolNodeModules, "@sparticuz", "chromium"))) {
 const browser = await puppeteer.launch(launchOptions);
 
 try {
-  await Promise.all(
-    jobs.map(async (job) => {
-      await mkdir(path.dirname(job.outputPath), { recursive: true });
+  const page = await browser.newPage();
+  page.setDefaultNavigationTimeout(pageLoadTimeoutMs);
+  page.setDefaultTimeout(pageLoadTimeoutMs);
+  await page.goto(pathToFileURL(inputPath).href, {
+    waitUntil: "load",
+    timeout: pageLoadTimeoutMs,
+  });
+  await page.waitForFunction(
+    () => document.readyState === "complete",
+    { timeout: pageLoadTimeoutMs },
+  );
+  await page.evaluate(async () => {
+    if ("fonts" in document) {
+      await document.fonts.ready;
+    }
+  });
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+  await page.emulateMediaType("print");
 
-      const page = await browser.newPage();
-      page.setDefaultNavigationTimeout(pageLoadTimeoutMs);
-      page.setDefaultTimeout(pageLoadTimeoutMs);
-      await page.goto(pathToFileURL(inputPath).href, {
-        waitUntil: "load",
-        timeout: pageLoadTimeoutMs,
-      });
-      await page.waitForFunction(
-        () => document.readyState === "complete",
-        { timeout: pageLoadTimeoutMs },
-      );
-      await page.evaluate(async () => {
-        if ("fonts" in document) {
-          await document.fonts.ready;
+  if (customCss) {
+    await page.addStyleTag({ content: customCss });
+  }
+
+  await page.evaluate(
+    ({ title, description }) => {
+      document.body.classList.add("pdf-export");
+
+    await page.evaluate(
+      ({ title, description, editionLabel }) => {
+        function removeHeaderLinks(mainElement) {
+          for (const link of mainElement.querySelectorAll("a.header")) {
+            link.removeAttribute("href");
+          }
         }
       });
       await new Promise((resolve) => setTimeout(resolve, 1500));
       await page.emulateMediaType("print");
 
-      if (customCss) {
-        await page.addStyleTag({ content: customCss });
-      }
-
-      await page.evaluate(
-        ({ title, description, editionLabel }) => {
-          document.body.classList.add("pdf-export");
-
-          const main = document.querySelector("main");
-          if (!main) {
-            return;
-          }
-
-          for (const link of main.querySelectorAll("a.header")) {
-            link.removeAttribute("href");
-          }
-
-          for (const heading of main.querySelectorAll("h1")) {
+        function formatHeadings(mainElement) {
+          for (const heading of mainElement.querySelectorAll("h1")) {
             const text = heading.textContent?.trim() ?? "";
             if (/^PART \d+/.test(text)) {
               heading.classList.add("pdf-part-title");
@@ -167,6 +164,18 @@ try {
               heading.classList.add("pdf-chapter-title");
             }
           }
+        }
+
+        function addCoverPage(mainElement, bookTitle, bookDescription, label) {
+          if (mainElement.querySelector(".pdf-cover")) {
+            return;
+          }
+
+          const visibleTitle = mainElement.querySelector("h1")?.textContent?.trim() ?? bookTitle;
+          const visibleSubtitle = mainElement.querySelector("h2")?.textContent?.trim() ?? "";
+
+          const cover = document.createElement("section");
+          cover.className = "pdf-cover";
 
           if (!main.querySelector(".pdf-cover")) {
             const visibleTitle = main.querySelector("h1")?.textContent?.trim() ?? title;
@@ -210,54 +219,60 @@ try {
             meta1.textContent = "Rust handbook for serious systems engineers";
             meta.appendChild(meta1);
 
-            const meta2 = document.createElement("div");
-            meta2.textContent = "Generated from the mdBook source";
-            meta.appendChild(meta2);
+          cover.appendChild(meta);
+          main.prepend(cover);
+        }
 
-            cover.appendChild(meta);
-            main.prepend(cover);
-          }
-        },
-        {
-          title: bookTitle,
-          description: bookDescription,
-          editionLabel: job.editionLabel,
-        },
-      );
+        document.body.classList.add("pdf-export");
 
-      const headerTemplate = `
-        <div style="width:100%; padding:0 12mm; font-size:8px; color:#6b7280; text-transform:uppercase; letter-spacing:0.08em;">
-          ${escapeHtml(job.editionLabel)}
-        </div>
-      `;
+        const main = document.querySelector("main");
+        if (!main) {
+          return;
+        }
 
-      const footerTemplate = `
-        <div style="width:100%; padding:0 12mm; font-size:8px; color:#6b7280; display:flex; justify-content:space-between; align-items:center;">
-          <span>${escapeHtml(bookTitle)}</span>
-          <span><span class="pageNumber"></span> / <span class="totalPages"></span></span>
-        </div>
-      `;
+        removeHeaderLinks(main);
+        formatHeadings(main);
+        addCoverPage(main, title, description, editionLabel);
+      },
+      {
+        title: bookTitle,
+        description: bookDescription,
+        editionLabel: job.editionLabel,
+      },
+    );
 
-      await page.pdf({
-        path: job.outputPath,
-        format: job.format,
-        printBackground: true,
-        preferCSSPageSize: false,
-        displayHeaderFooter: true,
-        headerTemplate,
-        footerTemplate,
-        margin: {
-          top: "18mm",
-          right: "14mm",
-          bottom: "18mm",
-          left: "14mm",
-        },
-      });
+    const headerTemplate = `
+      <div style="width:100%; padding:0 12mm; font-size:8px; color:#6b7280; text-transform:uppercase; letter-spacing:0.08em;">
+        ${escapeHtml(job.editionLabel)}
+      </div>
+    `;
 
-      console.log(job.outputPath);
-      await page.close();
-    })
-  );
+    const footerTemplate = `
+      <div style="width:100%; padding:0 12mm; font-size:8px; color:#6b7280; display:flex; justify-content:space-between; align-items:center;">
+        <span>${escapeHtml(bookTitle)}</span>
+        <span><span class="pageNumber"></span> / <span class="totalPages"></span></span>
+      </div>
+    `;
+
+    await page.pdf({
+      path: job.outputPath,
+      format: job.format,
+      printBackground: true,
+      preferCSSPageSize: false,
+      displayHeaderFooter: true,
+      headerTemplate,
+      footerTemplate,
+      margin: {
+        top: "18mm",
+        right: "14mm",
+        bottom: "18mm",
+        left: "14mm",
+      },
+    });
+
+    console.log(job.outputPath);
+  }
+  await page.close();
 } finally {
   await browser.close();
 }

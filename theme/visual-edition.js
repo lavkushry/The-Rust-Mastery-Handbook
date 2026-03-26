@@ -242,7 +242,7 @@
   }
 
   function cardifyRememberOnlyThree(main) {
-    const headings = Array.from(main.querySelectorAll("h2, h3"));
+    const headings = main.querySelectorAll("h2, h3");
     headings.forEach((heading) => {
       if (!/if you remember only 3 things/i.test(heading.textContent || "")) {
         return;
@@ -278,7 +278,7 @@
   }
 
   function enhanceMemoryHooks(main) {
-    const headings = Array.from(main.querySelectorAll("h2, h3"));
+    const headings = main.querySelectorAll("h2, h3");
     headings.forEach((heading) => {
       if (!/memory hook/i.test(heading.textContent || "")) {
         return;
@@ -317,7 +317,7 @@
   }
 
   function enhanceFlashcardDecks(main) {
-    const headings = Array.from(main.querySelectorAll("h2, h3"));
+    const headings = main.querySelectorAll("h2, h3");
     headings.forEach((heading) => {
       if (!/flashcard deck/i.test(heading.textContent || "")) {
         return;
@@ -328,7 +328,7 @@
         return;
       }
 
-      const rows = Array.from(next.querySelectorAll("tbody tr"));
+      const rows = next.querySelectorAll("tbody tr");
       if (rows.length === 0) {
         return;
       }
@@ -384,7 +384,7 @@
   }
 
   function enhanceCheatSheets(main) {
-    const headings = Array.from(main.querySelectorAll("h2, h3"));
+    const headings = main.querySelectorAll("h2, h3");
     headings.forEach((heading) => {
       if (!/chapter cheat sheet/i.test(heading.textContent || "")) {
         return;

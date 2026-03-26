@@ -44,40 +44,172 @@
     const hook = intro?.textContent?.trim() ?? "";
     const shortHook = hook.length > 280 ? `${hook.slice(0, 277)}...` : hook;
 
-    hero.innerHTML = `
-      <div class="${isPart ? "part-spread__grid" : "chapter-hero__grid"}">
-        <div>
-          <div class="${isPart ? "part-spread__eyebrow" : "chapter-hero__eyebrow"}">${eyebrow}</div>
-          <h1 class="${isPart ? "part-spread__title" : "chapter-hero__title"}">${title}</h1>
-          <p class="${isPart ? "part-spread__hook" : "chapter-hero__hook"}">${shortHook}</p>
-          <div class="${isPart ? "part-spread__meta" : "chapter-hero__meta"}">
-            <span class="${isPart ? "part-spread__pill" : "chapter-hero__pill"}">${pillLabel}</span>
-            <span class="${isPart ? "part-spread__pill" : "chapter-hero__pill"}">${conceptKey}</span>
-          </div>
-        </div>
-        <div aria-hidden="true">
-          <svg class="svg-frame" viewBox="0 0 520 360" role="img" aria-label="Concept signature illustration">
-            <defs>
-              <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="rgba(255,255,255,0.18)"></stop>
-                <stop offset="100%" stop-color="rgba(255,255,255,0.02)"></stop>
-              </linearGradient>
-            </defs>
-            <rect x="24" y="24" width="472" height="312" rx="28" fill="url(#heroGradient)" stroke="rgba(255,255,255,0.18)"></rect>
-            <circle cx="124" cy="120" r="46" fill="rgba(255,255,255,0.14)"></circle>
-            <circle cx="124" cy="120" r="20" fill="${accent}"></circle>
-            <rect x="188" y="82" width="240" height="18" rx="9" fill="rgba(255,255,255,0.14)"></rect>
-            <rect x="188" y="116" width="176" height="14" rx="7" fill="rgba(255,255,255,0.12)"></rect>
-            <path d="M120 174 L202 230 L312 160 L404 238" stroke="${accent}" stroke-width="6" fill="none" stroke-linecap="round"></path>
-            <circle cx="202" cy="230" r="12" fill="${accent}"></circle>
-            <circle cx="312" cy="160" r="12" fill="#ffffff"></circle>
-            <circle cx="404" cy="238" r="12" fill="${accent}"></circle>
-            <rect x="84" y="260" width="124" height="34" rx="17" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.14)"></rect>
-            <rect x="224" y="260" width="204" height="34" rx="17" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.14)"></rect>
-          </svg>
-        </div>
-      </div>
-    `;
+    const grid = document.createElement("div");
+    grid.className = isPart ? "part-spread__grid" : "chapter-hero__grid";
+
+    const content = document.createElement("div");
+
+    const eyebrowDiv = document.createElement("div");
+    eyebrowDiv.className = isPart ? "part-spread__eyebrow" : "chapter-hero__eyebrow";
+    eyebrowDiv.textContent = eyebrow;
+    content.appendChild(eyebrowDiv);
+
+    const titleH1 = document.createElement("h1");
+    titleH1.className = isPart ? "part-spread__title" : "chapter-hero__title";
+    titleH1.textContent = title;
+    content.appendChild(titleH1);
+
+    const hookP = document.createElement("p");
+    hookP.className = isPart ? "part-spread__hook" : "chapter-hero__hook";
+    hookP.textContent = shortHook;
+    content.appendChild(hookP);
+
+    const meta = document.createElement("div");
+    meta.className = isPart ? "part-spread__meta" : "chapter-hero__meta";
+
+    const pill1 = document.createElement("span");
+    pill1.className = isPart ? "part-spread__pill" : "chapter-hero__pill";
+    pill1.textContent = pillLabel;
+    meta.appendChild(pill1);
+
+    const pill2 = document.createElement("span");
+    pill2.className = isPart ? "part-spread__pill" : "chapter-hero__pill";
+    pill2.textContent = conceptKey;
+    meta.appendChild(pill2);
+
+    content.appendChild(meta);
+    grid.appendChild(content);
+
+    const illustration = document.createElement("div");
+    illustration.setAttribute("aria-hidden", "true");
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("class", "svg-frame");
+    svg.setAttribute("viewBox", "0 0 520 360");
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Concept signature illustration");
+
+    const defs = document.createElementNS(svgNS, "defs");
+    const linearGradient = document.createElementNS(svgNS, "linearGradient");
+    linearGradient.setAttribute("id", "heroGradient");
+    linearGradient.setAttribute("x1", "0%");
+    linearGradient.setAttribute("y1", "0%");
+    linearGradient.setAttribute("x2", "100%");
+    linearGradient.setAttribute("y2", "100%");
+
+    const stop1 = document.createElementNS(svgNS, "stop");
+    stop1.setAttribute("offset", "0%");
+    stop1.setAttribute("stop-color", "rgba(255,255,255,0.18)");
+    linearGradient.appendChild(stop1);
+
+    const stop2 = document.createElementNS(svgNS, "stop");
+    stop2.setAttribute("offset", "100%");
+    stop2.setAttribute("stop-color", "rgba(255,255,255,0.02)");
+    linearGradient.appendChild(stop2);
+
+    defs.appendChild(linearGradient);
+    svg.appendChild(defs);
+
+    const rect1 = document.createElementNS(svgNS, "rect");
+    rect1.setAttribute("x", "24");
+    rect1.setAttribute("y", "24");
+    rect1.setAttribute("width", "472");
+    rect1.setAttribute("height", "312");
+    rect1.setAttribute("rx", "28");
+    rect1.setAttribute("fill", "url(#heroGradient)");
+    rect1.setAttribute("stroke", "rgba(255,255,255,0.18)");
+    svg.appendChild(rect1);
+
+    const circle1 = document.createElementNS(svgNS, "circle");
+    circle1.setAttribute("cx", "124");
+    circle1.setAttribute("cy", "120");
+    circle1.setAttribute("r", "46");
+    circle1.setAttribute("fill", "rgba(255,255,255,0.14)");
+    svg.appendChild(circle1);
+
+    const circle2 = document.createElementNS(svgNS, "circle");
+    circle2.setAttribute("cx", "124");
+    circle2.setAttribute("cy", "120");
+    circle2.setAttribute("r", "20");
+    circle2.setAttribute("fill", accent);
+    svg.appendChild(circle2);
+
+    const rect2 = document.createElementNS(svgNS, "rect");
+    rect2.setAttribute("x", "188");
+    rect2.setAttribute("y", "82");
+    rect2.setAttribute("width", "240");
+    rect2.setAttribute("height", "18");
+    rect2.setAttribute("rx", "9");
+    rect2.setAttribute("fill", "rgba(255,255,255,0.14)");
+    svg.appendChild(rect2);
+
+    const rect3 = document.createElementNS(svgNS, "rect");
+    rect3.setAttribute("x", "188");
+    rect3.setAttribute("y", "116");
+    rect3.setAttribute("width", "176");
+    rect3.setAttribute("height", "14");
+    rect3.setAttribute("rx", "7");
+    rect3.setAttribute("fill", "rgba(255,255,255,0.12)");
+    svg.appendChild(rect3);
+
+    const path = document.createElementNS(svgNS, "path");
+    path.setAttribute("d", "M120 174 L202 230 L312 160 L404 238");
+    path.setAttribute("stroke", accent);
+    path.setAttribute("stroke-width", "6");
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke-linecap", "round");
+    svg.appendChild(path);
+
+    const circle3 = document.createElementNS(svgNS, "circle");
+    circle3.setAttribute("cx", "202");
+    circle3.setAttribute("cy", "230");
+    circle3.setAttribute("r", "12");
+    circle3.setAttribute("fill", accent);
+    svg.appendChild(circle3);
+
+    const circle4 = document.createElementNS(svgNS, "circle");
+    circle4.setAttribute("cx", "312");
+    circle4.setAttribute("cy", "160");
+    circle4.setAttribute("r", "12");
+    circle4.setAttribute("fill", "#ffffff");
+    svg.appendChild(circle4);
+
+    const circle5 = document.createElementNS(svgNS, "circle");
+    circle5.setAttribute("cx", "404");
+    circle5.setAttribute("cy", "238");
+    circle5.setAttribute("r", "12");
+    circle5.setAttribute("fill", accent);
+    svg.appendChild(circle5);
+
+    const rect4 = document.createElementNS(svgNS, "rect");
+    rect4.setAttribute("x", "84");
+    rect4.setAttribute("y", "260");
+    rect4.setAttribute("width", "124");
+    rect4.setAttribute("height", "34");
+    rect4.setAttribute("rx", "17");
+    rect4.setAttribute("fill", "rgba(255,255,255,0.12)");
+    rect4.setAttribute("stroke", "rgba(255,255,255,0.14)");
+    svg.appendChild(rect4);
+
+    const rect5 = document.createElementNS(svgNS, "rect");
+    rect5.setAttribute("x", "224");
+    rect5.setAttribute("y", "260");
+    rect5.setAttribute("width", "204");
+    rect5.setAttribute("height", "34");
+    rect5.setAttribute("rx", "17");
+    rect5.setAttribute("fill", "rgba(255,255,255,0.08)");
+    rect5.setAttribute("stroke", "rgba(255,255,255,0.14)");
+    svg.appendChild(rect5);
+
+    illustration.appendChild(svg);
+    grid.appendChild(illustration);
+    hero.appendChild(grid);
+
+    gridDiv.appendChild(textDiv);
+    gridDiv.appendChild(artDiv);
+
+    hero.appendChild(gridDiv);
 
     const firstHeading = main.querySelector("h1");
     if (firstHeading) {
@@ -127,10 +259,17 @@
       Array.from(next.children).forEach((item, index) => {
         const card = document.createElement("article");
         card.className = "concept-card";
-        card.innerHTML = `
-          <div class="concept-card__num">${index + 1}</div>
-          <p class="concept-card__text">${item.textContent.trim()}</p>
-        `;
+
+        const num = document.createElement("div");
+        num.className = "concept-card__num";
+        num.textContent = (index + 1).toString();
+        card.appendChild(num);
+
+        const text = document.createElement("p");
+        text.className = "concept-card__text";
+        text.textContent = item.textContent.trim();
+        card.appendChild(text);
+
         grid.appendChild(card);
       });
 
@@ -152,17 +291,25 @@
 
       const panel = document.createElement("section");
       panel.className = "memory-hook-panel";
-      panel.innerHTML = `
-        <div class="memory-hook-panel__art" aria-hidden="true">
-          <svg class="svg-frame" viewBox="0 0 220 120" role="img" aria-label="Memory hook illustration">
-            <rect x="10" y="10" width="200" height="100" rx="22" fill="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 10%, white 90%)" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 60%, white 40%)" stroke-width="3"></rect>
-            <circle cx="60" cy="60" r="22" fill="var(--chapter-accent, var(--compiler))"></circle>
-            <path d="M96 58 H 166" stroke="var(--chapter-accent, var(--compiler))" stroke-width="8" stroke-linecap="round"></path>
-            <path d="M96 78 H 142" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%)" stroke-width="8" stroke-linecap="round"></path>
-          </svg>
-        </div>
-        <div class="memory-hook-panel__body">${next.outerHTML}</div>
+
+      const artDiv = document.createElement("div");
+      artDiv.className = "memory-hook-panel__art";
+      artDiv.setAttribute("aria-hidden", "true");
+      artDiv.innerHTML = `
+        <svg class="svg-frame" viewBox="0 0 220 120" role="img" aria-label="Memory hook illustration">
+          <rect x="10" y="10" width="200" height="100" rx="22" fill="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 10%, white 90%)" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 60%, white 40%)" stroke-width="3"></rect>
+          <circle cx="60" cy="60" r="22" fill="var(--chapter-accent, var(--compiler))"></circle>
+          <path d="M96 58 H 166" stroke="var(--chapter-accent, var(--compiler))" stroke-width="8" stroke-linecap="round"></path>
+          <path d="M96 78 H 142" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%)" stroke-width="8" stroke-linecap="round"></path>
+        </svg>
       `;
+
+      const bodyDiv = document.createElement("div");
+      bodyDiv.className = "memory-hook-panel__body";
+      bodyDiv.appendChild(next.cloneNode(true));
+
+      panel.appendChild(artDiv);
+      panel.appendChild(bodyDiv);
 
       next.replaceWith(panel);
     });
@@ -196,16 +343,38 @@
 
         const card = document.createElement("article");
         card.className = "flashcard";
-        card.innerHTML = `
-          <div class="flashcard__front">
-            <div class="flashcard__index">Card ${index + 1}</div>
-            <p class="flashcard__question">${cells[0].innerHTML}</p>
-          </div>
-          <div class="flashcard__back">
-            <div class="flashcard__answer-label">Answer</div>
-            <p class="flashcard__answer">${cells[1].innerHTML}</p>
-          </div>
-        `;
+
+        const frontDiv = document.createElement("div");
+        frontDiv.className = "flashcard__front";
+
+        const indexDiv = document.createElement("div");
+        indexDiv.className = "flashcard__index";
+        indexDiv.textContent = `Card ${index + 1}`;
+
+        const questionP = document.createElement("p");
+        questionP.className = "flashcard__question";
+        questionP.innerHTML = cells[0].innerHTML; // Safe because it's sourced from Markdown rendering
+
+        frontDiv.appendChild(indexDiv);
+        frontDiv.appendChild(questionP);
+
+        const backDiv = document.createElement("div");
+        backDiv.className = "flashcard__back";
+
+        const answerLabel = document.createElement("div");
+        answerLabel.className = "flashcard__answer-label";
+        answerLabel.textContent = "Answer";
+
+        const answerP = document.createElement("p");
+        answerP.className = "flashcard__answer";
+        answerP.innerHTML = cells[1].innerHTML; // Safe because it's sourced from Markdown rendering
+
+        backDiv.appendChild(answerLabel);
+        backDiv.appendChild(answerP);
+
+        card.appendChild(frontDiv);
+        card.appendChild(backDiv);
+
         deck.appendChild(card);
       });
 

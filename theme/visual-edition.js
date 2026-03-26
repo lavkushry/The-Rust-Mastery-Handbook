@@ -417,11 +417,13 @@
     main.dataset.concept = concept.key;
     main.style.setProperty("--chapter-accent", concept.color);
 
+    const headings = Array.from(main.querySelectorAll("h2, h3"));
+
     upgradeCallouts(main);
-    cardifyRememberOnlyThree(main);
-    enhanceMemoryHooks(main);
-    enhanceFlashcardDecks(main);
-    enhanceCheatSheets(main);
+    cardifyRememberOnlyThree(main, headings);
+    enhanceMemoryHooks(main, headings);
+    enhanceFlashcardDecks(main, headings);
+    enhanceCheatSheets(main, headings);
     styleTables(main);
     createHero(main, title, concept.color, concept.key);
   });

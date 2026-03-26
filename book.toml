@@ -1,6 +1,6 @@
 [book]
 title = "The Rust Mastery Handbook"
-authors = ["OpenAI Codex"]
+authors = ["Lavkus Kumar and contributors"]
 language = "en"
 src = "src"
 description = "A deep, first-principles systems handbook for Rust, aimed at readers who want design-level understanding and open-source contribution readiness."
@@ -16,3 +16,6 @@ smart-punctuation = true
 no-section-label = false
 additional-css = ["theme/visual-edition.css"]
 additional-js = ["theme/visual-edition.js"]
+git-repository-url = "https://github.com/lavkushry/The-Rust-Mastery-Handbook"
+edit-url-template = "https://github.com/lavkushry/The-Rust-Mastery-Handbook/edit/main/{path}"
+site-url = "/The-Rust-Mastery-Handbook/"

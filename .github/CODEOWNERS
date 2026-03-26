@@ -1,0 +1,21 @@
+# Default owner
+* @lavkushry
+
+# Core handbook structure
+/src/SUMMARY.md @lavkushry
+/src/00_title_and_toc.md @lavkushry
+
+# Build and publishing
+/book.toml @lavkushry
+/.github/workflows/ @lavkushry
+/scripts/ @lavkushry
+/theme/ @lavkushry
+/styles/ @lavkushry
+
+# Community and governance files
+/.github/ @lavkushry
+/CONTRIBUTING.md @lavkushry
+/CODE_OF_CONDUCT.md @lavkushry
+/SECURITY.md @lavkushry
+/CHANGELOG.md @lavkushry
+/docs/ @lavkushry

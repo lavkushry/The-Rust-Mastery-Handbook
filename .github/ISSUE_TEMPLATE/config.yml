@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project support and usage questions
+    url: https://github.com/lavkushry/The-Rust-Mastery-Handbook/discussions
+    about: Ask questions and discuss usage patterns in Discussions.
+  - name: Security vulnerability reporting
+    url: https://github.com/lavkushry/The-Rust-Mastery-Handbook/security/policy
+    about: Please report vulnerabilities through the security policy process.

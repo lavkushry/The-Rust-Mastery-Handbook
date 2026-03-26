@@ -91,6 +91,7 @@ const bookTitle = bookTitleMatch?.[1] ?? "The Rust Mastery Handbook";
 const bookDescription =
   descriptionMatch?.[1] ??
   "A deep, first-principles systems handbook for Rust.";
+const pageLoadTimeoutMs = 120_000;
 
 function escapeHtml(value) {
   return value
@@ -128,7 +129,22 @@ try {
     await mkdir(path.dirname(job.outputPath), { recursive: true });
 
     const page = await browser.newPage();
-    await page.goto(pathToFileURL(inputPath).href, { waitUntil: "networkidle0" });
+    page.setDefaultNavigationTimeout(pageLoadTimeoutMs);
+    page.setDefaultTimeout(pageLoadTimeoutMs);
+    await page.goto(pathToFileURL(inputPath).href, {
+      waitUntil: "load",
+      timeout: pageLoadTimeoutMs,
+    });
+    await page.waitForFunction(
+      () => document.readyState === "complete",
+      { timeout: pageLoadTimeoutMs },
+    );
+    await page.evaluate(async () => {
+      if ("fonts" in document) {
+        await document.fonts.ready;
+      }
+    });
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     await page.emulateMediaType("print");
 
     if (customCss) {

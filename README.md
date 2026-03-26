@@ -1,81 +1,265 @@
-# Rust Mastery Handbook
+# The Rust Mastery Handbook
 
-This is now an `mdBook` project.
+[![Build Book](https://github.com/lavkushry/The-Rust-Mastery-Handbook/actions/workflows/ci.yml/badge.svg)](https://github.com/lavkushry/The-Rust-Mastery-Handbook/actions/workflows/ci.yml)
+[![Deploy Pages](https://github.com/lavkushry/The-Rust-Mastery-Handbook/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/lavkushry/The-Rust-Mastery-Handbook/actions/workflows/deploy-pages.yml)
 
-Core files:
+A long-form Rust systems engineering handbook for developers who want more than syntax: ownership reasoning, compiler mental models, and practical open-source contribution readiness.
 
-- [book.toml](/home/ems/rust_handbook/book.toml)
-- [src/SUMMARY.md](/home/ems/rust_handbook/src/SUMMARY.md)
-- [src/00_title_and_toc.md](/home/ems/rust_handbook/src/00_title_and_toc.md)
-- [src/part-01](/home/ems/rust_handbook/src/part-01)
-- [src/part-02](/home/ems/rust_handbook/src/part-02)
-- [src/part-03](/home/ems/rust_handbook/src/part-03)
-- [src/part-04](/home/ems/rust_handbook/src/part-04)
-- [src/part-05](/home/ems/rust_handbook/src/part-05)
-- [src/part-06](/home/ems/rust_handbook/src/part-06)
-- [src/part-07](/home/ems/rust_handbook/src/part-07)
-- [src/part-08](/home/ems/rust_handbook/src/part-08)
-- [src/part-09](/home/ems/rust_handbook/src/part-09)
-- [src/part-10](/home/ems/rust_handbook/src/part-10)
-- [src/appendices](/home/ems/rust_handbook/src/appendices)
-- [src/10_retention_and_mastery_drills.md](/home/ems/rust_handbook/src/10_retention_and_mastery_drills.md)
-- [archive/legacy-aggregates](/home/ems/rust_handbook/archive/legacy-aggregates)
+This repository publishes a multi-part Rust learning handbook built with mdBook, with chapterized content, visual diagrams, printable PDF export, and a contributor-oriented documentation workflow.
 
-Purpose:
+## Table of Contents
 
-- explain Rust from first principles
-- make ownership and lifetimes memorable
-- prepare the reader to read real codebases
-- build contribution readiness for serious open-source Rust work
+- [The Rust Mastery Handbook](#the-rust-mastery-handbook)
+  - [Table of Contents](#table-of-contents)
+  - [Why This Exists](#why-this-exists)
+  - [Who This Project Is For](#who-this-project-is-for)
+  - [Key Features](#key-features)
+  - [How It Works](#how-it-works)
+  - [Quick Start (Under 5 Minutes)](#quick-start-under-5-minutes)
+  - [Installation](#installation)
+    - [1) Install mdBook](#1-install-mdbook)
+    - [2) Clone the repository](#2-clone-the-repository)
+    - [3) Build the handbook](#3-build-the-handbook)
+  - [Usage](#usage)
+    - [Serve locally](#serve-locally)
+    - [Build static output](#build-static-output)
+    - [Export PDF (single format)](#export-pdf-single-format)
+    - [Export publication bundle (A4 + Letter)](#export-publication-bundle-a4--letter)
+  - [Project Structure](#project-structure)
+  - [Configuration](#configuration)
+  - [Development Workflow](#development-workflow)
+  - [Testing and Validation](#testing-and-validation)
+  - [Publishing and Deployment](#publishing-and-deployment)
+  - [Docs and Support](#docs-and-support)
+  - [Screenshots and Visual Assets](#screenshots-and-visual-assets)
+  - [Why Choose This Handbook](#why-choose-this-handbook)
+  - [Roadmap](#roadmap)
+  - [Contributing](#contributing)
+  - [Security](#security)
+  - [License](#license)
+  - [Maintainers](#maintainers)
 
-Local workflow:
+## Why This Exists
+
+Most Rust learning material is excellent for language onboarding, but often too shallow for engineers who need to reason about real-world codebases, architecture tradeoffs, and contribution pathways.
+
+The Rust Mastery Handbook is designed to bridge that gap by connecting first-principles Rust concepts to practical systems engineering and open-source contribution patterns.
+
+## Who This Project Is For
+
+- Backend and systems engineers moving into Rust
+- Developers who already know basic Rust syntax but want deeper mental models
+- Readers preparing to contribute to serious Rust projects
+- Teams using this handbook as internal upskilling material
+
+## Key Features
+
+- 10-part structured handbook from foundations to advanced systems topics
+- 50+ chapters plus appendices and retention drills
+- Visual diagrams embedded directly in chapter content
+- Printable PDF export in A4 and US Letter formats
+- mdBook-based publishing pipeline for GitHub Pages
+- Legacy aggregate drafts preserved for editorial history
+
+## How It Works
+
+Source content is authored in Markdown under src, navigation is controlled by src/SUMMARY.md, mdBook builds the static site, and an optional Node-based script exports print-ready PDFs.
+
+High-level flow:
+
+1. Write or edit chapter content in src.
+2. Build and preview with mdBook.
+3. Optionally export PDFs for publication bundles.
+4. Push to main to trigger Pages deployment.
+
+## Quick Start (Under 5 Minutes)
+
+Prerequisites:
+
+- Rust toolchain installed (for cargo)
+- mdBook CLI
+
+Commands:
 
 ```bash
-mdbook build
+cargo install mdbook --locked
+git clone https://github.com/lavkushry/The-Rust-Mastery-Handbook.git
+cd The-Rust-Mastery-Handbook
 mdbook serve --open
 ```
 
-PDF export:
+## Installation
+
+### 1) Install mdBook
+
+```bash
+cargo install mdbook --locked
+```
+
+### 2) Clone the repository
+
+```bash
+git clone https://github.com/lavkushry/The-Rust-Mastery-Handbook.git
+cd The-Rust-Mastery-Handbook
+```
+
+### 3) Build the handbook
+
+```bash
+mdbook build
+```
+
+## Usage
+
+### Serve locally
+
+```bash
+mdbook serve --open
+```
+
+### Build static output
+
+```bash
+mdbook build
+```
+
+### Export PDF (single format)
 
 ```bash
 mdbook build
 node scripts/export-pdf.mjs
 ```
 
-Default output:
+Output:
 
-- `dist/the-rust-mastery-handbook.pdf`
+- dist/the-rust-mastery-handbook.pdf
 
-Publication bundle:
+### Export publication bundle (A4 + Letter)
 
 ```bash
 mdbook build
 node scripts/export-pdf.mjs --all-formats
 ```
 
-Bundle outputs:
+Outputs:
 
-- `dist/the-rust-mastery-handbook-a4.pdf`
-- `dist/the-rust-mastery-handbook-letter.pdf`
+- dist/the-rust-mastery-handbook-a4.pdf
+- dist/the-rust-mastery-handbook-letter.pdf
 
-Project layout:
+## Project Structure
 
-- `src/part-XX/` contains the chapterized book content, one page per chapter plus a part landing page
-- `src/appendices/` contains appendix landing and appendix pages
-- `src/SUMMARY.md` controls navigation
-- `src/00_title_and_toc.md` is the reader-facing front door and manual TOC
-- `book.toml` configures the book
-- `book/` is generated output and ignored by git
-- `archive/legacy-aggregates/` holds the old monolithic source files that were split into chapter pages
+```text
+.
+├── book.toml
+├── src/
+│   ├── SUMMARY.md
+│   ├── 00_title_and_toc.md
+│   ├── part-01 ... part-10/
+│   ├── appendices/
+│   └── 10_retention_and_mastery_drills.md
+├── scripts/
+│   └── export-pdf.mjs
+├── styles/
+├── theme/
+└── archive/legacy-aggregates/
+```
 
-Legacy note:
+## Configuration
 
-- the old aggregate part files were moved to `archive/legacy-aggregates/` so `src/` has a single active source layout
+Main config lives in book.toml.
 
-Recommended study loop:
+- Book metadata and description
+- Build output location
+- HTML theme and front-end custom assets
+- Repository and edit-link metadata for discoverability
 
-1. Read one chapter in order.
-2. Type the examples and break them on purpose.
-3. Do the matching drill deck in `src/10_retention_and_mastery_drills.md`.
-4. Read one real Rust module that uses the same idea.
-5. Write down one invariant the compiler was protecting.
+Additional styles and scripts:
+
+- theme/visual-edition.css
+- theme/visual-edition.js
+- styles/pdf-export.css
+
+## Development Workflow
+
+Typical authoring loop:
+
+1. Edit chapter Markdown in src.
+2. Run mdbook build to validate structure.
+3. Preview with mdbook serve.
+4. Open a focused pull request.
+
+For contribution standards and review flow, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Testing and Validation
+
+This project is documentation-first. Validation is currently based on build correctness and rendered output checks.
+
+```bash
+mdbook build
+```
+
+Recommended pre-PR checks:
+
+- Ensure the book builds without errors
+- Verify updated pages render correctly in local preview
+- Verify links and headings in edited sections
+
+## Publishing and Deployment
+
+- GitHub Pages deployment is defined in .github/workflows/deploy-pages.yml.
+- The site is published from successful main-branch workflow runs.
+- Build verification for pull requests is defined in .github/workflows/ci.yml.
+
+## Docs and Support
+
+- Contributor guide: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Code of conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- Security policy: [SECURITY.md](SECURITY.md)
+- FAQ: [docs/faq.md](docs/faq.md)
+- Troubleshooting: [docs/troubleshooting.md](docs/troubleshooting.md)
+- Support policy: [docs/support-policy.md](docs/support-policy.md)
+- Versioning policy: [docs/versioning-policy.md](docs/versioning-policy.md)
+
+## Screenshots and Visual Assets
+
+This project currently uses inline SVG chapter visuals and does not yet include dedicated repository-level screenshot assets or social preview artwork.
+
+See [docs/social-preview-spec.md](docs/social-preview-spec.md) and [docs/oss-growth-roadmap.md](docs/oss-growth-roadmap.md) for concrete asset recommendations.
+
+## Why Choose This Handbook
+
+- Focuses on reasoning and engineering tradeoffs, not only syntax walkthroughs
+- Explicitly connects learning to open-source contribution readiness
+- Provides practical drills and chapter-level progression for retention
+- Maintains a source-first publishing workflow suitable for community contributions
+
+## Roadmap
+
+Planned OSS-quality and content expansion tasks are tracked in:
+
+- [docs/oss-growth-roadmap.md](docs/oss-growth-roadmap.md)
+
+## Contributing
+
+Contributions are welcome for:
+
+- Content clarity and accuracy improvements
+- Typos, structure, and consistency fixes
+- Additional examples and diagrams
+- Build and publishing workflow improvements
+
+Start here: [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Security
+
+Please report vulnerabilities according to [SECURITY.md](SECURITY.md).
+
+## License
+
+No final license file is committed yet. See [docs/license-decision-note.md](docs/license-decision-note.md) before reusing content.
+
+## Maintainers
+
+- @lavkushry
+
+For maintainer operations and triage practices, see [docs/maintainer-playbook.md](docs/maintainer-playbook.md).

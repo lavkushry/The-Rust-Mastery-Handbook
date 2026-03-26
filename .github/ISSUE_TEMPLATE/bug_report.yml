@@ -1,0 +1,72 @@
+name: Bug report
+description: Report a reproducible problem in content, build, or workflow behavior.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please provide enough detail to reproduce it quickly.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Chapter content
+        - Navigation and links
+        - mdBook build
+        - GitHub workflow
+        - PDF export
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: File or page
+      description: Provide a path such as src/part-04/chapter-23-iterators-the-rust-superpower.md
+      placeholder: src/part-xx/...
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include commands when relevant.
+      placeholder: |
+        1. Run ...
+        2. Open ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment details
+      description: OS, mdBook version, Node version (if PDF/export related)
+      placeholder: |
+        OS: ...
+        mdBook: ...
+        Node: ...
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Logs, screenshots, and related links.
+    validations:
+      required: false

@@ -1,0 +1,27 @@
+changelog:
+  categories:
+    - title: "Content and Handbook Updates"
+      labels:
+        - documentation
+        - content
+    - title: "Contributor Experience"
+      labels:
+        - maintenance
+        - enhancement
+        - onboarding
+    - title: "Build and Publishing"
+      labels:
+        - ci
+        - dependencies
+        - performance
+    - title: "Bug Fixes"
+      labels:
+        - bug
+    - title: "Security"
+      labels:
+        - security
+  exclude:
+    labels:
+      - skip-changelog
+    authors:
+      - dependabot

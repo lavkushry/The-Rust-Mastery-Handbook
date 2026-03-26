@@ -1,4 +1,14 @@
 # Chapter 11A: Slices, Borrowed Views into Contiguous Data
+<div class="diagram-grid diagram-grid--two">
+  <figure class="visual-figure" style="--chapter-accent: var(--borrow-shared);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Slice Window</div><h2 class="visual-figure__title">A Slice Borrows a Region, Not the Whole Collection API</h2></div></div>
+    <div class="visual-figure__body"><svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Slice window diagram showing a borrowed range into an array"><rect x="28" y="28" width="484" height="364" rx="24" fill="#fffdf8" stroke="rgba(69,123,157,0.16)"></rect><rect x="74" y="154" width="392" height="72" rx="18" fill="#eef2ff" stroke="#023e8a" stroke-width="3"></rect><rect x="86" y="168" width="52" height="44" fill="#dbeafe"></rect><rect x="142" y="168" width="52" height="44" fill="#dbeafe"></rect><rect x="198" y="168" width="52" height="44" fill="#457b9d"></rect><rect x="254" y="168" width="52" height="44" fill="#457b9d"></rect><rect x="310" y="168" width="52" height="44" fill="#457b9d"></rect><rect x="366" y="168" width="52" height="44" fill="#dbeafe"></rect><path d="M226 122 V 154 M338 122 V 154" stroke="#457b9d" stroke-width="5"></path><path d="M226 122 H 338" stroke="#457b9d" stroke-width="5"></path><text x="242" y="110" class="svg-small" style="fill:#2d5870;">&amp;nums[2..5]</text><text x="120" y="274" class="svg-small" style="fill:#6b7280;">a slice is pointer plus length into existing contiguous storage</text></svg></div>
+  </figure>
+  <figure class="visual-figure visual-figure--dark" style="--chapter-accent: var(--borrow-shared);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">String View</div><h2 class="visual-figure__title"><code>&amp;str</code> Is a UTF-8 Slice, Not a Random-Access Char Array</h2></div></div>
+    <div class="visual-figure__body"><svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="String slice diagram showing bytes and a borrowed substring window"><rect x="24" y="24" width="492" height="372" rx="24" fill="#101827" stroke="rgba(255,255,255,0.08)"></rect><rect x="62" y="158" width="416" height="72" rx="18" fill="#172554" stroke="#3a86ff" stroke-width="3"></rect><rect x="82" y="172" width="48" height="44" fill="#8ecae6"></rect><rect x="134" y="172" width="48" height="44" fill="#8ecae6"></rect><rect x="186" y="172" width="48" height="44" fill="#457b9d"></rect><rect x="238" y="172" width="48" height="44" fill="#457b9d"></rect><rect x="290" y="172" width="48" height="44" fill="#8ecae6"></rect><rect x="342" y="172" width="48" height="44" fill="#8ecae6"></rect><text x="196" y="136" class="svg-small" style="fill:#dbeafe;">borrowed UTF-8 window</text><text x="92" y="282" class="svg-small" style="fill:#fff3c4;">indexing by byte boundary matters because characters are not fixed-width</text></svg></div>
+  </figure>
+</div>
 
 ## Step 1 - The Problem
 

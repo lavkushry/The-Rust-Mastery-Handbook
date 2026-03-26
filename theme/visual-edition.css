@@ -327,6 +327,95 @@ body {
   line-height: 1.5;
 }
 
+.memory-hook-panel {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.6fr) minmax(0, 1fr);
+  gap: 1rem;
+  margin: 1.4rem 0 2rem;
+  padding: 1rem;
+  border: 2px dashed color-mix(in srgb, var(--chapter-accent, var(--compiler)) 48%, white 52%);
+  border-radius: 1.2rem;
+  background: linear-gradient(180deg, #fffdf8, color-mix(in srgb, var(--chapter-accent, var(--compiler)) 6%, white 94%));
+}
+
+.memory-hook-panel__art {
+  align-self: center;
+}
+
+.memory-hook-panel__body p {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.7;
+}
+
+.flashcard-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 1.6rem 0 2rem;
+}
+
+.flashcard {
+  border: 1px solid color-mix(in srgb, var(--chapter-accent, var(--compiler)) 24%, white 76%);
+  border-radius: 1.15rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+}
+
+.flashcard__front {
+  padding: 1rem 1rem 0.9rem;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--chapter-accent, var(--compiler)) 86%, #09111d 14%), #09111d);
+  color: #fff;
+}
+
+.flashcard__index {
+  margin-bottom: 0.55rem;
+  color: rgba(255, 255, 255, 0.82);
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.flashcard__question,
+.flashcard__answer {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.flashcard__question {
+  font-weight: 700;
+}
+
+.flashcard__back {
+  padding: 0.95rem 1rem 1rem;
+  background: #fff;
+}
+
+.flashcard__answer-label {
+  margin-bottom: 0.45rem;
+  color: var(--chapter-accent, var(--compiler));
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cheat-sheet-panel {
+  margin: 1.6rem 0 2rem;
+  padding: 0.9rem;
+  border: 3px double color-mix(in srgb, var(--chapter-accent, var(--compiler)) 56%, white 44%);
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, #ffffff, color-mix(in srgb, var(--chapter-accent, var(--compiler)) 4%, white 96%));
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+}
+
+.cheat-sheet-table th {
+  background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 9%, white 91%);
+}
+
 .annotated-code {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(250px, 0.75fr);
@@ -448,6 +537,7 @@ blockquote.callout--zero-cost .callout__label {
   width: 100%;
   border-collapse: collapse;
   overflow: hidden;
+  border-radius: 1rem;
 }
 
 .visual-table th,
@@ -463,6 +553,7 @@ blockquote.callout--zero-cost .callout__label {
   font-size: 0.84rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 6%, white 94%);
 }
 
 .svg-frame {
@@ -530,7 +621,9 @@ blockquote.callout--zero-cost .callout__label {
   .diagram-grid--two,
   .diagram-grid--three,
   .concept-card-row,
-  .caption-grid {
+  .caption-grid,
+  .flashcard-grid,
+  .memory-hook-panel {
     grid-template-columns: 1fr;
   }
 

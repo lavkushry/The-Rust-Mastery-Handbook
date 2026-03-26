@@ -138,6 +138,107 @@
     });
   }
 
+  function enhanceMemoryHooks(main) {
+    const headings = Array.from(main.querySelectorAll("h2, h3"));
+    headings.forEach((heading) => {
+      if (!/memory hook/i.test(heading.textContent || "")) {
+        return;
+      }
+
+      const next = heading.nextElementSibling;
+      if (!next || next.tagName !== "P") {
+        return;
+      }
+
+      const panel = document.createElement("section");
+      panel.className = "memory-hook-panel";
+      panel.innerHTML = `
+        <div class="memory-hook-panel__art" aria-hidden="true">
+          <svg class="svg-frame" viewBox="0 0 220 120" role="img" aria-label="Memory hook illustration">
+            <rect x="10" y="10" width="200" height="100" rx="22" fill="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 10%, white 90%)" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 60%, white 40%)" stroke-width="3"></rect>
+            <circle cx="60" cy="60" r="22" fill="var(--chapter-accent, var(--compiler))"></circle>
+            <path d="M96 58 H 166" stroke="var(--chapter-accent, var(--compiler))" stroke-width="8" stroke-linecap="round"></path>
+            <path d="M96 78 H 142" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%)" stroke-width="8" stroke-linecap="round"></path>
+          </svg>
+        </div>
+        <div class="memory-hook-panel__body">${next.outerHTML}</div>
+      `;
+
+      next.replaceWith(panel);
+    });
+  }
+
+  function enhanceFlashcardDecks(main) {
+    const headings = Array.from(main.querySelectorAll("h2, h3"));
+    headings.forEach((heading) => {
+      if (!/flashcard deck/i.test(heading.textContent || "")) {
+        return;
+      }
+
+      const next = heading.nextElementSibling;
+      if (!next || next.tagName !== "TABLE") {
+        return;
+      }
+
+      const rows = Array.from(next.querySelectorAll("tbody tr"));
+      if (rows.length === 0) {
+        return;
+      }
+
+      const deck = document.createElement("div");
+      deck.className = "flashcard-grid";
+
+      rows.forEach((row, index) => {
+        const cells = row.querySelectorAll("td");
+        if (cells.length < 2) {
+          return;
+        }
+
+        const card = document.createElement("article");
+        card.className = "flashcard";
+        card.innerHTML = `
+          <div class="flashcard__front">
+            <div class="flashcard__index">Card ${index + 1}</div>
+            <p class="flashcard__question">${cells[0].innerHTML}</p>
+          </div>
+          <div class="flashcard__back">
+            <div class="flashcard__answer-label">Answer</div>
+            <p class="flashcard__answer">${cells[1].innerHTML}</p>
+          </div>
+        `;
+        deck.appendChild(card);
+      });
+
+      next.replaceWith(deck);
+    });
+  }
+
+  function enhanceCheatSheets(main) {
+    const headings = Array.from(main.querySelectorAll("h2, h3"));
+    headings.forEach((heading) => {
+      if (!/chapter cheat sheet/i.test(heading.textContent || "")) {
+        return;
+      }
+
+      const next = heading.nextElementSibling;
+      if (!next || next.tagName !== "TABLE") {
+        return;
+      }
+
+      next.classList.add("visual-table", "cheat-sheet-table");
+      const panel = document.createElement("section");
+      panel.className = "cheat-sheet-panel";
+      next.replaceWith(panel);
+      panel.appendChild(next);
+    });
+  }
+
+  function styleTables(main) {
+    main.querySelectorAll("table").forEach((table) => {
+      table.classList.add("visual-table");
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     const main = document.querySelector("#mdbook-content main");
     if (!main) {
@@ -153,6 +254,10 @@
 
     upgradeCallouts(main);
     cardifyRememberOnlyThree(main);
+    enhanceMemoryHooks(main);
+    enhanceFlashcardDecks(main);
+    enhanceCheatSheets(main);
+    styleTables(main);
     createHero(main, title, concept.color, concept.key);
   });
 })();

@@ -118,82 +118,90 @@ if (existsSync(path.join(toolNodeModules, "@sparticuz", "chromium"))) {
 const browser = await puppeteer.launch(launchOptions);
 
 try {
+  const page = await browser.newPage();
+  page.setDefaultNavigationTimeout(pageLoadTimeoutMs);
+  page.setDefaultTimeout(pageLoadTimeoutMs);
+  await page.goto(pathToFileURL(inputPath).href, {
+    waitUntil: "load",
+    timeout: pageLoadTimeoutMs,
+  });
+  await page.waitForFunction(
+    () => document.readyState === "complete",
+    { timeout: pageLoadTimeoutMs },
+  );
+  await page.evaluate(async () => {
+    if ("fonts" in document) {
+      await document.fonts.ready;
+    }
+  });
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+  await page.emulateMediaType("print");
+
+  if (customCss) {
+    await page.addStyleTag({ content: customCss });
+  }
+
+  await page.evaluate(
+    ({ title, description }) => {
+      document.body.classList.add("pdf-export");
+
+      const main = document.querySelector("main");
+      if (!main) {
+        return;
+      }
+
+      for (const link of main.querySelectorAll("a.header")) {
+        link.removeAttribute("href");
+      }
+
+      for (const heading of main.querySelectorAll("h1")) {
+        const text = heading.textContent?.trim() ?? "";
+        if (/^PART \d+/.test(text)) {
+          heading.classList.add("pdf-part-title");
+        }
+        if (/^Chapter /.test(text)) {
+          heading.classList.add("pdf-chapter-title");
+        }
+      }
+
+      if (!main.querySelector(".pdf-cover")) {
+        const visibleTitle = main.querySelector("h1")?.textContent?.trim() ?? title;
+        const visibleSubtitle = main.querySelector("h2")?.textContent?.trim() ?? "";
+        const cover = document.createElement("section");
+        cover.className = "pdf-cover";
+        cover.innerHTML = `
+          <div class="pdf-cover__top">
+            <div class="pdf-cover__eyebrow"></div>
+            <div class="pdf-cover__spine"></div>
+            <h1 class="pdf-cover__title">${visibleTitle}</h1>
+            <p class="pdf-cover__subtitle">${visibleSubtitle}</p>
+            <p class="pdf-cover__purpose">${description}</p>
+          </div>
+          <div class="pdf-cover__meta">
+            <div>Rust handbook for serious systems engineers</div>
+            <div>Generated from the mdBook source</div>
+          </div>
+        `;
+        main.prepend(cover);
+      }
+    },
+    {
+      title: bookTitle,
+      description: bookDescription,
+    },
+  );
+
   for (const job of jobs) {
     await mkdir(path.dirname(job.outputPath), { recursive: true });
 
-    const page = await browser.newPage();
-    page.setDefaultNavigationTimeout(pageLoadTimeoutMs);
-    page.setDefaultTimeout(pageLoadTimeoutMs);
-    await page.goto(pathToFileURL(inputPath).href, {
-      waitUntil: "load",
-      timeout: pageLoadTimeoutMs,
-    });
-    await page.waitForFunction(
-      () => document.readyState === "complete",
-      { timeout: pageLoadTimeoutMs },
-    );
-    await page.evaluate(async () => {
-      if ("fonts" in document) {
-        await document.fonts.ready;
+    await page.evaluate(({ editionLabel }) => {
+      const eyebrow = document.querySelector(".pdf-cover__eyebrow");
+      if (eyebrow) {
+        eyebrow.textContent = editionLabel;
       }
+    }, {
+      editionLabel: job.editionLabel,
     });
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    await page.emulateMediaType("print");
-
-    if (customCss) {
-      await page.addStyleTag({ content: customCss });
-    }
-
-    await page.evaluate(
-      ({ title, description, editionLabel }) => {
-        document.body.classList.add("pdf-export");
-
-        const main = document.querySelector("main");
-        if (!main) {
-          return;
-        }
-
-        for (const link of main.querySelectorAll("a.header")) {
-          link.removeAttribute("href");
-        }
-
-        for (const heading of main.querySelectorAll("h1")) {
-          const text = heading.textContent?.trim() ?? "";
-          if (/^PART \d+/.test(text)) {
-            heading.classList.add("pdf-part-title");
-          }
-          if (/^Chapter /.test(text)) {
-            heading.classList.add("pdf-chapter-title");
-          }
-        }
-
-        if (!main.querySelector(".pdf-cover")) {
-          const visibleTitle = main.querySelector("h1")?.textContent?.trim() ?? title;
-          const visibleSubtitle = main.querySelector("h2")?.textContent?.trim() ?? "";
-          const cover = document.createElement("section");
-          cover.className = "pdf-cover";
-          cover.innerHTML = `
-            <div class="pdf-cover__top">
-              <div class="pdf-cover__eyebrow">${editionLabel}</div>
-              <div class="pdf-cover__spine"></div>
-              <h1 class="pdf-cover__title">${visibleTitle}</h1>
-              <p class="pdf-cover__subtitle">${visibleSubtitle}</p>
-              <p class="pdf-cover__purpose">${description}</p>
-            </div>
-            <div class="pdf-cover__meta">
-              <div>Rust handbook for serious systems engineers</div>
-              <div>Generated from the mdBook source</div>
-            </div>
-          `;
-          main.prepend(cover);
-        }
-      },
-      {
-        title: bookTitle,
-        description: bookDescription,
-        editionLabel: job.editionLabel,
-      },
-    );
 
     const headerTemplate = `
       <div style="width:100%; padding:0 12mm; font-size:8px; color:#6b7280; text-transform:uppercase; letter-spacing:0.08em;">
@@ -225,8 +233,8 @@ try {
     });
 
     console.log(job.outputPath);
-    await page.close();
   }
+  await page.close();
 } finally {
   await browser.close();
 }

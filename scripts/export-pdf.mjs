@@ -264,7 +264,7 @@ try {
       },
     });
 
-    console.log(job.outputPath);
+    console.log(`Exported PDF to: ${job.outputPath}`);
     await page.close();
   }
 } finally {

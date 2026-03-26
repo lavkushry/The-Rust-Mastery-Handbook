@@ -144,30 +144,32 @@ try {
 
     await page.evaluate(
       ({ title, description, editionLabel }) => {
-        document.body.classList.add("pdf-export");
-
-        const main = document.querySelector("main");
-        if (!main) {
-          return;
-        }
-
-        for (const link of main.querySelectorAll("a.header")) {
-          link.removeAttribute("href");
-        }
-
-        for (const heading of main.querySelectorAll("h1")) {
-          const text = heading.textContent?.trim() ?? "";
-          if (/^PART \d+/.test(text)) {
-            heading.classList.add("pdf-part-title");
-          }
-          if (/^Chapter /.test(text)) {
-            heading.classList.add("pdf-chapter-title");
+        function removeHeaderLinks(mainElement) {
+          for (const link of mainElement.querySelectorAll("a.header")) {
+            link.removeAttribute("href");
           }
         }
 
-        if (!main.querySelector(".pdf-cover")) {
-          const visibleTitle = main.querySelector("h1")?.textContent?.trim() ?? title;
-          const visibleSubtitle = main.querySelector("h2")?.textContent?.trim() ?? "";
+        function formatHeadings(mainElement) {
+          for (const heading of mainElement.querySelectorAll("h1")) {
+            const text = heading.textContent?.trim() ?? "";
+            if (/^PART \d+/.test(text)) {
+              heading.classList.add("pdf-part-title");
+            }
+            if (/^Chapter /.test(text)) {
+              heading.classList.add("pdf-chapter-title");
+            }
+          }
+        }
+
+        function addCoverPage(mainElement, bookTitle, bookDescription, label) {
+          if (mainElement.querySelector(".pdf-cover")) {
+            return;
+          }
+
+          const visibleTitle = mainElement.querySelector("h1")?.textContent?.trim() ?? bookTitle;
+          const visibleSubtitle = mainElement.querySelector("h2")?.textContent?.trim() ?? "";
+
           const cover = document.createElement("section");
           cover.className = "pdf-cover";
 
@@ -214,6 +216,17 @@ try {
           cover.appendChild(meta);
           main.prepend(cover);
         }
+
+        document.body.classList.add("pdf-export");
+
+        const main = document.querySelector("main");
+        if (!main) {
+          return;
+        }
+
+        removeHeaderLinks(main);
+        formatHeadings(main);
+        addCoverPage(main, title, description, editionLabel);
       },
       {
         title: bookTitle,

@@ -13,6 +13,12 @@ Step 2:
 Step 3:
 - open a focused PR with clear before/after explanation
 
+Typical tasks:
+
+- typo and grammar fixes
+- broken links in one chapter
+- minor phrasing improvements for readability
+
 ## Path B: Documentation Contributors
 
 Step 1:
@@ -24,7 +30,24 @@ Step 2:
 Step 3:
 - propose and implement new appendix content
 
-## Path C: Bug-Fix Contributors
+Typical tasks:
+
+- chapter clarity rewrites for one concept section
+- glossary alignment and definition quality improvements
+- chapter-to-appendix cross-linking
+
+## Path C: Accessibility and Diagram Contributors
+
+Step 1:
+- audit one chapter's visual content for aria-label and readability quality
+
+Step 2:
+- improve SVG role/label consistency without changing technical meaning
+
+Step 3:
+- document reusable diagram conventions in docs/editorial-style-guide.md
+
+## Path D: Bug-Fix Contributors
 
 Step 1:
 - reproduce a reported build or rendering issue
@@ -35,7 +58,24 @@ Step 2:
 Step 3:
 - improve workflow robustness in CI or deployment files
 
-## Path D: Feature Contributors
+Typical tasks:
+
+- mdBook build fixes
+- link path corrections
+- workflow reliability fixes
+
+## Path E: Tooling and Workflow Contributors
+
+Step 1:
+- identify one pain point in authoring, validation, or release flow
+
+Step 2:
+- propose a scoped automation or docs workflow improvement
+
+Step 3:
+- implement with documentation updates and validation notes
+
+## Path F: Feature and Content Expansion Contributors
 
 Step 1:
 - discuss idea scope in an issue
@@ -46,7 +86,7 @@ Step 2:
 Step 3:
 - implement incrementally and document behavior impact
 
-## Path E: Maintainer Path
+## Path G: Maintainer Path
 
 Step 1:
 - triage and label incoming issues

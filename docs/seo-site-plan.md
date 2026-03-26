@@ -20,6 +20,7 @@ The plan below strengthens search discoverability without changing core content 
   - ownership and lifetimes
   - open-source contribution
 - Added contributor and support docs to improve trust and crawlable context.
+- Added dedicated intent maps in docs/seo-keyword-map.md and docs/content-cluster-plan.md.
 
 ## Recommended Information Architecture
 
@@ -38,16 +39,19 @@ Primary crawlable entry pages to keep maintained:
 ## Keyword Clusters
 
 1. Rust learning depth
+
 - rust mastery handbook
 - rust ownership mental model
 - rust lifetimes explained
 
-2. Systems engineering context
+1. Systems engineering context
+
 - rust systems programming handbook
 - rust async systems guide
 - rust architecture learning
 
-3. OSS contribution intent
+1. OSS contribution intent
+
 - contribute to rust open source
 - rust repository onboarding
 - first rust contribution guide
@@ -84,3 +88,9 @@ If a dedicated marketing page is added later, include structured data for:
 - TechArticle
 
 For current repository-first setup, prioritize clean headings, internal links, and strong intro copy.
+
+## Related Documents
+
+- docs/seo-keyword-map.md
+- docs/content-cluster-plan.md
+- docs/repo-metadata.md

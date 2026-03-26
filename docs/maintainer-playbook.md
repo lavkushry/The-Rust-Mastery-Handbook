@@ -47,6 +47,13 @@ Review dimensions:
 3. Reader clarity and information architecture
 4. Build impact and workflow safety
 
+Suggested review sequence:
+
+1. Confirm problem statement and scope
+2. Validate technical correctness and handbook voice
+3. Verify links/navigation/build impact
+4. Provide actionable feedback with acceptance hints
+
 Reviewer behavior:
 
 - be specific and kind
@@ -62,6 +69,8 @@ For each release:
 - mention any migration notes for navigation changes
 - link to full changelog section
 
+Use docs/release-checklist.md and docs/changelog-guidelines.md as release prep references.
+
 ## Pinned Issues Strategy
 
 Recommended pinned issues:
@@ -70,6 +79,11 @@ Recommended pinned issues:
 2. roadmap/meta issue for upcoming milestones
 
 Maintain pinned issues by updating status monthly.
+
+Suggested pinned issue names:
+
+- Start here: newcomer contribution board
+- Quarterly roadmap and release objectives
 
 ## Release Highlights Strategy
 
@@ -113,3 +127,9 @@ Monthly maintainer checklist:
 - review and merge dependency updates
 - publish a small progress summary in Discussions or Releases
 - keep roadmap and support docs current
+
+Quarterly hygiene pass:
+
+- refresh repo metadata recommendations in docs/repo-metadata.md
+- review topic ranking in docs/github-topics.md
+- update SEO intent mapping in docs/seo-keyword-map.md

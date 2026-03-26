@@ -1,5 +1,7 @@
 # Troubleshooting
 
+For quick setup guidance first, see docs/getting-started.md and docs/installation.md.
+
 ## mdbook command not found
 
 Symptom:
@@ -105,3 +107,9 @@ Checklist:
 - Confirm mdBook version compatibility.
 - Confirm no local-only files are required.
 - Confirm links and paths are case-correct for Linux runners.
+
+## Need Help Choosing the Right Channel
+
+- Usage/support question: .github/SUPPORT.md
+- Reproducible repository defect: bug issue template
+- Security concern: SECURITY.md

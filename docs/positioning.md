@@ -44,6 +44,19 @@ This handbook focuses on that missing bridge.
 9. Rust education repository with architecture-focused explanations and contributor paths.
 10. Systems-oriented Rust handbook with chapterized progression and maintainable docs workflow.
 
+## 10 Short Social-Post Hooks
+
+1. Learn Rust by understanding invariants, not memorizing compiler errors.
+2. A Rust handbook for engineers who care about architecture, not just syntax.
+3. From ownership confusion to contribution confidence in one structured path.
+4. If Rust feels strict, this handbook explains the design logic behind the rules.
+5. Practical Rust depth for backend and systems developers.
+6. Built for readers who want to navigate real Rust repos confidently.
+7. mdBook-based Rust handbook with contributor-friendly workflow docs.
+8. Deep Rust learning path from foundations to open-source readiness.
+9. Ownership, lifetimes, async, architecture, and contribution strategy in one place.
+10. Serious Rust learning for serious engineering work.
+
 ## 5 Launch Post Drafts
 
 ### Draft 1
@@ -86,3 +99,9 @@ Open-source maintainers and learners: this Rust handbook is now contributor-frie
 8. How to structure long-form technical docs with mdBook
 9. Rust contribution checklist for first pull requests
 10. Building a documentation-first open-source Rust project
+
+## Voice Constraints for Outreach Content
+
+- avoid hype language and growth claims
+- avoid implying official Rust governance affiliation
+- prefer concrete engineering outcomes over motivational slogans

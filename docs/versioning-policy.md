@@ -37,6 +37,12 @@ Suggested categories:
 - Bug Fixes
 - Security
 
+See also:
+
+- docs/release-strategy.md
+- docs/changelog-guidelines.md
+- docs/release-checklist.md
+
 ## Backward Compatibility Expectations
 
 - Existing deep links may occasionally change when chapters are reorganized.

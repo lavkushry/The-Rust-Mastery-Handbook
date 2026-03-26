@@ -17,20 +17,32 @@ When someone shares the repository, the preview should instantly communicate:
 - Format: PNG
 - Visual style: clean, high contrast, readable at small size
 
+Safe zones:
+
+- keep critical text inside a centered 1120 x 520 area
+- avoid placing key text near extreme edges where platform crops may occur
+
 ## Suggested Layout
 
 Top-left:
+
 - Title: The Rust Mastery Handbook
 - Subtitle: From foundations to real open-source contribution
 
 Center:
+
 - 3 concise pillars:
   - Ownership and lifetimes
   - Async and systems patterns
   - Open-source contribution readiness
 
 Bottom-right:
+
 - GitHub handle or project mark: lavkushry
+
+Optional micro-text line:
+
+- "mdBook project | Rust systems learning | contributor-ready"
 
 ## Copy Constraints
 
@@ -51,3 +63,9 @@ Upload in GitHub UI:
 2. General
 3. Social preview
 4. Upload image
+
+## Validation Checklist
+
+- preview remains readable at small card sizes
+- title is legible on both dark and light feed backgrounds
+- image visually matches repository tone: technical, practical, non-hype

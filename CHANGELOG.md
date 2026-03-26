@@ -4,7 +4,18 @@ All notable changes to this repository should be documented in this file.
 
 The format is based on Keep a Changelog and this project aims to follow Semantic Versioning principles for repository releases where applicable.
 
+Use docs/changelog-guidelines.md for entry-writing standards.
+
 ## [Unreleased]
+
+Use these sections when preparing entries:
+
+- Added
+- Changed
+- Fixed
+- Deprecated
+- Removed
+- Security
 
 ### Added
 

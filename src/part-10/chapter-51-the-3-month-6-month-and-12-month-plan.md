@@ -1,4 +1,56 @@
 # Chapter 51: The 3-Month, 6-Month, and 12-Month Plan
+<div class="diagram-grid diagram-grid--two">
+  <figure class="visual-figure" style="--chapter-accent: var(--perf);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Roadmap Board</div><h2 class="visual-figure__title">Three Stages, Three Different Goals</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Roadmap board showing months 1-3, 3-6, and 6-12 with focus areas and readiness checks">
+        <rect x="28" y="28" width="484" height="364" rx="24" fill="#fffdf8" stroke="rgba(255,190,11,0.16)"></rect>
+        <rect x="44" y="74" width="144" height="250" rx="18" fill="#eef6fb" stroke="#219ebc" stroke-width="3"></rect>
+        <text x="78" y="108" class="svg-small" style="fill:#0b5e73;">1-3 months</text>
+        <text x="60" y="144" class="svg-small" style="fill:#0b5e73;">ownership</text>
+        <text x="60" y="170" class="svg-small" style="fill:#0b5e73;">errors</text>
+        <text x="60" y="196" class="svg-small" style="fill:#0b5e73;">small tools</text>
+        <text x="60" y="248" class="svg-small" style="fill:#0b5e73;">ready when you can</text>
+        <text x="60" y="274" class="svg-small" style="fill:#0b5e73;">predict basic borrow</text>
+        <text x="60" y="300" class="svg-small" style="fill:#0b5e73;">errors before compile</text>
+        <rect x="198" y="74" width="144" height="250" rx="18" fill="#eef2ff" stroke="#3a86ff" stroke-width="3"></rect>
+        <text x="234" y="108" class="svg-small" style="fill:#1e40af;">3-6 months</text>
+        <text x="214" y="144" class="svg-small" style="fill:#1e40af;">async services</text>
+        <text x="214" y="170" class="svg-small" style="fill:#1e40af;">testing</text>
+        <text x="214" y="196" class="svg-small" style="fill:#1e40af;">first PRs</text>
+        <text x="214" y="248" class="svg-small" style="fill:#1e40af;">ready when you can</text>
+        <text x="214" y="274" class="svg-small" style="fill:#1e40af;">trace request flow</text>
+        <text x="214" y="300" class="svg-small" style="fill:#1e40af;">and discuss tradeoffs</text>
+        <rect x="352" y="74" width="144" height="250" rx="18" fill="#edf8f1" stroke="#52b788" stroke-width="3"></rect>
+        <text x="388" y="108" class="svg-small" style="fill:#1f6f4d;">6-12 months</text>
+        <text x="368" y="144" class="svg-small" style="fill:#1f6f4d;">APIs</text>
+        <text x="368" y="170" class="svg-small" style="fill:#1f6f4d;">profiling</text>
+        <text x="368" y="196" class="svg-small" style="fill:#1f6f4d;">design review</text>
+        <text x="368" y="248" class="svg-small" style="fill:#1f6f4d;">ready when you can</text>
+        <text x="368" y="274" class="svg-small" style="fill:#1f6f4d;">enter new repos and</text>
+        <text x="368" y="300" class="svg-small" style="fill:#1f6f4d;">be useful quickly</text>
+      </svg>
+    </div>
+  </figure>
+  <figure class="visual-figure visual-figure--dark" style="--chapter-accent: var(--perf);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Daily Practice</div><h2 class="visual-figure__title">The Small Loop That Produces Compounding Skill</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Daily practice loop showing flashcards, coding, repo reading, and notes about invariants">
+        <rect x="24" y="24" width="492" height="372" rx="24" fill="#101827" stroke="rgba(255,255,255,0.08)"></rect>
+        <circle cx="270" cy="210" r="112" fill="none" stroke="#ffbe0b" stroke-width="8" stroke-dasharray="18 16"></circle>
+        <rect x="214" y="56" width="112" height="44" rx="14" fill="#172554" stroke="#3a86ff" stroke-width="3"></rect>
+        <text x="234" y="83" class="svg-small" style="fill:#dbeafe;">flashcards</text>
+        <rect x="366" y="154" width="118" height="44" rx="14" fill="#123e2e" stroke="#52b788" stroke-width="3"></rect>
+        <text x="398" y="181" class="svg-small" style="fill:#d9fbe9;">write code</text>
+        <rect x="212" y="320" width="116" height="44" rx="14" fill="#231942" stroke="#8338ec" stroke-width="3"></rect>
+        <text x="230" y="347" class="svg-small" style="fill:#efe8ff;">repo reading</text>
+        <rect x="56" y="154" width="118" height="44" rx="14" fill="#3a1c17" stroke="#e76f51" stroke-width="3"></rect>
+        <text x="94" y="181" class="svg-small" style="fill:#ffd8cc;">notes</text>
+        <text x="154" y="214" class="svg-small" style="fill:#fff3c4;">what invariant was this code protecting?</text>
+      </svg>
+    </div>
+  </figure>
+</div>
 
 ## Step 1 - The Problem
 

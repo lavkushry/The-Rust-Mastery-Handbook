@@ -96,7 +96,7 @@ test("visual-edition — chapter hero rendered on ownership chapter", async ({ p
   await expect(hero.locator(".chapter-hero__title")).toBeVisible();
 });
 
-test("visual-edition — tables get visual-table class", async ({ page }) => {
+test("visual-edition — tables get visual-table class and wrapper", async ({ page }) => {
   await page.goto(PAGES.find((p) => p.name === "retention-drills").path);
   await page.waitForLoadState("domcontentloaded");
   const tableCount = await page.locator("#mdbook-content main table").count();
@@ -104,6 +104,11 @@ test("visual-edition — tables get visual-table class", async ({ page }) => {
     const tables = page.locator("#mdbook-content main table");
     for (let i = 0; i < tableCount; i++) {
       await expect(tables.nth(i)).toHaveClass(/visual-table/);
+      // Each table should be in a scrollable wrapper
+      const parentClass = await tables.nth(i).evaluate(
+        (el) => el.parentElement?.className ?? "",
+      );
+      expect(parentClass, `Table ${i} should be wrapped in .visual-table-wrapper`).toMatch(/visual-table-wrapper/);
     }
   }
 });

@@ -84,6 +84,12 @@ body {
 #mdbook-content main a {
   text-decoration-thickness: 0.08em;
   text-underline-offset: 0.15em;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+#mdbook-content main a:hover {
+  text-decoration-thickness: 0.12em;
+  color: var(--chapter-accent, var(--compiler));
 }
 
 #mdbook-content main pre,
@@ -113,11 +119,15 @@ body {
   border-radius: 0.25rem;
 }
 
+/* ─── Code blocks: readable, scrollable, not overflowing ─────────────────── */
+
 #mdbook-content main pre {
   background: #1e1e2e;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1rem;
   box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 .visual-edition-page {
@@ -570,6 +580,15 @@ blockquote.callout--zero-cost .callout__label {
   border-radius: 1rem;
 }
 
+/* Scrollable table wrapper for narrow viewports */
+.visual-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.6rem 0;
+  border-radius: 1rem;
+  border: 1px solid rgba(2, 62, 138, 0.12);
+}
+
 .visual-table th,
 .visual-table td {
   padding: 0.75rem 0.85rem;
@@ -693,4 +712,131 @@ blockquote.callout--zero-cost .callout__label {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+}
+
+/* ─── Dark mode — mdBook navy / coal / ayu themes ─────────────────────────── */
+
+body.navy,
+body.coal,
+body.ayu {
+  --ink: #d4d8e2;
+  --paper: #1e2030;
+  --paper-strong: #252840;
+  --grid: rgba(100, 140, 220, 0.1);
+  --card-border: rgba(100, 140, 220, 0.2);
+}
+
+body.navy #mdbook-content main p code,
+body.navy #mdbook-content main li code,
+body.navy #mdbook-content main td code,
+body.navy #mdbook-content main th code,
+body.coal #mdbook-content main p code,
+body.coal #mdbook-content main li code,
+body.coal #mdbook-content main td code,
+body.coal #mdbook-content main th code,
+body.ayu #mdbook-content main p code,
+body.ayu #mdbook-content main li code,
+body.ayu #mdbook-content main td code,
+body.ayu #mdbook-content main th code {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+}
+
+body.navy .visual-table th,
+body.coal .visual-table th,
+body.ayu .visual-table th {
+  background: rgba(255, 255, 255, 0.06);
+  color: #93c5fd;
+}
+
+body.navy .visual-table th,
+body.navy .visual-table td,
+body.coal .visual-table th,
+body.coal .visual-table td,
+body.ayu .visual-table th,
+body.ayu .visual-table td {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body.navy .concept-card,
+body.coal .concept-card,
+body.ayu .concept-card {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+body.navy .concept-card__text,
+body.coal .concept-card__text,
+body.ayu .concept-card__text {
+  color: #e2e8f0;
+}
+
+body.navy .flashcard,
+body.coal .flashcard,
+body.ayu .flashcard {
+  background: #1e2030;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+body.navy .flashcard__back,
+body.coal .flashcard__back,
+body.ayu .flashcard__back {
+  background: #252840;
+}
+
+body.navy .flashcard__answer,
+body.coal .flashcard__answer,
+body.ayu .flashcard__answer {
+  color: #e2e8f0;
+}
+
+body.navy .memory-hook-panel,
+body.coal .memory-hook-panel,
+body.ayu .memory-hook-panel {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.navy .memory-hook-panel__body p,
+body.coal .memory-hook-panel__body p,
+body.ayu .memory-hook-panel__body p {
+  color: #e2e8f0;
+}
+
+body.navy .cheat-sheet-panel,
+body.coal .cheat-sheet-panel,
+body.ayu .cheat-sheet-panel {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.navy blockquote.callout--design-insight,
+body.coal blockquote.callout--design-insight,
+body.ayu blockquote.callout--design-insight {
+  background: rgba(2, 62, 138, 0.2);
+}
+
+body.navy blockquote.callout--expert-tip,
+body.coal blockquote.callout--expert-tip,
+body.ayu blockquote.callout--expert-tip {
+  background: rgba(138, 93, 0, 0.2);
+}
+
+body.navy blockquote.callout--common-mistake,
+body.coal blockquote.callout--common-mistake,
+body.ayu blockquote.callout--common-mistake {
+  background: rgba(214, 40, 40, 0.15);
+}
+
+body.navy blockquote.callout--compiler-says,
+body.coal blockquote.callout--compiler-says,
+body.ayu blockquote.callout--compiler-says {
+  background: rgba(131, 56, 236, 0.18);
+}
+
+body.navy .chapter-break,
+body.coal .chapter-break,
+body.ayu .chapter-break {
+  border-top-color: rgba(255, 255, 255, 0.12);
 }

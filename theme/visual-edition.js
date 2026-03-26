@@ -400,6 +400,15 @@
   function styleTables(main) {
     main.querySelectorAll("table").forEach((table) => {
       table.classList.add("visual-table");
+
+      // Wrap in a scrollable container if not already wrapped, so wide tables
+      // scroll horizontally on narrow viewports instead of overflowing the page.
+      if (!table.parentElement?.classList.contains("visual-table-wrapper")) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "visual-table-wrapper";
+        table.replaceWith(wrapper);
+        wrapper.appendChild(table);
+      }
     });
   }
 

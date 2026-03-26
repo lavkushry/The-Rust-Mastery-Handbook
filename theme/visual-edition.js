@@ -298,7 +298,6 @@
           <path d="M96 78 H 142" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%)" stroke-width="8" stroke-linecap="round"></path>
         </svg>
       `;
-      panel.querySelector(".memory-hook-panel__body").appendChild(next.cloneNode(true));
 
       const bodyDiv = document.createElement("div");
       bodyDiv.className = "memory-hook-panel__body";

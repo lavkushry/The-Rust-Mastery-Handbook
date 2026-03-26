@@ -1,0 +1,222 @@
+html,
+body {
+  background: #ffffff !important;
+}
+
+body.pdf-export {
+  color: #111827;
+  font-family: "IBM Plex Sans", "Source Sans Pro", "Segoe UI", sans-serif !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body.pdf-export #mdbook-help-container,
+body.pdf-export #mdbook-sidebar,
+body.pdf-export #mdbook-search-wrapper,
+body.pdf-export #mdbook-menu-bar,
+body.pdf-export #mdbook-menu-bar-hover-placeholder,
+body.pdf-export #mdbook-sidebar-toggle-anchor {
+  display: none !important;
+}
+
+body.pdf-export #mdbook-body-container,
+body.pdf-export #mdbook-page-wrapper,
+body.pdf-export .page-wrapper,
+body.pdf-export .page,
+body.pdf-export .content,
+body.pdf-export main {
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: none !important;
+  min-height: auto !important;
+  width: auto !important;
+}
+
+body.pdf-export a,
+body.pdf-export a:visited {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+body.pdf-export a.header::before {
+  display: none !important;
+}
+
+body.pdf-export p,
+body.pdf-export li {
+  font-size: 10.5pt;
+  line-height: 1.5;
+}
+
+body.pdf-export h1,
+body.pdf-export h2,
+body.pdf-export h3,
+body.pdf-export h4 {
+  color: #111827;
+  break-after: avoid-page;
+  page-break-after: avoid;
+  font-family: "JetBrains Mono", "Space Mono", "IBM Plex Mono", monospace !important;
+}
+
+body.pdf-export h1 {
+  font-size: 24pt;
+  margin-top: 1.6rem;
+}
+
+body.pdf-export h2 {
+  font-size: 16pt;
+  margin-top: 1.25rem;
+}
+
+body.pdf-export h3 {
+  font-size: 12.5pt;
+  margin-top: 1rem;
+}
+
+body.pdf-export h1.pdf-part-title,
+body.pdf-export h1.pdf-chapter-title {
+  break-before: page;
+  page-break-before: always;
+}
+
+body.pdf-export pre,
+body.pdf-export table,
+body.pdf-export blockquote,
+body.pdf-export .visual-figure,
+body.pdf-export .chapter-hero,
+body.pdf-export .part-spread,
+body.pdf-export .annotated-code {
+  break-inside: avoid-page;
+  page-break-inside: avoid;
+}
+
+body.pdf-export pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f7f7f5 !important;
+  padding: 12px;
+}
+
+body.pdf-export code,
+body.pdf-export pre code {
+  font-family: "JetBrains Mono", "Fira Code", Consolas, monospace !important;
+  font-size: 0.9em;
+}
+
+body.pdf-export table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9.5pt;
+}
+
+body.pdf-export th,
+body.pdf-export td {
+  border: 1px solid #d1d5db;
+  padding: 6px 8px;
+  vertical-align: top;
+}
+
+body.pdf-export blockquote {
+  margin-left: 0;
+  border-left: 4px solid #c08457;
+  background: #faf7f2;
+  color: #374151;
+  padding: 8px 14px;
+}
+
+body.pdf-export .chapter-hero,
+body.pdf-export .part-spread {
+  margin-top: 0;
+}
+
+body.pdf-export .visual-figure__title,
+body.pdf-export .chapter-hero__title,
+body.pdf-export .part-spread__title {
+  font-family: "JetBrains Mono", "Space Mono", "IBM Plex Mono", monospace !important;
+}
+
+body.pdf-export .visual-figure__caption,
+body.pdf-export .chapter-hero__hook,
+body.pdf-export .part-spread__hook,
+body.pdf-export .concept-card__text {
+  font-family: "IBM Plex Sans", "Source Sans Pro", "Segoe UI", sans-serif !important;
+}
+
+body.pdf-export .visual-figure svg,
+body.pdf-export .chapter-hero svg,
+body.pdf-export .part-spread svg {
+  max-width: 100%;
+  height: auto;
+}
+
+body.pdf-export hr {
+  border: 0;
+  border-top: 1px solid #d1d5db;
+  margin: 2rem 0;
+}
+
+body.pdf-export ul,
+body.pdf-export ol {
+  padding-left: 1.25rem;
+}
+
+body.pdf-export .pdf-cover {
+  min-height: 245mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6mm 0 0;
+  break-after: page;
+  page-break-after: always;
+}
+
+body.pdf-export .pdf-cover__eyebrow {
+  color: #92400e;
+  font-size: 10pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+body.pdf-export .pdf-cover__spine {
+  width: 42mm;
+  height: 6px;
+  background: #c08457;
+  margin: 0 0 14mm;
+}
+
+body.pdf-export .pdf-cover__title {
+  margin: 0 0 8mm;
+  font-size: 30pt;
+  line-height: 1.08;
+}
+
+body.pdf-export .pdf-cover__subtitle {
+  max-width: 150mm;
+  margin: 0 0 10mm;
+  color: #374151;
+  font-size: 17pt;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+body.pdf-export .pdf-cover__purpose {
+  max-width: 150mm;
+  margin: 0;
+  color: #374151;
+  font-size: 11pt;
+  line-height: 1.55;
+}
+
+body.pdf-export .pdf-cover__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12mm;
+  margin-top: 12mm;
+  padding-top: 6mm;
+  border-top: 1px solid #d1d5db;
+  color: #6b7280;
+  font-size: 9pt;
+}

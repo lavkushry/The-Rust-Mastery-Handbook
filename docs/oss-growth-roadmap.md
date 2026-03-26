@@ -31,7 +31,12 @@ This roadmap tracks completed improvements and next-step actions for discoverabi
 
 ### 1) Choose and commit a license
 
-Status: completed. Dual license established (MIT for code/tooling, CC BY 4.0 for content). `LICENSE` file committed.
+Status: blocked on maintainer decision.
+
+Needed:
+
+- explicit license for content and code assets
+- LICENSE file commit
 
 ### 2) Configure repository topics in GitHub UI
 
@@ -120,6 +125,7 @@ Needed:
 
 These items cannot be finalized without maintainer decisions:
 
+- final license model and LICENSE file
 - discussions enabled vs issue-only support routing
 - sponsor program activation
 - branch protection strictness and review thresholds

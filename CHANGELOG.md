@@ -19,7 +19,6 @@ Use these sections when preparing entries:
 
 ### Added
 
-- Dual license setup: MIT for code/tooling and CC BY 4.0 for content and visuals (`LICENSE`).
 - OSS project foundation files for contribution, governance, and maintenance.
 - GitHub issue forms, pull request template, CODEOWNERS, support and funding metadata.
 - Maintainer and discoverability playbooks under docs/.

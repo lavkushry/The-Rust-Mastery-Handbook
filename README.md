@@ -301,12 +301,7 @@ Please report vulnerabilities according to [SECURITY.md](SECURITY.md).
 
 ## License
 
-The Rust Mastery Handbook is dual-licensed:
-
-- Handbook content, chapters, and inline diagrams in `src/` are licensed under CC BY 4.0.
-- Code snippets, scripts, and build tooling are licensed under MIT.
-
-See the [LICENSE](LICENSE) file for complete details.
+No final license file is committed yet. See [docs/license-decision-note.md](docs/license-decision-note.md) before reusing content.
 
 ## Maintainers
 

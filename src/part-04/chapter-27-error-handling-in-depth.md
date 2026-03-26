@@ -195,8 +195,7 @@ Why is this weak error handling for a library?
 
 ```rust
 pub fn parse(data: &str) -> anyhow::Result<Model> {
-    let model = serde_json::from_str(data)?;
-    Ok(model)
+    Ok(todo!())
 }
 ```
 

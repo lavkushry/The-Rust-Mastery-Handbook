@@ -1,21 +1,20 @@
 # License Decision Note
 
-This decision has been resolved and a dual-license structure has been committed to the repository in the `LICENSE` file.
+This repository currently does not include a committed LICENSE file.
 
 ## Why This Note Exists
 
-To avoid making incorrect legal assumptions, a license should not be guessed. We documented the alternatives here before making the decision.
+To avoid making incorrect legal assumptions, a license should not be guessed.
 
 ## Decision Required
 
 Repository maintainers should choose and commit an explicit license file.
-**Decision: Dual license (MIT for code, CC BY 4.0 for content) has been adopted.**
 
 ## Current Blockers
 
-- ~~no explicit decision on content license for handbook text and diagrams~~ (Resolved: CC BY 4.0)
-- ~~no explicit decision on code/tooling license for scripts and workflows~~ (Resolved: MIT)
-- ~~no published guidance on whether dual licensing is preferred~~ (Resolved: Dual license preferred and implemented)
+- no explicit decision on content license for handbook text and diagrams
+- no explicit decision on code/tooling license for scripts and workflows
+- no published guidance on whether dual licensing is preferred
 
 Common options for documentation-focused projects include:
 
@@ -37,11 +36,11 @@ If you prefer a single license across all assets:
 
 ## Recommended Next Step
 
-1. ~~Decide licensing intent for:~~
-   - ~~handbook text~~
-   - ~~diagrams and visuals~~
-   - ~~scripts and workflow files~~
-2. ~~Add LICENSE (and NOTICE if needed).~~
-3. ~~Update README.md and this note accordingly.~~
+1. Decide licensing intent for:
+   - handbook text
+   - diagrams and visuals
+   - scripts and workflow files
+2. Add LICENSE (and NOTICE if needed).
+3. Update README.md and this note accordingly.
 
-Until then, reuse permissions are undefined. (Resolved: Reuse permissions are explicitly defined in `LICENSE`).
+Until then, reuse permissions are undefined.

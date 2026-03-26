@@ -33,10 +33,10 @@ Choose one pattern and document rationale.
 
 ## Pre-Commit Checks
 
-- Confirm maintainers agree on selected model.
-- Confirm compatibility with any third-party material.
-- Prepare LICENSE and optional NOTICE files.
-- Update README and docs/license-decision-note.md.
+- [x] Confirm maintainers agree on selected model.
+- [x] Confirm compatibility with any third-party material.
+- [x] Prepare LICENSE and optional NOTICE files.
+- [x] Update README and docs/license-decision-note.md.
 
 ## Post-Commit Checks
 

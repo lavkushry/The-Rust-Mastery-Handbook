@@ -116,31 +116,32 @@ if (existsSync(path.join(toolNodeModules, "@sparticuz", "chromium"))) {
 const browser = await puppeteer.launch(launchOptions);
 
 try {
-  for (const job of jobs) {
-    await mkdir(path.dirname(job.outputPath), { recursive: true });
-
-    const page = await browser.newPage();
-    page.setDefaultNavigationTimeout(pageLoadTimeoutMs);
-    page.setDefaultTimeout(pageLoadTimeoutMs);
-    await page.goto(pathToFileURL(inputPath).href, {
-      waitUntil: "load",
-      timeout: pageLoadTimeoutMs,
-    });
-    await page.waitForFunction(
-      () => document.readyState === "complete",
-      { timeout: pageLoadTimeoutMs },
-    );
-    await page.evaluate(async () => {
-      if ("fonts" in document) {
-        await document.fonts.ready;
-      }
-    });
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    await page.emulateMediaType("print");
-
-    if (customCss) {
-      await page.addStyleTag({ content: customCss });
+  const page = await browser.newPage();
+  page.setDefaultNavigationTimeout(pageLoadTimeoutMs);
+  page.setDefaultTimeout(pageLoadTimeoutMs);
+  await page.goto(pathToFileURL(inputPath).href, {
+    waitUntil: "load",
+    timeout: pageLoadTimeoutMs,
+  });
+  await page.waitForFunction(
+    () => document.readyState === "complete",
+    { timeout: pageLoadTimeoutMs },
+  );
+  await page.evaluate(async () => {
+    if ("fonts" in document) {
+      await document.fonts.ready;
     }
+  });
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+  await page.emulateMediaType("print");
+
+  if (customCss) {
+    await page.addStyleTag({ content: customCss });
+  }
+
+  await page.evaluate(
+    ({ title, description }) => {
+      document.body.classList.add("pdf-export");
 
     await page.evaluate(
       ({ title, description, editionLabel }) => {
@@ -264,9 +265,9 @@ try {
       },
     });
 
-    console.log(`Exported PDF to: ${job.outputPath}`);
-    await page.close();
+    console.log(job.outputPath);
   }
+  await page.close();
 } finally {
   await browser.close();
 }

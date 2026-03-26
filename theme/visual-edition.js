@@ -206,6 +206,11 @@
     grid.appendChild(illustration);
     hero.appendChild(grid);
 
+    gridDiv.appendChild(textDiv);
+    gridDiv.appendChild(artDiv);
+
+    hero.appendChild(gridDiv);
+
     const firstHeading = main.querySelector("h1");
     if (firstHeading) {
       firstHeading.insertAdjacentElement("afterend", hero);
@@ -286,17 +291,25 @@
 
       const panel = document.createElement("section");
       panel.className = "memory-hook-panel";
-      panel.innerHTML = `
-        <div class="memory-hook-panel__art" aria-hidden="true">
-          <svg class="svg-frame" viewBox="0 0 220 120" role="img" aria-label="Memory hook illustration">
-            <rect x="10" y="10" width="200" height="100" rx="22" fill="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 10%, white 90%)" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 60%, white 40%)" stroke-width="3"></rect>
-            <circle cx="60" cy="60" r="22" fill="var(--chapter-accent, var(--compiler))"></circle>
-            <path d="M96 58 H 166" stroke="var(--chapter-accent, var(--compiler))" stroke-width="8" stroke-linecap="round"></path>
-            <path d="M96 78 H 142" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%)" stroke-width="8" stroke-linecap="round"></path>
-          </svg>
-        </div>
-        <div class="memory-hook-panel__body">${next.outerHTML}</div>
+
+      const artDiv = document.createElement("div");
+      artDiv.className = "memory-hook-panel__art";
+      artDiv.setAttribute("aria-hidden", "true");
+      artDiv.innerHTML = `
+        <svg class="svg-frame" viewBox="0 0 220 120" role="img" aria-label="Memory hook illustration">
+          <rect x="10" y="10" width="200" height="100" rx="22" fill="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 10%, white 90%)" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 60%, white 40%)" stroke-width="3"></rect>
+          <circle cx="60" cy="60" r="22" fill="var(--chapter-accent, var(--compiler))"></circle>
+          <path d="M96 58 H 166" stroke="var(--chapter-accent, var(--compiler))" stroke-width="8" stroke-linecap="round"></path>
+          <path d="M96 78 H 142" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%)" stroke-width="8" stroke-linecap="round"></path>
+        </svg>
       `;
+
+      const bodyDiv = document.createElement("div");
+      bodyDiv.className = "memory-hook-panel__body";
+      bodyDiv.appendChild(next.cloneNode(true));
+
+      panel.appendChild(artDiv);
+      panel.appendChild(bodyDiv);
 
       next.replaceWith(panel);
     });
@@ -330,16 +343,38 @@
 
         const card = document.createElement("article");
         card.className = "flashcard";
-        card.innerHTML = `
-          <div class="flashcard__front">
-            <div class="flashcard__index">Card ${index + 1}</div>
-            <p class="flashcard__question">${cells[0].innerHTML}</p>
-          </div>
-          <div class="flashcard__back">
-            <div class="flashcard__answer-label">Answer</div>
-            <p class="flashcard__answer">${cells[1].innerHTML}</p>
-          </div>
-        `;
+
+        const frontDiv = document.createElement("div");
+        frontDiv.className = "flashcard__front";
+
+        const indexDiv = document.createElement("div");
+        indexDiv.className = "flashcard__index";
+        indexDiv.textContent = `Card ${index + 1}`;
+
+        const questionP = document.createElement("p");
+        questionP.className = "flashcard__question";
+        questionP.innerHTML = cells[0].innerHTML; // Safe because it's sourced from Markdown rendering
+
+        frontDiv.appendChild(indexDiv);
+        frontDiv.appendChild(questionP);
+
+        const backDiv = document.createElement("div");
+        backDiv.className = "flashcard__back";
+
+        const answerLabel = document.createElement("div");
+        answerLabel.className = "flashcard__answer-label";
+        answerLabel.textContent = "Answer";
+
+        const answerP = document.createElement("p");
+        answerP.className = "flashcard__answer";
+        answerP.innerHTML = cells[1].innerHTML; // Safe because it's sourced from Markdown rendering
+
+        backDiv.appendChild(answerLabel);
+        backDiv.appendChild(answerP);
+
+        card.appendChild(frontDiv);
+        card.appendChild(backDiv);
+
         deck.appendChild(card);
       });
 

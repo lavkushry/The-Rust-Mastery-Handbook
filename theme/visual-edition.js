@@ -236,6 +236,14 @@
     });
   }
 
+  function getNextSignificantSibling(element) {
+    let next = element.nextElementSibling;
+    while (next && (next.tagName === "BR" || next.tagName === "HR" || next.classList.contains("anchor") || (next.tagName === "P" && next.textContent.trim() === ""))) {
+      next = next.nextElementSibling;
+    }
+    return next;
+  }
+
   function cardifyRememberOnlyThree(main) {
     const headings = main.querySelectorAll("h2, h3");
     headings.forEach((heading) => {
@@ -243,7 +251,7 @@
         return;
       }
 
-      const next = heading.nextElementSibling;
+      const next = getNextSignificantSibling(heading);
       if (!next || next.tagName !== "UL" || next.children.length !== 3) {
         return;
       }
@@ -260,9 +268,9 @@
         num.textContent = (index + 1).toString();
         card.appendChild(num);
 
-        const text = document.createElement("p");
+        const text = document.createElement("div");
         text.className = "concept-card__text";
-        text.textContent = item.textContent.trim();
+        text.innerHTML = item.innerHTML;
         card.appendChild(text);
 
         grid.appendChild(card);
@@ -279,7 +287,7 @@
         return;
       }
 
-      const next = heading.nextElementSibling;
+      const next = getNextSignificantSibling(heading);
       if (!next || next.tagName !== "P") {
         return;
       }
@@ -298,7 +306,6 @@
           <path d="M96 78 H 142" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%)" stroke-width="8" stroke-linecap="round"></path>
         </svg>
       `;
-      panel.querySelector(".memory-hook-panel__body").appendChild(next.cloneNode(true));
 
       const bodyDiv = document.createElement("div");
       bodyDiv.className = "memory-hook-panel__body";
@@ -318,7 +325,7 @@
         return;
       }
 
-      const next = heading.nextElementSibling;
+      const next = getNextSignificantSibling(heading);
       if (!next || next.tagName !== "TABLE") {
         return;
       }
@@ -347,7 +354,7 @@
         indexDiv.className = "flashcard__index";
         indexDiv.textContent = `Card ${index + 1}`;
 
-        const questionP = document.createElement("p");
+        const questionP = document.createElement("div");
         questionP.className = "flashcard__question";
         questionP.innerHTML = cells[0].innerHTML; // Safe because it's sourced from Markdown rendering
 
@@ -361,7 +368,7 @@
         answerLabel.className = "flashcard__answer-label";
         answerLabel.textContent = "Answer";
 
-        const answerP = document.createElement("p");
+        const answerP = document.createElement("div");
         answerP.className = "flashcard__answer";
         answerP.innerHTML = cells[1].innerHTML; // Safe because it's sourced from Markdown rendering
 
@@ -385,7 +392,7 @@
         return;
       }
 
-      const next = heading.nextElementSibling;
+      const next = getNextSignificantSibling(heading);
       if (!next || next.tagName !== "TABLE") {
         return;
       }

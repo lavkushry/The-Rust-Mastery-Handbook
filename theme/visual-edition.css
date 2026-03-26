@@ -101,6 +101,24 @@ body {
   background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 9%, white 91%);
   color: #111827;
   font-size: 0.9em;
+  word-break: break-word;
+}
+
+html.navy #mdbook-content main p code,
+html.mocha #mdbook-content main p code,
+html.ayu #mdbook-content main p code,
+html.navy #mdbook-content main li code,
+html.mocha #mdbook-content main li code,
+html.ayu #mdbook-content main li code,
+html.navy #mdbook-content main td code,
+html.mocha #mdbook-content main td code,
+html.ayu #mdbook-content main td code,
+html.navy #mdbook-content main th code,
+html.mocha #mdbook-content main th code,
+html.ayu #mdbook-content main th code {
+  border-color: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 30%, #334155 70%);
+  background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 15%, #0f172a 85%);
+  color: #e2e8f0;
 }
 
 #mdbook-content main :target {
@@ -118,6 +136,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1rem;
   box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .visual-edition-page {
@@ -296,6 +316,7 @@ body {
 
 .visual-figure__body {
   padding: 0.75rem 1rem 1rem;
+  overflow-x: auto;
 }
 
 .visual-figure__caption {
@@ -336,6 +357,14 @@ body {
   background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 8%, white 92%);
 }
 
+html.navy .concept-card,
+html.mocha .concept-card,
+html.ayu .concept-card {
+  background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 15%, #0f172a 85%);
+  border-color: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 40%, #0f172a 60%);
+  color: #f8fafc;
+}
+
 .concept-card__num {
   display: inline-flex;
   align-items: center;
@@ -357,6 +386,12 @@ body {
   line-height: 1.5;
 }
 
+html.navy .concept-card__text,
+html.mocha .concept-card__text,
+html.ayu .concept-card__text {
+  color: #f8fafc;
+}
+
 .memory-hook-panel {
   display: grid;
   grid-template-columns: minmax(180px, 0.6fr) minmax(0, 1fr);
@@ -368,14 +403,27 @@ body {
   background: linear-gradient(180deg, #fffdf8, color-mix(in srgb, var(--chapter-accent, var(--compiler)) 6%, white 94%));
 }
 
+html.navy .memory-hook-panel,
+html.mocha .memory-hook-panel,
+html.ayu .memory-hook-panel {
+  background: linear-gradient(180deg, #1e293b, color-mix(in srgb, var(--chapter-accent, var(--compiler)) 10%, #0f172a 90%));
+  border-color: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 40%, #334155 60%);
+}
+
 .memory-hook-panel__art {
   align-self: center;
 }
 
-.memory-hook-panel__body p {
+.memory-hook-panel__body {
   margin: 0;
   color: var(--ink);
   line-height: 1.7;
+}
+
+html.navy .memory-hook-panel__body,
+html.mocha .memory-hook-panel__body,
+html.ayu .memory-hook-panel__body {
+  color: #e2e8f0;
 }
 
 .flashcard-grid {
@@ -391,6 +439,13 @@ body {
   overflow: hidden;
   background: #fff;
   box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+}
+
+html.navy .flashcard,
+html.mocha .flashcard,
+html.ayu .flashcard {
+  background: #1e293b;
+  border-color: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 20%, #475569 80%);
 }
 
 .flashcard__front {
@@ -423,6 +478,18 @@ body {
   background: #fff;
 }
 
+html.navy .flashcard__back,
+html.mocha .flashcard__back,
+html.ayu .flashcard__back {
+  background: #1e293b;
+}
+
+html.navy .flashcard__answer,
+html.mocha .flashcard__answer,
+html.ayu .flashcard__answer {
+  color: #e2e8f0;
+}
+
 .flashcard__answer-label {
   margin-bottom: 0.45rem;
   color: var(--chapter-accent, var(--compiler));
@@ -442,8 +509,21 @@ body {
   box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
 }
 
+html.navy .cheat-sheet-panel,
+html.mocha .cheat-sheet-panel,
+html.ayu .cheat-sheet-panel {
+  background: linear-gradient(180deg, #1e293b, color-mix(in srgb, var(--chapter-accent, var(--compiler)) 6%, #0f172a 94%));
+  border-color: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 40%, #475569 60%);
+}
+
 .cheat-sheet-table th {
   background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 9%, white 91%);
+}
+
+html.navy .cheat-sheet-table th,
+html.mocha .cheat-sheet-table th,
+html.ayu .cheat-sheet-table th {
+  background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 15%, #0f172a 85%);
 }
 
 .annotated-code {
@@ -512,8 +592,21 @@ blockquote.callout--design-insight {
   background: #eef2ff;
 }
 
+html.navy blockquote.callout--design-insight,
+html.mocha blockquote.callout--design-insight,
+html.ayu blockquote.callout--design-insight {
+  background: color-mix(in srgb, var(--compiler) 15%, #0f172a 85%);
+  color: #e2e8f0;
+}
+
 blockquote.callout--design-insight .callout__label {
   color: var(--compiler);
+}
+
+html.navy blockquote.callout--design-insight .callout__label,
+html.mocha blockquote.callout--design-insight .callout__label,
+html.ayu blockquote.callout--design-insight .callout__label {
+  color: #9bd1ea;
 }
 
 blockquote.callout--expert-tip {
@@ -521,8 +614,21 @@ blockquote.callout--expert-tip {
   background: #fff8df;
 }
 
+html.navy blockquote.callout--expert-tip,
+html.mocha blockquote.callout--expert-tip,
+html.ayu blockquote.callout--expert-tip {
+  background: color-mix(in srgb, var(--perf) 15%, #0f172a 85%);
+  color: #e2e8f0;
+}
+
 blockquote.callout--expert-tip .callout__label {
   color: #8a5d00;
+}
+
+html.navy blockquote.callout--expert-tip .callout__label,
+html.mocha blockquote.callout--expert-tip .callout__label,
+html.ayu blockquote.callout--expert-tip .callout__label {
+  color: #ffd34d;
 }
 
 blockquote.callout--common-mistake {
@@ -530,8 +636,21 @@ blockquote.callout--common-mistake {
   background: #fff5f5;
 }
 
+html.navy blockquote.callout--common-mistake,
+html.mocha blockquote.callout--common-mistake,
+html.ayu blockquote.callout--common-mistake {
+  background: color-mix(in srgb, var(--error) 15%, #0f172a 85%);
+  color: #e2e8f0;
+}
+
 blockquote.callout--common-mistake .callout__label {
   color: var(--error);
+}
+
+html.navy blockquote.callout--common-mistake .callout__label,
+html.mocha blockquote.callout--common-mistake .callout__label,
+html.ayu blockquote.callout--common-mistake .callout__label {
+  color: #fca5a5;
 }
 
 blockquote.callout--compiler-says {
@@ -539,8 +658,21 @@ blockquote.callout--compiler-says {
   background: #f5f1ff;
 }
 
+html.navy blockquote.callout--compiler-says,
+html.mocha blockquote.callout--compiler-says,
+html.ayu blockquote.callout--compiler-says {
+  background: color-mix(in srgb, var(--lifetime) 15%, #0f172a 85%);
+  color: #e2e8f0;
+}
+
 blockquote.callout--compiler-says .callout__label {
   color: var(--lifetime);
+}
+
+html.navy blockquote.callout--compiler-says .callout__label,
+html.mocha blockquote.callout--compiler-says .callout__label,
+html.ayu blockquote.callout--compiler-says .callout__label {
+  color: #c4b5fd;
 }
 
 blockquote.callout--memory-model {
@@ -575,6 +707,16 @@ blockquote.callout--zero-cost .callout__label {
   padding: 0.75rem 0.85rem;
   border-bottom: 1px solid rgba(2, 62, 138, 0.12);
   vertical-align: top;
+}
+
+html.navy .visual-table th,
+html.navy .visual-table td,
+html.mocha .visual-table th,
+html.mocha .visual-table td,
+html.ayu .visual-table th,
+html.ayu .visual-table td {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
 }
 
 .visual-table th {

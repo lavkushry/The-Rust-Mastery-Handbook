@@ -236,8 +236,7 @@
     });
   }
 
-  function cardifyRememberOnlyThree(main) {
-    const headings = Array.from(main.querySelectorAll("h2, h3"));
+  function cardifyRememberOnlyThree(main, headings) {
     headings.forEach((heading) => {
       if (!/if you remember only 3 things/i.test(heading.textContent || "")) {
         return;
@@ -272,8 +271,7 @@
     });
   }
 
-  function enhanceMemoryHooks(main) {
-    const headings = Array.from(main.querySelectorAll("h2, h3"));
+  function enhanceMemoryHooks(main, headings) {
     headings.forEach((heading) => {
       if (!/memory hook/i.test(heading.textContent || "")) {
         return;
@@ -302,8 +300,7 @@
     });
   }
 
-  function enhanceFlashcardDecks(main) {
-    const headings = Array.from(main.querySelectorAll("h2, h3"));
+  function enhanceFlashcardDecks(main, headings) {
     headings.forEach((heading) => {
       if (!/flashcard deck/i.test(heading.textContent || "")) {
         return;
@@ -347,8 +344,7 @@
     });
   }
 
-  function enhanceCheatSheets(main) {
-    const headings = Array.from(main.querySelectorAll("h2, h3"));
+  function enhanceCheatSheets(main, headings) {
     headings.forEach((heading) => {
       if (!/chapter cheat sheet/i.test(heading.textContent || "")) {
         return;
@@ -386,11 +382,13 @@
     main.dataset.concept = concept.key;
     main.style.setProperty("--chapter-accent", concept.color);
 
+    const headings = Array.from(main.querySelectorAll("h2, h3"));
+
     upgradeCallouts(main);
-    cardifyRememberOnlyThree(main);
-    enhanceMemoryHooks(main);
-    enhanceFlashcardDecks(main);
-    enhanceCheatSheets(main);
+    cardifyRememberOnlyThree(main, headings);
+    enhanceMemoryHooks(main, headings);
+    enhanceFlashcardDecks(main, headings);
+    enhanceCheatSheets(main, headings);
     styleTables(main);
     createHero(main, title, concept.color, concept.key);
   });

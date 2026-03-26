@@ -80,10 +80,8 @@ const jobs = allFormats
       },
     ];
 
-const bookToml = existsSync(bookTomlPath)
-  ? await readFile(bookTomlPath, "utf8")
-  : "";
-const customCss = existsSync(cssPath) ? await readFile(cssPath, "utf8") : "";
+const bookToml = await readFile(bookTomlPath, "utf8").catch(() => "");
+const customCss = await readFile(cssPath, "utf8").catch(() => "");
 
 const bookTitleMatch = bookToml.match(/^title\s*=\s*"(.+)"$/m);
 const descriptionMatch = bookToml.match(/^description\s*=\s*"(.+)"$/m);

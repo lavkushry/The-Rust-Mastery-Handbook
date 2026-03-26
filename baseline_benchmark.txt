@@ -1,13 +1,13 @@
 Running benchmark with 1000000 iterations...\n
 Test: No special chars
-Time: 613.93 ms
-Ops/sec: 1628837\n
+Time: 255.46 ms
+Ops/sec: 3914532\n
 Test: Some special chars
-Time: 1403.15 ms
-Ops/sec: 712682\n
+Time: 1188.62 ms
+Ops/sec: 841313\n
 Test: All special chars
-Time: 2501.83 ms
-Ops/sec: 399708\n
+Time: 2509.04 ms
+Ops/sec: 398559\n
 Test: Long string with mixed content
-Time: 3962.16 ms
-Ops/sec: 252387\n
+Time: 5606.50 ms
+Ops/sec: 178364\n

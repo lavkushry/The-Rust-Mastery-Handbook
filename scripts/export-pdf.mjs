@@ -172,19 +172,43 @@ try {
           const visibleSubtitle = main.querySelector("h2")?.textContent?.trim() ?? "";
           const cover = document.createElement("section");
           cover.className = "pdf-cover";
-          cover.innerHTML = `
-            <div class="pdf-cover__top">
-              <div class="pdf-cover__eyebrow">${editionLabel}</div>
-              <div class="pdf-cover__spine"></div>
-              <h1 class="pdf-cover__title">${visibleTitle}</h1>
-              <p class="pdf-cover__subtitle">${visibleSubtitle}</p>
-              <p class="pdf-cover__purpose">${description}</p>
-            </div>
-            <div class="pdf-cover__meta">
-              <div>Rust handbook for serious systems engineers</div>
-              <div>Generated from the mdBook source</div>
-            </div>
-          `;
+
+          const topDiv = document.createElement("div");
+          topDiv.className = "pdf-cover__top";
+
+          const eyebrowDiv = document.createElement("div");
+          eyebrowDiv.className = "pdf-cover__eyebrow";
+          eyebrowDiv.textContent = editionLabel;
+
+          const spineDiv = document.createElement("div");
+          spineDiv.className = "pdf-cover__spine";
+
+          const titleH1 = document.createElement("h1");
+          titleH1.className = "pdf-cover__title";
+          titleH1.textContent = visibleTitle;
+
+          const subtitleP = document.createElement("p");
+          subtitleP.className = "pdf-cover__subtitle";
+          subtitleP.textContent = visibleSubtitle;
+
+          const purposeP = document.createElement("p");
+          purposeP.className = "pdf-cover__purpose";
+          purposeP.textContent = description;
+
+          topDiv.append(eyebrowDiv, spineDiv, titleH1, subtitleP, purposeP);
+
+          const metaDiv = document.createElement("div");
+          metaDiv.className = "pdf-cover__meta";
+
+          const metaLine1 = document.createElement("div");
+          metaLine1.textContent = "Rust handbook for serious systems engineers";
+
+          const metaLine2 = document.createElement("div");
+          metaLine2.textContent = "Generated from the mdBook source";
+
+          metaDiv.append(metaLine1, metaLine2);
+
+          cover.append(topDiv, metaDiv);
           main.prepend(cover);
         }
       },

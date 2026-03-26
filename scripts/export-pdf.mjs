@@ -146,6 +146,50 @@ try {
 
     await page.evaluate(
       ({ title, description, editionLabel }) => {
+        function removeHeaderLinks(mainElement) {
+          for (const link of mainElement.querySelectorAll("a.header")) {
+            link.removeAttribute("href");
+          }
+        }
+
+        function formatHeadings(mainElement) {
+          for (const heading of mainElement.querySelectorAll("h1")) {
+            const text = heading.textContent?.trim() ?? "";
+            if (/^PART \d+/.test(text)) {
+              heading.classList.add("pdf-part-title");
+            }
+            if (/^Chapter /.test(text)) {
+              heading.classList.add("pdf-chapter-title");
+            }
+          }
+        }
+
+        function addCoverPage(mainElement, bookTitle, bookDescription, label) {
+          if (mainElement.querySelector(".pdf-cover")) {
+            return;
+          }
+
+          const visibleTitle = mainElement.querySelector("h1")?.textContent?.trim() ?? bookTitle;
+          const visibleSubtitle = mainElement.querySelector("h2")?.textContent?.trim() ?? "";
+
+          const cover = document.createElement("section");
+          cover.className = "pdf-cover";
+          cover.innerHTML = `
+            <div class="pdf-cover__top">
+              <div class="pdf-cover__eyebrow">${label}</div>
+              <div class="pdf-cover__spine"></div>
+              <h1 class="pdf-cover__title">${visibleTitle}</h1>
+              <p class="pdf-cover__subtitle">${visibleSubtitle}</p>
+              <p class="pdf-cover__purpose">${bookDescription}</p>
+            </div>
+            <div class="pdf-cover__meta">
+              <div>Rust handbook for serious systems engineers</div>
+              <div>Generated from the mdBook source</div>
+            </div>
+          `;
+          mainElement.prepend(cover);
+        }
+
         document.body.classList.add("pdf-export");
 
         const main = document.querySelector("main");
@@ -153,40 +197,9 @@ try {
           return;
         }
 
-        for (const link of main.querySelectorAll("a.header")) {
-          link.removeAttribute("href");
-        }
-
-        for (const heading of main.querySelectorAll("h1")) {
-          const text = heading.textContent?.trim() ?? "";
-          if (/^PART \d+/.test(text)) {
-            heading.classList.add("pdf-part-title");
-          }
-          if (/^Chapter /.test(text)) {
-            heading.classList.add("pdf-chapter-title");
-          }
-        }
-
-        if (!main.querySelector(".pdf-cover")) {
-          const visibleTitle = main.querySelector("h1")?.textContent?.trim() ?? title;
-          const visibleSubtitle = main.querySelector("h2")?.textContent?.trim() ?? "";
-          const cover = document.createElement("section");
-          cover.className = "pdf-cover";
-          cover.innerHTML = `
-            <div class="pdf-cover__top">
-              <div class="pdf-cover__eyebrow">${editionLabel}</div>
-              <div class="pdf-cover__spine"></div>
-              <h1 class="pdf-cover__title">${visibleTitle}</h1>
-              <p class="pdf-cover__subtitle">${visibleSubtitle}</p>
-              <p class="pdf-cover__purpose">${description}</p>
-            </div>
-            <div class="pdf-cover__meta">
-              <div>Rust handbook for serious systems engineers</div>
-              <div>Generated from the mdBook source</div>
-            </div>
-          `;
-          main.prepend(cover);
-        }
+        removeHeaderLinks(main);
+        formatHeadings(main);
+        addCoverPage(main, title, description, editionLabel);
       },
       {
         title: bookTitle,

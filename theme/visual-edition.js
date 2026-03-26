@@ -26,25 +26,8 @@
     return match ?? { key: "compiler", color: "var(--compiler)" };
   }
 
-  function createHero(main, title, accent, conceptKey) {
-    if (!title || main.querySelector(".chapter-hero, .part-spread")) {
-      return;
-    }
-
-    const intro = Array.from(main.children).find(
-      (node) => node.tagName === "P" && node.textContent.trim().length > 60,
-    );
-    const isPart = /^PART\s+\d+/i.test(title);
-    const hero = document.createElement("section");
-    hero.className = isPart ? "part-spread" : "chapter-hero";
-    hero.style.setProperty("--chapter-accent", accent);
-
-    const eyebrow = isPart ? "Visual Part Opener" : "Visual Edition";
-    const pillLabel = isPart ? "Part System Map" : "Concept Signature";
-    const hook = intro?.textContent?.trim() ?? "";
-    const shortHook = hook.length > 280 ? `${hook.slice(0, 277)}...` : hook;
-
-    hero.innerHTML = `
+  function getHeroTemplate(isPart, eyebrow, title, shortHook, pillLabel, conceptKey, accent) {
+    return `
       <div class="${isPart ? "part-spread__grid" : "chapter-hero__grid"}">
         <div>
           <div class="${isPart ? "part-spread__eyebrow" : "chapter-hero__eyebrow"}">${eyebrow}</div>
@@ -78,6 +61,27 @@
         </div>
       </div>
     `;
+  }
+
+  function createHero(main, title, accent, conceptKey) {
+    if (!title || main.querySelector(".chapter-hero, .part-spread")) {
+      return;
+    }
+
+    const intro = Array.from(main.children).find(
+      (node) => node.tagName === "P" && node.textContent.trim().length > 60,
+    );
+    const isPart = /^PART\s+\d+/i.test(title);
+    const hero = document.createElement("section");
+    hero.className = isPart ? "part-spread" : "chapter-hero";
+    hero.style.setProperty("--chapter-accent", accent);
+
+    const eyebrow = isPart ? "Visual Part Opener" : "Visual Edition";
+    const pillLabel = isPart ? "Part System Map" : "Concept Signature";
+    const hook = intro?.textContent?.trim() ?? "";
+    const shortHook = hook.length > 280 ? `${hook.slice(0, 277)}...` : hook;
+
+    hero.innerHTML = getHeroTemplate(isPart, eyebrow, title, shortHook, pillLabel, conceptKey, accent);
 
     const firstHeading = main.querySelector("h1");
     if (firstHeading) {

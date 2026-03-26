@@ -118,144 +118,146 @@ if (existsSync(path.join(toolNodeModules, "@sparticuz", "chromium"))) {
 const browser = await puppeteer.launch(launchOptions);
 
 try {
-  for (const job of jobs) {
-    await mkdir(path.dirname(job.outputPath), { recursive: true });
+  await Promise.all(
+    jobs.map(async (job) => {
+      await mkdir(path.dirname(job.outputPath), { recursive: true });
 
-    const page = await browser.newPage();
-    page.setDefaultNavigationTimeout(pageLoadTimeoutMs);
-    page.setDefaultTimeout(pageLoadTimeoutMs);
-    await page.goto(pathToFileURL(inputPath).href, {
-      waitUntil: "load",
-      timeout: pageLoadTimeoutMs,
-    });
-    await page.waitForFunction(
-      () => document.readyState === "complete",
-      { timeout: pageLoadTimeoutMs },
-    );
-    await page.evaluate(async () => {
-      if ("fonts" in document) {
-        await document.fonts.ready;
+      const page = await browser.newPage();
+      page.setDefaultNavigationTimeout(pageLoadTimeoutMs);
+      page.setDefaultTimeout(pageLoadTimeoutMs);
+      await page.goto(pathToFileURL(inputPath).href, {
+        waitUntil: "load",
+        timeout: pageLoadTimeoutMs,
+      });
+      await page.waitForFunction(
+        () => document.readyState === "complete",
+        { timeout: pageLoadTimeoutMs },
+      );
+      await page.evaluate(async () => {
+        if ("fonts" in document) {
+          await document.fonts.ready;
+        }
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await page.emulateMediaType("print");
+
+      if (customCss) {
+        await page.addStyleTag({ content: customCss });
       }
-    });
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    await page.emulateMediaType("print");
 
-    if (customCss) {
-      await page.addStyleTag({ content: customCss });
-    }
+      await page.evaluate(
+        ({ title, description, editionLabel }) => {
+          document.body.classList.add("pdf-export");
 
-    await page.evaluate(
-      ({ title, description, editionLabel }) => {
-        document.body.classList.add("pdf-export");
-
-        const main = document.querySelector("main");
-        if (!main) {
-          return;
-        }
-
-        for (const link of main.querySelectorAll("a.header")) {
-          link.removeAttribute("href");
-        }
-
-        for (const heading of main.querySelectorAll("h1")) {
-          const text = heading.textContent?.trim() ?? "";
-          if (/^PART \d+/.test(text)) {
-            heading.classList.add("pdf-part-title");
+          const main = document.querySelector("main");
+          if (!main) {
+            return;
           }
-          if (/^Chapter /.test(text)) {
-            heading.classList.add("pdf-chapter-title");
+
+          for (const link of main.querySelectorAll("a.header")) {
+            link.removeAttribute("href");
           }
-        }
 
-        if (!main.querySelector(".pdf-cover")) {
-          const visibleTitle = main.querySelector("h1")?.textContent?.trim() ?? title;
-          const visibleSubtitle = main.querySelector("h2")?.textContent?.trim() ?? "";
-          const cover = document.createElement("section");
-          cover.className = "pdf-cover";
+          for (const heading of main.querySelectorAll("h1")) {
+            const text = heading.textContent?.trim() ?? "";
+            if (/^PART \d+/.test(text)) {
+              heading.classList.add("pdf-part-title");
+            }
+            if (/^Chapter /.test(text)) {
+              heading.classList.add("pdf-chapter-title");
+            }
+          }
 
-          const top = document.createElement("div");
-          top.className = "pdf-cover__top";
+          if (!main.querySelector(".pdf-cover")) {
+            const visibleTitle = main.querySelector("h1")?.textContent?.trim() ?? title;
+            const visibleSubtitle = main.querySelector("h2")?.textContent?.trim() ?? "";
+            const cover = document.createElement("section");
+            cover.className = "pdf-cover";
 
-          const eyebrow = document.createElement("div");
-          eyebrow.className = "pdf-cover__eyebrow";
-          eyebrow.textContent = editionLabel;
-          top.appendChild(eyebrow);
+            const top = document.createElement("div");
+            top.className = "pdf-cover__top";
 
-          const spine = document.createElement("div");
-          spine.className = "pdf-cover__spine";
-          top.appendChild(spine);
+            const eyebrow = document.createElement("div");
+            eyebrow.className = "pdf-cover__eyebrow";
+            eyebrow.textContent = editionLabel;
+            top.appendChild(eyebrow);
 
-          const titleH1 = document.createElement("h1");
-          titleH1.className = "pdf-cover__title";
-          titleH1.textContent = visibleTitle;
-          top.appendChild(titleH1);
+            const spine = document.createElement("div");
+            spine.className = "pdf-cover__spine";
+            top.appendChild(spine);
 
-          const subtitle = document.createElement("p");
-          subtitle.className = "pdf-cover__subtitle";
-          subtitle.textContent = visibleSubtitle;
-          top.appendChild(subtitle);
+            const titleH1 = document.createElement("h1");
+            titleH1.className = "pdf-cover__title";
+            titleH1.textContent = visibleTitle;
+            top.appendChild(titleH1);
 
-          const purpose = document.createElement("p");
-          purpose.className = "pdf-cover__purpose";
-          purpose.textContent = description;
-          top.appendChild(purpose);
+            const subtitle = document.createElement("p");
+            subtitle.className = "pdf-cover__subtitle";
+            subtitle.textContent = visibleSubtitle;
+            top.appendChild(subtitle);
 
-          cover.appendChild(top);
+            const purpose = document.createElement("p");
+            purpose.className = "pdf-cover__purpose";
+            purpose.textContent = description;
+            top.appendChild(purpose);
 
-          const meta = document.createElement("div");
-          meta.className = "pdf-cover__meta";
+            cover.appendChild(top);
 
-          const meta1 = document.createElement("div");
-          meta1.textContent = "Rust handbook for serious systems engineers";
-          meta.appendChild(meta1);
+            const meta = document.createElement("div");
+            meta.className = "pdf-cover__meta";
 
-          const meta2 = document.createElement("div");
-          meta2.textContent = "Generated from the mdBook source";
-          meta.appendChild(meta2);
+            const meta1 = document.createElement("div");
+            meta1.textContent = "Rust handbook for serious systems engineers";
+            meta.appendChild(meta1);
 
-          cover.appendChild(meta);
-          main.prepend(cover);
-        }
-      },
-      {
-        title: bookTitle,
-        description: bookDescription,
-        editionLabel: job.editionLabel,
-      },
-    );
+            const meta2 = document.createElement("div");
+            meta2.textContent = "Generated from the mdBook source";
+            meta.appendChild(meta2);
 
-    const headerTemplate = `
-      <div style="width:100%; padding:0 12mm; font-size:8px; color:#6b7280; text-transform:uppercase; letter-spacing:0.08em;">
-        ${escapeHtml(job.editionLabel)}
-      </div>
-    `;
+            cover.appendChild(meta);
+            main.prepend(cover);
+          }
+        },
+        {
+          title: bookTitle,
+          description: bookDescription,
+          editionLabel: job.editionLabel,
+        },
+      );
 
-    const footerTemplate = `
-      <div style="width:100%; padding:0 12mm; font-size:8px; color:#6b7280; display:flex; justify-content:space-between; align-items:center;">
-        <span>${escapeHtml(bookTitle)}</span>
-        <span><span class="pageNumber"></span> / <span class="totalPages"></span></span>
-      </div>
-    `;
+      const headerTemplate = `
+        <div style="width:100%; padding:0 12mm; font-size:8px; color:#6b7280; text-transform:uppercase; letter-spacing:0.08em;">
+          ${escapeHtml(job.editionLabel)}
+        </div>
+      `;
 
-    await page.pdf({
-      path: job.outputPath,
-      format: job.format,
-      printBackground: true,
-      preferCSSPageSize: false,
-      displayHeaderFooter: true,
-      headerTemplate,
-      footerTemplate,
-      margin: {
-        top: "18mm",
-        right: "14mm",
-        bottom: "18mm",
-        left: "14mm",
-      },
-    });
+      const footerTemplate = `
+        <div style="width:100%; padding:0 12mm; font-size:8px; color:#6b7280; display:flex; justify-content:space-between; align-items:center;">
+          <span>${escapeHtml(bookTitle)}</span>
+          <span><span class="pageNumber"></span> / <span class="totalPages"></span></span>
+        </div>
+      `;
 
-    console.log(job.outputPath);
-    await page.close();
-  }
+      await page.pdf({
+        path: job.outputPath,
+        format: job.format,
+        printBackground: true,
+        preferCSSPageSize: false,
+        displayHeaderFooter: true,
+        headerTemplate,
+        footerTemplate,
+        margin: {
+          top: "18mm",
+          right: "14mm",
+          bottom: "18mm",
+          left: "14mm",
+        },
+      });
+
+      console.log(job.outputPath);
+      await page.close();
+    })
+  );
 } finally {
   await browser.close();
 }

@@ -1,4 +1,43 @@
 # Chapter 47: Making Your First Contributions
+<div class="diagram-grid diagram-grid--two">
+  <figure class="visual-figure" style="--chapter-accent: var(--ownership);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Contribution Ladder</div><h2 class="visual-figure__title">The Safest Path Upward in Scope</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Contribution ladder from docs to tests to diagnostics to bug fixes to small features">
+        <rect x="28" y="28" width="484" height="364" rx="24" fill="#fffdf8" stroke="rgba(230,57,70,0.16)"></rect>
+        <rect x="76" y="302" width="388" height="40" rx="14" fill="#eef6fb" stroke="#219ebc" stroke-width="3"></rect>
+        <text x="240" y="327" class="svg-small" style="fill:#0b5e73;">docs and examples</text>
+        <rect x="108" y="244" width="324" height="40" rx="14" fill="#edf8f1" stroke="#52b788" stroke-width="3"></rect>
+        <text x="246" y="269" class="svg-small" style="fill:#1f6f4d;">tests and regressions</text>
+        <rect x="138" y="186" width="264" height="40" rx="14" fill="#fff8df" stroke="#ffbe0b" stroke-width="3"></rect>
+        <text x="226" y="211" class="svg-small" style="fill:#8f5d00;">error quality</text>
+        <rect x="168" y="128" width="204" height="40" rx="14" fill="#fff1eb" stroke="#e76f51" stroke-width="3"></rect>
+        <text x="230" y="153" class="svg-small" style="fill:#8f3d22;">local bug fix</text>
+        <rect x="198" y="70" width="144" height="40" rx="14" fill="#fce7f3" stroke="#ff006e" stroke-width="3"></rect>
+        <text x="232" y="95" class="svg-small" style="fill:#a00052;">small feature</text>
+        <text x="92" y="366" class="svg-small" style="fill:#6b7280;">climb only when scope, blast radius, and review cost remain legible</text>
+      </svg>
+    </div>
+  </figure>
+  <figure class="visual-figure visual-figure--dark" style="--chapter-accent: var(--ownership);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">PR Anatomy</div><h2 class="visual-figure__title">A Good First Pull Request Lowers Uncertainty</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Diagram of high-signal PR structure with summary, reproduction, change, verification, and limited blast radius">
+        <rect x="24" y="24" width="492" height="372" rx="24" fill="#101827" stroke="rgba(255,255,255,0.08)"></rect>
+        <rect x="76" y="60" width="388" height="52" rx="16" fill="#172554" stroke="#3a86ff" stroke-width="3"></rect>
+        <text x="234" y="91" class="svg-small" style="fill:#dbeafe;">summary</text>
+        <rect x="76" y="124" width="388" height="52" rx="16" fill="#1d3557" stroke="#457b9d" stroke-width="3"></rect>
+        <text x="216" y="155" class="svg-small" style="fill:#e0f2fe;">reproduction steps</text>
+        <rect x="76" y="188" width="388" height="52" rx="16" fill="#231942" stroke="#8338ec" stroke-width="3"></rect>
+        <text x="244" y="219" class="svg-small" style="fill:#efe8ff;">change</text>
+        <rect x="76" y="252" width="388" height="52" rx="16" fill="#123e2e" stroke="#52b788" stroke-width="3"></rect>
+        <text x="224" y="283" class="svg-small" style="fill:#d9fbe9;">verification</text>
+        <rect x="76" y="316" width="388" height="40" rx="16" fill="#fff8df" stroke="#ffbe0b" stroke-width="3"></rect>
+        <text x="144" y="341" class="svg-small" style="fill:#8f5d00;">small scope, clear invariant, easy review path</text>
+      </svg>
+    </div>
+  </figure>
+</div>
 
 ## Step 1 - The Problem
 

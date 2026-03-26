@@ -1,4 +1,50 @@
 # Chapter 46: Entering an Unfamiliar Rust Repo
+<div class="diagram-grid diagram-grid--two">
+  <figure class="visual-figure" style="--chapter-accent: var(--trait);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Entry Protocol</div><h2 class="visual-figure__title">The Outside-In Route Through a Rust Repo</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Stepwise flow for entering an unfamiliar Rust repository from README through Cargo.toml to tests and one traced execution path">
+        <rect x="28" y="28" width="484" height="364" rx="24" fill="#fffdf8" stroke="rgba(33,158,188,0.16)"></rect>
+        <rect x="64" y="58" width="170" height="44" rx="14" fill="#eef6fb" stroke="#219ebc" stroke-width="3"></rect>
+        <text x="122" y="85" class="svg-small" style="fill:#0b5e73;">README</text>
+        <path d="M149 102 V 138" stroke="#219ebc" stroke-width="5"></path>
+        <rect x="64" y="138" width="170" height="44" rx="14" fill="#eef2ff" stroke="#023e8a" stroke-width="3"></rect>
+        <text x="100" y="165" class="svg-small" style="fill:#023e8a;">Cargo.toml</text>
+        <path d="M149 182 V 218" stroke="#023e8a" stroke-width="5"></path>
+        <rect x="64" y="218" width="170" height="44" rx="14" fill="#f3f0ff" stroke="#8338ec" stroke-width="3"></rect>
+        <text x="104" y="245" class="svg-small" style="fill:#5c2bb1;">lib.rs / main.rs</text>
+        <path d="M149 262 V 298" stroke="#8338ec" stroke-width="5"></path>
+        <rect x="64" y="298" width="170" height="44" rx="14" fill="#edf8f1" stroke="#52b788" stroke-width="3"></rect>
+        <text x="126" y="325" class="svg-small" style="fill:#1f6f4d;">tests</text>
+        <rect x="290" y="92" width="184" height="236" rx="18" fill="#fff8df" stroke="#ffbe0b" stroke-width="3"></rect>
+        <text x="322" y="126" class="svg-small" style="fill:#8f5d00;">build map</text>
+        <text x="322" y="154" class="svg-small" style="fill:#8f5d00;">execution map</text>
+        <text x="322" y="182" class="svg-small" style="fill:#8f5d00;">invariant map</text>
+        <text x="322" y="226" class="svg-small" style="fill:#8f5d00;">only then trace one</text>
+        <text x="322" y="252" class="svg-small" style="fill:#8f5d00;">request, command, or</text>
+        <text x="322" y="278" class="svg-small" style="fill:#8f5d00;">data flow end to end</text>
+      </svg>
+    </div>
+  </figure>
+  <figure class="visual-figure visual-figure--dark" style="--chapter-accent: var(--trait);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Repo X-Ray</div><h2 class="visual-figure__title">What Each Search Command Reveals</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Repository layers diagram tying shell commands to top-level shape, public API, tests, concurrency, and feature flags">
+        <rect x="24" y="24" width="492" height="372" rx="24" fill="#101827" stroke="rgba(255,255,255,0.08)"></rect>
+        <rect x="70" y="64" width="400" height="50" rx="16" fill="#172554" stroke="#3a86ff" stroke-width="3"></rect>
+        <text x="132" y="94" class="svg-small" style="fill:#dbeafe;">rg --files .   -&gt; top-level shape</text>
+        <rect x="70" y="126" width="400" height="50" rx="16" fill="#1d3557" stroke="#457b9d" stroke-width="3"></rect>
+        <text x="114" y="156" class="svg-small" style="fill:#e0f2fe;">sed -n Cargo.toml   -&gt; build and deps</text>
+        <rect x="70" y="188" width="400" height="50" rx="16" fill="#0f4c5c" stroke="#219ebc" stroke-width="3"></rect>
+        <text x="102" y="218" class="svg-small" style="fill:#e0fbff;">rg -n \"pub ...\"   -&gt; public surface</text>
+        <rect x="70" y="250" width="400" height="50" rx="16" fill="#231942" stroke="#8338ec" stroke-width="3"></rect>
+        <text x="94" y="280" class="svg-small" style="fill:#efe8ff;">rg -n \"#\\[test\\]\"   -&gt; intended behavior</text>
+        <rect x="70" y="312" width="400" height="50" rx="16" fill="#123e2e" stroke="#52b788" stroke-width="3"></rect>
+        <text x="88" y="342" class="svg-small" style="fill:#d9fbe9;">rg concurrency / cfg patterns   -&gt; hidden boundaries</text>
+      </svg>
+    </div>
+  </figure>
+</div>
 
 ## Step 1 - The Problem
 

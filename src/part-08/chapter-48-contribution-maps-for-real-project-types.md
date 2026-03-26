@@ -1,4 +1,48 @@
 # Chapter 48: Contribution Maps for Real Project Types
+<div class="diagram-grid diagram-grid--two">
+  <figure class="visual-figure" style="--chapter-accent: var(--trait);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Project Families</div><h2 class="visual-figure__title">Different Repo Types Hide Their Logic in Different Places</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Contribution map comparing CLI tools, async services, observability stacks, workspaces, and rustc by entry point and test style">
+        <rect x="28" y="28" width="484" height="364" rx="24" fill="#fffdf8" stroke="rgba(33,158,188,0.16)"></rect>
+        <rect x="52" y="72" width="104" height="72" rx="18" fill="#eef6fb" stroke="#219ebc" stroke-width="3"></rect>
+        <text x="82" y="102" class="svg-small" style="fill:#0b5e73;">CLI</text>
+        <text x="70" y="126" class="svg-small" style="fill:#0b5e73;">main + output</text>
+        <rect x="176" y="72" width="104" height="72" rx="18" fill="#eef2ff" stroke="#023e8a" stroke-width="3"></rect>
+        <text x="192" y="102" class="svg-small" style="fill:#023e8a;">service</text>
+        <text x="188" y="126" class="svg-small" style="fill:#023e8a;">router + state</text>
+        <rect x="300" y="72" width="104" height="72" rx="18" fill="#f3f0ff" stroke="#8338ec" stroke-width="3"></rect>
+        <text x="314" y="102" class="svg-small" style="fill:#5c2bb1;">observability</text>
+        <text x="320" y="126" class="svg-small" style="fill:#5c2bb1;">event flow</text>
+        <rect x="114" y="188" width="104" height="72" rx="18" fill="#fff8df" stroke="#ffbe0b" stroke-width="3"></rect>
+        <text x="134" y="218" class="svg-small" style="fill:#8f5d00;">workspace</text>
+        <text x="130" y="242" class="svg-small" style="fill:#8f5d00;">crate graph</text>
+        <rect x="258" y="188" width="104" height="72" rx="18" fill="#fff1eb" stroke="#e76f51" stroke-width="3"></rect>
+        <text x="288" y="218" class="svg-small" style="fill:#8f3d22;">rustc</text>
+        <text x="272" y="242" class="svg-small" style="fill:#8f3d22;">phase boundary</text>
+        <text x="96" y="314" class="svg-small" style="fill:#6b7280;">same language, different orientation protocol depending on project family</text>
+      </svg>
+    </div>
+  </figure>
+  <figure class="visual-figure visual-figure--dark" style="--chapter-accent: var(--trait);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Safe First PR Map</div><h2 class="visual-figure__title">What “Good First Contribution” Usually Means by Domain</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Domain-specific first contribution suggestions mapped to project types">
+        <rect x="24" y="24" width="492" height="372" rx="24" fill="#101827" stroke="rgba(255,255,255,0.08)"></rect>
+        <rect x="54" y="64" width="432" height="44" rx="14" fill="#172554" stroke="#3a86ff" stroke-width="3"></rect>
+        <text x="136" y="91" class="svg-small" style="fill:#dbeafe;">CLI -&gt; output edge case, docs, snapshot tests</text>
+        <rect x="54" y="120" width="432" height="44" rx="14" fill="#1d3557" stroke="#457b9d" stroke-width="3"></rect>
+        <text x="118" y="147" class="svg-small" style="fill:#e0f2fe;">service -&gt; validation, error mapping, timeout tests</text>
+        <rect x="54" y="176" width="432" height="44" rx="14" fill="#231942" stroke="#8338ec" stroke-width="3"></rect>
+        <text x="100" y="203" class="svg-small" style="fill:#efe8ff;">observability -&gt; field propagation, structured output tests</text>
+        <rect x="54" y="232" width="432" height="44" rx="14" fill="#123e2e" stroke="#52b788" stroke-width="3"></rect>
+        <text x="98" y="259" class="svg-small" style="fill:#d9fbe9;">workspace -&gt; one-crate-localized bug fix or relationship docs</text>
+        <rect x="54" y="288" width="432" height="44" rx="14" fill="#3a1c17" stroke="#e76f51" stroke-width="3"></rect>
+        <text x="114" y="315" class="svg-small" style="fill:#ffd8cc;">rustc -&gt; UI tests, diagnostics wording, tool-local improvements</text>
+      </svg>
+    </div>
+  </figure>
+</div>
 
 ## Step 1 - The Problem
 

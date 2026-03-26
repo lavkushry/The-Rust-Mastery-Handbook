@@ -1,4 +1,53 @@
 # Chapter 49: The `rustc` Compilation Pipeline
+<div class="diagram-grid diagram-grid--two">
+  <figure class="visual-figure visual-figure--dark" style="--chapter-accent: var(--compiler);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Compilation Flow</div><h2 class="visual-figure__title">Source Code Through Rustc's Internal Stages</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Compilation pipeline showing source to AST to HIR to MIR to LLVM IR to machine code with borrow checking highlighted on MIR">
+        <rect x="24" y="24" width="492" height="372" rx="24" fill="#101827" stroke="rgba(255,255,255,0.08)"></rect>
+        <rect x="74" y="54" width="392" height="42" rx="14" fill="#172554" stroke="#3a86ff" stroke-width="3"></rect>
+        <text x="232" y="80" class="svg-small" style="fill:#dbeafe;">source code</text>
+        <path d="M270 96 V 128" stroke="#3a86ff" stroke-width="5"></path>
+        <rect x="98" y="128" width="344" height="42" rx="14" fill="#1d3557" stroke="#457b9d" stroke-width="3"></rect>
+        <text x="248" y="154" class="svg-small" style="fill:#e0f2fe;">AST and expansion</text>
+        <path d="M270 170 V 202" stroke="#457b9d" stroke-width="5"></path>
+        <rect x="118" y="202" width="304" height="42" rx="14" fill="#0f4c5c" stroke="#219ebc" stroke-width="3"></rect>
+        <text x="256" y="228" class="svg-small" style="fill:#e0fbff;">HIR</text>
+        <path d="M270 244 V 276" stroke="#219ebc" stroke-width="5"></path>
+        <rect x="118" y="276" width="304" height="52" rx="16" fill="#231942" stroke="#8338ec" stroke-width="4"></rect>
+        <text x="256" y="304" class="svg-small" style="fill:#efe8ff;">MIR</text>
+        <text x="170" y="324" class="svg-small" style="fill:#efe8ff;">borrow checking and control-flow analysis</text>
+        <path d="M270 328 V 356" stroke="#8338ec" stroke-width="5"></path>
+        <rect x="132" y="356" width="276" height="32" rx="12" fill="#123e2e" stroke="#52b788" stroke-width="3"></rect>
+        <text x="236" y="377" class="svg-small" style="fill:#d9fbe9;">LLVM IR -&gt; machine code</text>
+      </svg>
+    </div>
+  </figure>
+  <figure class="visual-figure" style="--chapter-accent: var(--compiler);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Desugaring Lens</div><h2 class="visual-figure__title">Why the Compiler Sees More Structure Than You Wrote</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Side-by-side diagram showing a source for loop lowering into iterator control flow and explicit temporaries">
+        <rect x="28" y="28" width="484" height="364" rx="24" fill="#fffdf8" stroke="rgba(2,62,138,0.16)"></rect>
+        <rect x="52" y="70" width="170" height="126" rx="18" fill="#eef2ff" stroke="#023e8a" stroke-width="3"></rect>
+        <text x="86" y="104" class="svg-small" style="fill:#023e8a;">source</text>
+        <text x="74" y="136" class="svg-small" style="fill:#023e8a;">for x in values {</text>
+        <text x="74" y="162" class="svg-small" style="fill:#023e8a;">println!(\"{x}\");</text>
+        <text x="74" y="188" class="svg-small" style="fill:#023e8a;">}</text>
+        <path d="M242 136 H 302" stroke="#3a86ff" stroke-width="5"></path>
+        <rect x="302" y="58" width="182" height="266" rx="18" fill="#f3f0ff" stroke="#8338ec" stroke-width="3"></rect>
+        <text x="334" y="92" class="svg-small" style="fill:#5c2bb1;">conceptual lowered form</text>
+        <text x="326" y="126" class="svg-small" style="fill:#5c2bb1;">let mut iter = IntoIterator::into_iter(values);</text>
+        <text x="326" y="156" class="svg-small" style="fill:#5c2bb1;">loop {</text>
+        <text x="326" y="182" class="svg-small" style="fill:#5c2bb1;">match iter.next() {</text>
+        <text x="326" y="208" class="svg-small" style="fill:#5c2bb1;">Some(x) =&gt; ...</text>
+        <text x="326" y="234" class="svg-small" style="fill:#5c2bb1;">None =&gt; break</text>
+        <text x="326" y="260" class="svg-small" style="fill:#5c2bb1;">}</text>
+        <text x="326" y="286" class="svg-small" style="fill:#5c2bb1;">}</text>
+        <text x="76" y="252" class="svg-small" style="fill:#6b7280;">later stages reason about explicit temporaries, matches, and drops</text>
+      </svg>
+    </div>
+  </figure>
+</div>
 
 ## Step 1 - The Problem
 

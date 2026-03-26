@@ -1,4 +1,65 @@
 # Chapter 50: RFCs, Language Design, and How Rust Evolves
+<div class="diagram-grid diagram-grid--two">
+  <figure class="visual-figure" style="--chapter-accent: var(--lifetime);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Evolution Pipeline</div><h2 class="visual-figure__title">How a Language Idea Becomes Stable Rust</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="RFC process flow from problem statement through pre-RFC, RFC PR, implementation, nightly, and stabilization">
+        <rect x="28" y="28" width="484" height="364" rx="24" fill="#fffdf8" stroke="rgba(131,56,236,0.16)"></rect>
+        <rect x="58" y="74" width="424" height="42" rx="14" fill="#f3f0ff" stroke="#8338ec" stroke-width="3"></rect>
+        <text x="208" y="100" class="svg-small" style="fill:#5c2bb1;">problem statement</text>
+        <path d="M270 116 V 146" stroke="#8338ec" stroke-width="5"></path>
+        <rect x="88" y="146" width="364" height="40" rx="14" fill="#eef2ff" stroke="#023e8a" stroke-width="3"></rect>
+        <text x="198" y="171" class="svg-small" style="fill:#023e8a;">pre-RFC discussion</text>
+        <path d="M270 186 V 216" stroke="#023e8a" stroke-width="5"></path>
+        <rect x="108" y="216" width="324" height="42" rx="14" fill="#eef6fb" stroke="#219ebc" stroke-width="3"></rect>
+        <text x="220" y="242" class="svg-small" style="fill:#0b5e73;">RFC PR and review</text>
+        <path d="M270 258 V 288" stroke="#219ebc" stroke-width="5"></path>
+        <rect x="126" y="288" width="288" height="42" rx="14" fill="#fff8df" stroke="#ffbe0b" stroke-width="3"></rect>
+        <text x="208" y="314" class="svg-small" style="fill:#8f5d00;">implementation on nightly</text>
+        <path d="M270 330 V 360" stroke="#ffbe0b" stroke-width="5"></path>
+        <rect x="160" y="360" width="220" height="22" rx="11" fill="#edf8f1" stroke="#52b788" stroke-width="3"></rect>
+        <text x="238" y="376" class="svg-small" style="fill:#1f6f4d;">stabilization</text>
+      </svg>
+    </div>
+  </figure>
+  <figure class="visual-figure visual-figure--dark" style="--chapter-accent: var(--lifetime);">
+    <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Case Studies</div><h2 class="visual-figure__title">Five Features, Five Tradeoff Shapes</h2></div></div>
+    <div class="visual-figure__body">
+      <svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Feature case-study matrix for async await, NLL, GATs, let-else, and const generics mapped against ergonomics, soundness, and compiler complexity">
+        <rect x="24" y="24" width="492" height="372" rx="24" fill="#101827" stroke="rgba(255,255,255,0.08)"></rect>
+        <text x="80" y="82" class="svg-small" style="fill:#dbeafe;">feature</text>
+        <text x="228" y="82" class="svg-small" style="fill:#dbeafe;">ergonomics</text>
+        <text x="340" y="82" class="svg-small" style="fill:#dbeafe;">soundness</text>
+        <text x="444" y="82" class="svg-small" style="fill:#dbeafe;">compiler cost</text>
+        <g>
+          <text x="70" y="130" class="svg-small" style="fill:#efe8ff;">async/await</text>
+          <text x="86" y="178" class="svg-small" style="fill:#efe8ff;">NLL</text>
+          <text x="86" y="226" class="svg-small" style="fill:#efe8ff;">GATs</text>
+          <text x="72" y="274" class="svg-small" style="fill:#efe8ff;">let-else</text>
+          <text x="54" y="322" class="svg-small" style="fill:#efe8ff;">const generics</text>
+        </g>
+        <g>
+          <circle cx="252" cy="124" r="12" fill="#52b788"></circle>
+          <circle cx="252" cy="172" r="12" fill="#52b788"></circle>
+          <circle cx="252" cy="220" r="12" fill="#ffbe0b"></circle>
+          <circle cx="252" cy="268" r="12" fill="#52b788"></circle>
+          <circle cx="252" cy="316" r="12" fill="#ffbe0b"></circle>
+          <circle cx="360" cy="124" r="12" fill="#ffbe0b"></circle>
+          <circle cx="360" cy="172" r="12" fill="#52b788"></circle>
+          <circle cx="360" cy="220" r="12" fill="#52b788"></circle>
+          <circle cx="360" cy="268" r="12" fill="#52b788"></circle>
+          <circle cx="360" cy="316" r="12" fill="#52b788"></circle>
+          <circle cx="464" cy="124" r="12" fill="#e76f51"></circle>
+          <circle cx="464" cy="172" r="12" fill="#ffbe0b"></circle>
+          <circle cx="464" cy="220" r="12" fill="#e76f51"></circle>
+          <circle cx="464" cy="268" r="12" fill="#ffbe0b"></circle>
+          <circle cx="464" cy="316" r="12" fill="#e76f51"></circle>
+        </g>
+        <text x="66" y="372" class="svg-small" style="fill:#fff3c4;">green = strong benefit, yellow = moderate tension, sienna = high implementation cost</text>
+      </svg>
+    </div>
+  </figure>
+</div>
 
 ## Step 1 - The Problem
 

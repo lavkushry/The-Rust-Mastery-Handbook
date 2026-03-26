@@ -150,6 +150,9 @@ try {
             link.removeAttribute("href");
           }
         }
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await page.emulateMediaType("print");
 
         function formatHeadings(mainElement) {
           for (const heading of mainElement.querySelectorAll("h1")) {
@@ -174,45 +177,47 @@ try {
           const cover = document.createElement("section");
           cover.className = "pdf-cover";
 
-          const top = document.createElement("div");
-          top.className = "pdf-cover__top";
+          if (!main.querySelector(".pdf-cover")) {
+            const visibleTitle = main.querySelector("h1")?.textContent?.trim() ?? title;
+            const visibleSubtitle = main.querySelector("h2")?.textContent?.trim() ?? "";
+            const cover = document.createElement("section");
+            cover.className = "pdf-cover";
 
-          const eyebrow = document.createElement("div");
-          eyebrow.className = "pdf-cover__eyebrow";
-          eyebrow.textContent = editionLabel;
-          top.appendChild(eyebrow);
+            const top = document.createElement("div");
+            top.className = "pdf-cover__top";
 
-          const spine = document.createElement("div");
-          spine.className = "pdf-cover__spine";
-          top.appendChild(spine);
+            const eyebrow = document.createElement("div");
+            eyebrow.className = "pdf-cover__eyebrow";
+            eyebrow.textContent = editionLabel;
+            top.appendChild(eyebrow);
 
-          const titleH1 = document.createElement("h1");
-          titleH1.className = "pdf-cover__title";
-          titleH1.textContent = visibleTitle;
-          top.appendChild(titleH1);
+            const spine = document.createElement("div");
+            spine.className = "pdf-cover__spine";
+            top.appendChild(spine);
 
-          const subtitle = document.createElement("p");
-          subtitle.className = "pdf-cover__subtitle";
-          subtitle.textContent = visibleSubtitle;
-          top.appendChild(subtitle);
+            const titleH1 = document.createElement("h1");
+            titleH1.className = "pdf-cover__title";
+            titleH1.textContent = visibleTitle;
+            top.appendChild(titleH1);
 
-          const purpose = document.createElement("p");
-          purpose.className = "pdf-cover__purpose";
-          purpose.textContent = description;
-          top.appendChild(purpose);
+            const subtitle = document.createElement("p");
+            subtitle.className = "pdf-cover__subtitle";
+            subtitle.textContent = visibleSubtitle;
+            top.appendChild(subtitle);
 
-          cover.appendChild(top);
+            const purpose = document.createElement("p");
+            purpose.className = "pdf-cover__purpose";
+            purpose.textContent = description;
+            top.appendChild(purpose);
 
-          const meta = document.createElement("div");
-          meta.className = "pdf-cover__meta";
+            cover.appendChild(top);
 
-          const meta1 = document.createElement("div");
-          meta1.textContent = "Rust handbook for serious systems engineers";
-          meta.appendChild(meta1);
+            const meta = document.createElement("div");
+            meta.className = "pdf-cover__meta";
 
-          const meta2 = document.createElement("div");
-          meta2.textContent = "Generated from the mdBook source";
-          meta.appendChild(meta2);
+            const meta1 = document.createElement("div");
+            meta1.textContent = "Rust handbook for serious systems engineers";
+            meta.appendChild(meta1);
 
           cover.appendChild(meta);
           main.prepend(cover);

@@ -1,5 +1,6 @@
 import { readFile, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { escapeHtml } from "./utils.mjs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
@@ -93,14 +94,6 @@ const bookDescription =
   "A deep, first-principles systems handbook for Rust.";
 const pageLoadTimeoutMs = 120_000;
 
-function escapeHtml(value) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
 
 let puppeteer;
 let launchOptions;

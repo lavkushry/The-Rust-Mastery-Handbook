@@ -81,10 +81,8 @@ const jobs = allFormats
       },
     ];
 
-const bookToml = existsSync(bookTomlPath)
-  ? await readFile(bookTomlPath, "utf8")
-  : "";
-const customCss = existsSync(cssPath) ? await readFile(cssPath, "utf8") : "";
+const bookToml = await readFile(bookTomlPath, "utf8").catch(() => "");
+const customCss = await readFile(cssPath, "utf8").catch(() => "");
 
 const bookTitleMatch = bookToml.match(/^title\s*=\s*"(.+)"$/m);
 const descriptionMatch = bookToml.match(/^description\s*=\s*"(.+)"$/m);
@@ -174,20 +172,49 @@ try {
 
           const cover = document.createElement("section");
           cover.className = "pdf-cover";
-          cover.innerHTML = `
-            <div class="pdf-cover__top">
-              <div class="pdf-cover__eyebrow">${label}</div>
-              <div class="pdf-cover__spine"></div>
-              <h1 class="pdf-cover__title">${visibleTitle}</h1>
-              <p class="pdf-cover__subtitle">${visibleSubtitle}</p>
-              <p class="pdf-cover__purpose">${bookDescription}</p>
-            </div>
-            <div class="pdf-cover__meta">
-              <div>Rust handbook for serious systems engineers</div>
-              <div>Generated from the mdBook source</div>
-            </div>
-          `;
-          mainElement.prepend(cover);
+
+          const top = document.createElement("div");
+          top.className = "pdf-cover__top";
+
+          const eyebrow = document.createElement("div");
+          eyebrow.className = "pdf-cover__eyebrow";
+          eyebrow.textContent = editionLabel;
+          top.appendChild(eyebrow);
+
+          const spine = document.createElement("div");
+          spine.className = "pdf-cover__spine";
+          top.appendChild(spine);
+
+          const titleH1 = document.createElement("h1");
+          titleH1.className = "pdf-cover__title";
+          titleH1.textContent = visibleTitle;
+          top.appendChild(titleH1);
+
+          const subtitle = document.createElement("p");
+          subtitle.className = "pdf-cover__subtitle";
+          subtitle.textContent = visibleSubtitle;
+          top.appendChild(subtitle);
+
+          const purpose = document.createElement("p");
+          purpose.className = "pdf-cover__purpose";
+          purpose.textContent = description;
+          top.appendChild(purpose);
+
+          cover.appendChild(top);
+
+          const meta = document.createElement("div");
+          meta.className = "pdf-cover__meta";
+
+          const meta1 = document.createElement("div");
+          meta1.textContent = "Rust handbook for serious systems engineers";
+          meta.appendChild(meta1);
+
+          const meta2 = document.createElement("div");
+          meta2.textContent = "Generated from the mdBook source";
+          meta.appendChild(meta2);
+
+          cover.appendChild(meta);
+          main.prepend(cover);
         }
 
         document.body.classList.add("pdf-export");

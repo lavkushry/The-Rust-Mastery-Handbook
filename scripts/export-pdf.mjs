@@ -81,10 +81,8 @@ const jobs = allFormats
       },
     ];
 
-const bookToml = existsSync(bookTomlPath)
-  ? await readFile(bookTomlPath, "utf8")
-  : "";
-const customCss = existsSync(cssPath) ? await readFile(cssPath, "utf8") : "";
+const bookToml = await readFile(bookTomlPath, "utf8").catch(() => "");
+const customCss = await readFile(cssPath, "utf8").catch(() => "");
 
 const bookTitleMatch = bookToml.match(/^title\s*=\s*"(.+)"$/m);
 const descriptionMatch = bookToml.match(/^description\s*=\s*"(.+)"$/m);
@@ -146,6 +144,79 @@ try {
 
     await page.evaluate(
       ({ title, description, editionLabel }) => {
+        function removeHeaderLinks(mainElement) {
+          for (const link of mainElement.querySelectorAll("a.header")) {
+            link.removeAttribute("href");
+          }
+        }
+
+        function formatHeadings(mainElement) {
+          for (const heading of mainElement.querySelectorAll("h1")) {
+            const text = heading.textContent?.trim() ?? "";
+            if (/^PART \d+/.test(text)) {
+              heading.classList.add("pdf-part-title");
+            }
+            if (/^Chapter /.test(text)) {
+              heading.classList.add("pdf-chapter-title");
+            }
+          }
+        }
+
+        function addCoverPage(mainElement, bookTitle, bookDescription, label) {
+          if (mainElement.querySelector(".pdf-cover")) {
+            return;
+          }
+
+          const visibleTitle = mainElement.querySelector("h1")?.textContent?.trim() ?? bookTitle;
+          const visibleSubtitle = mainElement.querySelector("h2")?.textContent?.trim() ?? "";
+
+          const cover = document.createElement("section");
+          cover.className = "pdf-cover";
+
+          const top = document.createElement("div");
+          top.className = "pdf-cover__top";
+
+          const eyebrow = document.createElement("div");
+          eyebrow.className = "pdf-cover__eyebrow";
+          eyebrow.textContent = editionLabel;
+          top.appendChild(eyebrow);
+
+          const spine = document.createElement("div");
+          spine.className = "pdf-cover__spine";
+          top.appendChild(spine);
+
+          const titleH1 = document.createElement("h1");
+          titleH1.className = "pdf-cover__title";
+          titleH1.textContent = visibleTitle;
+          top.appendChild(titleH1);
+
+          const subtitle = document.createElement("p");
+          subtitle.className = "pdf-cover__subtitle";
+          subtitle.textContent = visibleSubtitle;
+          top.appendChild(subtitle);
+
+          const purpose = document.createElement("p");
+          purpose.className = "pdf-cover__purpose";
+          purpose.textContent = description;
+          top.appendChild(purpose);
+
+          cover.appendChild(top);
+
+          const meta = document.createElement("div");
+          meta.className = "pdf-cover__meta";
+
+          const meta1 = document.createElement("div");
+          meta1.textContent = "Rust handbook for serious systems engineers";
+          meta.appendChild(meta1);
+
+          const meta2 = document.createElement("div");
+          meta2.textContent = "Generated from the mdBook source";
+          meta.appendChild(meta2);
+
+          cover.appendChild(meta);
+          main.prepend(cover);
+        }
+
         document.body.classList.add("pdf-export");
 
         const main = document.querySelector("main");
@@ -153,64 +224,9 @@ try {
           return;
         }
 
-        for (const link of main.querySelectorAll("a.header")) {
-          link.removeAttribute("href");
-        }
-
-        for (const heading of main.querySelectorAll("h1")) {
-          const text = heading.textContent?.trim() ?? "";
-          if (/^PART \d+/.test(text)) {
-            heading.classList.add("pdf-part-title");
-          }
-          if (/^Chapter /.test(text)) {
-            heading.classList.add("pdf-chapter-title");
-          }
-        }
-
-        if (!main.querySelector(".pdf-cover")) {
-          const visibleTitle = main.querySelector("h1")?.textContent?.trim() ?? title;
-          const visibleSubtitle = main.querySelector("h2")?.textContent?.trim() ?? "";
-          const cover = document.createElement("section");
-          cover.className = "pdf-cover";
-
-          const topDiv = document.createElement("div");
-          topDiv.className = "pdf-cover__top";
-
-          const eyebrowDiv = document.createElement("div");
-          eyebrowDiv.className = "pdf-cover__eyebrow";
-          eyebrowDiv.textContent = editionLabel;
-
-          const spineDiv = document.createElement("div");
-          spineDiv.className = "pdf-cover__spine";
-
-          const titleH1 = document.createElement("h1");
-          titleH1.className = "pdf-cover__title";
-          titleH1.textContent = visibleTitle;
-
-          const subtitleP = document.createElement("p");
-          subtitleP.className = "pdf-cover__subtitle";
-          subtitleP.textContent = visibleSubtitle;
-
-          const purposeP = document.createElement("p");
-          purposeP.className = "pdf-cover__purpose";
-          purposeP.textContent = description;
-
-          topDiv.append(eyebrowDiv, spineDiv, titleH1, subtitleP, purposeP);
-
-          const metaDiv = document.createElement("div");
-          metaDiv.className = "pdf-cover__meta";
-
-          const metaLine1 = document.createElement("div");
-          metaLine1.textContent = "Rust handbook for serious systems engineers";
-
-          const metaLine2 = document.createElement("div");
-          metaLine2.textContent = "Generated from the mdBook source";
-
-          metaDiv.append(metaLine1, metaLine2);
-
-          cover.append(topDiv, metaDiv);
-          main.prepend(cover);
-        }
+        removeHeaderLinks(main);
+        formatHeadings(main);
+        addCoverPage(main, title, description, editionLabel);
       },
       {
         title: bookTitle,

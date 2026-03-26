@@ -1,9 +1,9 @@
-import { readFile, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { escapeHtml } from "./utils.mjs";
+import { mkdir, readFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { createRequire } from "node:module";
+import { escapeHtml } from "./utils.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -88,10 +88,8 @@ const bookTitleMatch = bookToml.match(/^title\s*=\s*"(.+)"$/m);
 const descriptionMatch = bookToml.match(/^description\s*=\s*"(.+)"$/m);
 const bookTitle = bookTitleMatch?.[1] ?? "The Rust Mastery Handbook";
 const bookDescription =
-  descriptionMatch?.[1] ??
-  "A deep, first-principles systems handbook for Rust.";
+  descriptionMatch?.[1] ?? "A deep, first-principles systems handbook for Rust.";
 const pageLoadTimeoutMs = 120_000;
-
 
 let puppeteer;
 let launchOptions;
@@ -116,32 +114,33 @@ if (existsSync(path.join(toolNodeModules, "@sparticuz", "chromium"))) {
 const browser = await puppeteer.launch(launchOptions);
 
 try {
-  const page = await browser.newPage();
-  page.setDefaultNavigationTimeout(pageLoadTimeoutMs);
-  page.setDefaultTimeout(pageLoadTimeoutMs);
-  await page.goto(pathToFileURL(inputPath).href, {
-    waitUntil: "load",
-    timeout: pageLoadTimeoutMs,
-  });
-  await page.waitForFunction(
-    () => document.readyState === "complete",
-    { timeout: pageLoadTimeoutMs },
-  );
-  await page.evaluate(async () => {
-    if ("fonts" in document) {
-      await document.fonts.ready;
+  for (const job of jobs) {
+    await mkdir(path.dirname(job.outputPath), { recursive: true });
+
+    const page = await browser.newPage();
+    page.setDefaultNavigationTimeout(pageLoadTimeoutMs);
+    page.setDefaultTimeout(pageLoadTimeoutMs);
+
+    await page.goto(pathToFileURL(inputPath).href, {
+      waitUntil: "load",
+      timeout: pageLoadTimeoutMs,
+    });
+    await page.waitForFunction(() => document.readyState === "complete", {
+      timeout: pageLoadTimeoutMs,
+    });
+
+    await page.evaluate(async () => {
+      if ("fonts" in document) {
+        await document.fonts.ready;
+      }
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await page.emulateMediaType("print");
+
+    if (customCss) {
+      await page.addStyleTag({ content: customCss });
     }
-  });
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-  await page.emulateMediaType("print");
-
-  if (customCss) {
-    await page.addStyleTag({ content: customCss });
-  }
-
-  await page.evaluate(
-    ({ title, description }) => {
-      document.body.classList.add("pdf-export");
 
     await page.evaluate(
       ({ title, description, editionLabel }) => {
@@ -150,9 +149,6 @@ try {
             link.removeAttribute("href");
           }
         }
-      });
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      await page.emulateMediaType("print");
 
         function formatHeadings(mainElement) {
           for (const heading of mainElement.querySelectorAll("h1")) {
@@ -166,61 +162,61 @@ try {
           }
         }
 
-        function addCoverPage(mainElement, bookTitle, bookDescription, label) {
+        function addCoverPage(mainElement, fallbackTitle, fallbackDescription, label) {
           if (mainElement.querySelector(".pdf-cover")) {
             return;
           }
 
-          const visibleTitle = mainElement.querySelector("h1")?.textContent?.trim() ?? bookTitle;
-          const visibleSubtitle = mainElement.querySelector("h2")?.textContent?.trim() ?? "";
+          const visibleTitle =
+            mainElement.querySelector("h1")?.textContent?.trim() ?? fallbackTitle;
+          const visibleSubtitle =
+            mainElement.querySelector("h2")?.textContent?.trim() ?? "";
 
           const cover = document.createElement("section");
           cover.className = "pdf-cover";
 
-          if (!main.querySelector(".pdf-cover")) {
-            const visibleTitle = main.querySelector("h1")?.textContent?.trim() ?? title;
-            const visibleSubtitle = main.querySelector("h2")?.textContent?.trim() ?? "";
-            const cover = document.createElement("section");
-            cover.className = "pdf-cover";
+          const top = document.createElement("div");
+          top.className = "pdf-cover__top";
 
-            const top = document.createElement("div");
-            top.className = "pdf-cover__top";
+          const eyebrow = document.createElement("div");
+          eyebrow.className = "pdf-cover__eyebrow";
+          eyebrow.textContent = label;
+          top.appendChild(eyebrow);
 
-            const eyebrow = document.createElement("div");
-            eyebrow.className = "pdf-cover__eyebrow";
-            eyebrow.textContent = editionLabel;
-            top.appendChild(eyebrow);
+          const spine = document.createElement("div");
+          spine.className = "pdf-cover__spine";
+          top.appendChild(spine);
 
-            const spine = document.createElement("div");
-            spine.className = "pdf-cover__spine";
-            top.appendChild(spine);
+          const titleH1 = document.createElement("h1");
+          titleH1.className = "pdf-cover__title";
+          titleH1.textContent = visibleTitle;
+          top.appendChild(titleH1);
 
-            const titleH1 = document.createElement("h1");
-            titleH1.className = "pdf-cover__title";
-            titleH1.textContent = visibleTitle;
-            top.appendChild(titleH1);
+          const subtitle = document.createElement("p");
+          subtitle.className = "pdf-cover__subtitle";
+          subtitle.textContent = visibleSubtitle;
+          top.appendChild(subtitle);
 
-            const subtitle = document.createElement("p");
-            subtitle.className = "pdf-cover__subtitle";
-            subtitle.textContent = visibleSubtitle;
-            top.appendChild(subtitle);
+          const purpose = document.createElement("p");
+          purpose.className = "pdf-cover__purpose";
+          purpose.textContent = fallbackDescription;
+          top.appendChild(purpose);
 
-            const purpose = document.createElement("p");
-            purpose.className = "pdf-cover__purpose";
-            purpose.textContent = description;
-            top.appendChild(purpose);
+          cover.appendChild(top);
 
-            cover.appendChild(top);
+          const meta = document.createElement("div");
+          meta.className = "pdf-cover__meta";
 
-            const meta = document.createElement("div");
-            meta.className = "pdf-cover__meta";
+          const meta1 = document.createElement("div");
+          meta1.textContent = "Rust handbook for serious systems engineers";
+          meta.appendChild(meta1);
 
-            const meta1 = document.createElement("div");
-            meta1.textContent = "Rust handbook for serious systems engineers";
-            meta.appendChild(meta1);
+          const meta2 = document.createElement("div");
+          meta2.textContent = "Ownership, concurrency, tooling, and architecture";
+          meta.appendChild(meta2);
 
           cover.appendChild(meta);
-          main.prepend(cover);
+          mainElement.prepend(cover);
         }
 
         document.body.classList.add("pdf-export");
@@ -271,8 +267,8 @@ try {
     });
 
     console.log(job.outputPath);
+    await page.close();
   }
-  await page.close();
 } finally {
   await browser.close();
 }

@@ -206,11 +206,6 @@
     grid.appendChild(illustration);
     hero.appendChild(grid);
 
-    gridDiv.appendChild(textDiv);
-    gridDiv.appendChild(artDiv);
-
-    hero.appendChild(gridDiv);
-
     const firstHeading = main.querySelector("h1");
     if (firstHeading) {
       firstHeading.insertAdjacentElement("afterend", hero);

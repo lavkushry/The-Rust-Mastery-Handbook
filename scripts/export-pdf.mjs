@@ -136,8 +136,18 @@ try {
       if ("fonts" in document) {
         await document.fonts.ready;
       }
+
+      const images = Array.from(document.images);
+      await Promise.all(
+        images.map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = resolve; // Ignore missing images to prevent blocking
+          });
+        })
+      );
     });
-    await new Promise((resolve) => setTimeout(resolve, 1500));
     await page.emulateMediaType("print");
 
     if (customCss) {

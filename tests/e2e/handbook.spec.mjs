@@ -167,6 +167,15 @@ test("main landmark is present and visible", async ({ page }) => {
   await expect(main.first()).toBeVisible();
 });
 
+test("skip-to-content link is present and targets main content", async ({ page }) => {
+  await page.goto(PAGES.find((p) => p.name === "title-page").path);
+  await page.waitForLoadState("domcontentloaded");
+
+  const skip = page.locator("a.skip-to-content").first();
+  await expect(skip).toBeAttached();
+  await expect(skip).toHaveAttribute("href", /#main-content/);
+});
+
 test("visible focus states — links are keyboard accessible", async ({ page }) => {
   await page.goto(PAGES.find((p) => p.name === "ownership-chapter").path);
   await page.waitForLoadState("domcontentloaded");
@@ -344,6 +353,16 @@ test("mobile — no horizontal overflow on ownership chapter", async ({ page }) 
     return document.documentElement.scrollWidth > document.documentElement.clientWidth;
   });
   expect(overflow, "Horizontal overflow on mobile viewport").toBe(false);
+});
+
+test("tablet — no horizontal overflow on ownership chapter", async ({ page }) => {
+  await page.setViewportSize({ width: 768, height: 1024 });
+  await page.goto(PAGES.find((p) => p.name === "ownership-chapter").path);
+  await page.waitForLoadState("domcontentloaded");
+  const overflow = await page.evaluate(() => {
+    return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+  });
+  expect(overflow, "Horizontal overflow on tablet viewport").toBe(false);
 });
 
 // ─── Code blocks don't overflow ──────────────────────────────────────────────

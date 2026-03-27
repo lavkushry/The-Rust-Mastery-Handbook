@@ -975,6 +975,22 @@
     });
   }
 
+  function ensureSkipLink(main) {
+    if (!main.id) {
+      main.id = "main-content";
+    }
+
+    if (document.querySelector(".skip-to-content")) {
+      return;
+    }
+
+    const skipLink = document.createElement("a");
+    skipLink.className = "skip-to-content";
+    skipLink.href = `#${main.id}`;
+    skipLink.textContent = "Skip to main content";
+    document.body.insertBefore(skipLink, document.body.firstChild);
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     const main = document.querySelector("#mdbook-content main");
     if (!main) {
@@ -987,6 +1003,8 @@
     main.classList.add("visual-edition-page");
     main.dataset.concept = concept.key;
     main.style.setProperty("--chapter-accent", concept.color);
+
+    ensureSkipLink(main);
 
     upgradeCallouts(main);
     cardifyRememberOnlyThree(main);

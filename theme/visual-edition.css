@@ -150,6 +150,36 @@ html.ayu #mdbook-content main th code {
   text-decoration: none;
 }
 
+.skip-to-content {
+  position: fixed;
+  top: 0.6rem;
+  left: 0.8rem;
+  z-index: 9999;
+  transform: translateY(-180%);
+  transition: transform 0.18s ease;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(2, 62, 138, 0.35);
+  background: color-mix(in srgb, var(--compiler) 14%, white 86%);
+  color: var(--ink);
+  padding: 0.55rem 0.8rem;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.skip-to-content:focus-visible {
+  transform: translateY(0);
+  outline: 3px solid var(--chapter-accent, var(--compiler));
+  outline-offset: 2px;
+}
+
+#mdbook-sidebar a {
+  min-height: 2rem;
+  padding-block: 0.25rem;
+}
+
 /* ─── Code blocks: readable, scrollable, not overflowing ─────────────────── */
 
 #mdbook-content main pre {
@@ -1742,6 +1772,15 @@ html.ayu blockquote.callout--learning-objective .callout__label {
 }
 
 @media (max-width: 900px) {
+  #mdbook-content main {
+    padding-inline: clamp(1rem, 4vw, 1.45rem);
+  }
+
+  #mdbook-sidebar a {
+    padding-block: 0.32rem;
+    line-height: 1.42;
+  }
+
   .chapter-hero,
   .part-spread {
     padding: 1.1rem;
@@ -1767,6 +1806,15 @@ html.ayu blockquote.callout--learning-objective .callout__label {
 }
 
 @media (max-width: 768px) {
+  #mdbook-content main {
+    padding-inline: 0.9rem;
+  }
+
+  #mdbook-sidebar a {
+    min-height: 2.15rem;
+    padding-block: 0.38rem;
+  }
+
   .chapter-hero,
   .part-spread {
     margin-bottom: 1.9rem;

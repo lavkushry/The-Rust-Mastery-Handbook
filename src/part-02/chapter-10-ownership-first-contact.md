@@ -45,9 +45,9 @@
         <rect x="136" y="132" width="92" height="118" rx="10" fill="#b56576"></rect>
         <rect x="110" y="270" width="140" height="28" rx="14" fill="#e9c46a"></rect>
         <circle cx="182" cy="332" r="28" fill="#e63946"></circle>
-        <text x="126" y="372" class="svg-label" style="fill:#e63946;">1. OWNER</text>
-        <text x="98" y="396" class="svg-small" style="fill:#4b5563;">Person A holds the</text>
-        <text x="102" y="414" class="svg-small" style="fill:#4b5563;">checkout card.</text>
+        <text x="126" y="364" class="svg-label" style="fill:#e63946;">1. OWNER</text>
+        <text x="98" y="386" class="svg-small" style="fill:#4b5563;">Person A holds the</text>
+        <text x="102" y="402" class="svg-small" style="fill:#4b5563;">checkout card.</text>
       </g>
       <g>
         <rect x="318" y="88" width="212" height="320" rx="20" fill="#fff5eb" stroke="#fb8500" stroke-width="3"></rect>
@@ -56,27 +56,27 @@
         <rect x="352" y="140" width="60" height="86" rx="10" fill="#b56576"></rect>
         <rect x="430" y="140" width="60" height="86" rx="10" fill="#b56576"></rect>
         <path d="M390 264 H 456" stroke="#fb8500" stroke-width="8" marker-end="url(#ownMoveArrow)"></path>
-        <text x="390" y="372" class="svg-label" style="fill:#fb8500;">2. MOVE</text>
-        <text x="364" y="396" class="svg-small" style="fill:#4b5563;">Responsibility moves</text>
-        <text x="372" y="414" class="svg-small" style="fill:#4b5563;">with the card.</text>
+        <text x="390" y="364" class="svg-label" style="fill:#fb8500;">2. MOVE</text>
+        <text x="364" y="386" class="svg-small" style="fill:#4b5563;">Responsibility moves</text>
+        <text x="372" y="402" class="svg-small" style="fill:#4b5563;">with the card.</text>
       </g>
       <g>
         <rect x="560" y="88" width="212" height="320" rx="20" fill="#fff5f5" stroke="#d62828" stroke-width="3"></rect>
         <rect x="620" y="140" width="88" height="114" rx="10" fill="#b56576" fill-opacity="0.35"></rect>
         <circle cx="610" cy="332" r="28" fill="#e5e7eb" stroke="#d62828" stroke-width="3"></circle>
         <path d="M642 174 l44 44 M686 174 l-44 44" stroke="#d62828" stroke-width="8" stroke-linecap="round"></path>
-        <text x="600" y="372" class="svg-label" style="fill:#d62828;">3. USE AFTER MOVE</text>
-        <text x="602" y="396" class="svg-small" style="fill:#4b5563;">Old name still exists,</text>
-        <text x="592" y="414" class="svg-small" style="fill:#4b5563;">authority does not.</text>
+        <text x="600" y="364" class="svg-label" style="fill:#d62828;">3. USE AFTER MOVE</text>
+        <text x="602" y="386" class="svg-small" style="fill:#4b5563;">Old name still exists,</text>
+        <text x="592" y="402" class="svg-small" style="fill:#4b5563;">authority does not.</text>
       </g>
       <g>
         <rect x="802" y="88" width="212" height="320" rx="20" fill="#f3f0ff" stroke="#6d6875" stroke-width="3"></rect>
         <rect x="864" y="144" width="86" height="110" rx="12" fill="#b56576" fill-opacity="0.25" stroke="#6d6875" stroke-dasharray="8 6"></rect>
         <path d="M904 280 v40" stroke="#6d6875" stroke-width="8" stroke-linecap="round"></path>
         <path d="M886 318 h36" stroke="#6d6875" stroke-width="8" stroke-linecap="round"></path>
-        <text x="870" y="372" class="svg-label" style="fill:#6d6875;">4. DROP</text>
-        <text x="858" y="396" class="svg-small" style="fill:#4b5563;">Scope ends. The book</text>
-        <text x="858" y="414" class="svg-small" style="fill:#4b5563;">goes back exactly once.</text>
+        <text x="870" y="364" class="svg-label" style="fill:#6d6875;">4. DROP</text>
+        <text x="858" y="386" class="svg-small" style="fill:#4b5563;">Scope ends. The book</text>
+        <text x="858" y="402" class="svg-small" style="fill:#4b5563;">goes back exactly once.</text>
       </g>
       <defs>
         <marker id="ownMoveArrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">

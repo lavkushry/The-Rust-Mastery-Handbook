@@ -100,11 +100,13 @@ test("visual-edition.js - upgradeCallouts", () => {
 
   assert.ok(blockquotes[0].classList.contains("callout"));
   assert.ok(blockquotes[0].classList.contains("callout--expert-tip"));
-  assert.strictEqual(blockquotes[0].querySelector(".callout__label").textContent, "⭐ Expert Tip: Always prefer iterators.");
+  assert.strictEqual(blockquotes[0].querySelector(".callout__label").textContent.trim(), "Expert Tip: Always prefer iterators.");
+  assert.ok(blockquotes[0].querySelector(".callout__label .inline-svg-icon"));
 
   assert.ok(blockquotes[1].classList.contains("callout"));
   assert.ok(blockquotes[1].classList.contains("callout--common-mistake"));
-  assert.strictEqual(blockquotes[1].querySelector(".callout__label").textContent, "⚠️ Common Mistake");
+  assert.strictEqual(blockquotes[1].querySelector(".callout__label").textContent.trim(), "Common Mistake");
+  assert.ok(blockquotes[1].querySelector(".callout__label .inline-svg-icon"));
 
   assert.ok(!blockquotes[2].classList.contains("callout"));
 });

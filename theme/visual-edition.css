@@ -797,6 +797,17 @@ html.ayu .visual-table td {
   display: block;
 }
 
+.svg-frame--wide {
+  width: max(100%, var(--svg-min-width, 960px));
+  max-width: none;
+}
+
+.inline-svg-icon {
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+}
+
 .svg-title {
   fill: currentColor;
   font-family: var(--font-display);
@@ -1473,6 +1484,10 @@ html.ayu blockquote.callout--learning-objective .callout__label {
 }
 
 .level-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
   flex: 1;
   padding: 10px 14px;
   font-size: 12px;
@@ -1483,6 +1498,11 @@ html.ayu blockquote.callout--learning-objective .callout__label {
   cursor: pointer;
   border-bottom: 3px solid transparent;
   transition: border-color 0.2s, background 0.2s;
+}
+
+.level-tab__icon {
+  width: 0.95rem;
+  height: 0.95rem;
 }
 
 .level-tab:hover {

@@ -13,14 +13,86 @@
   ];
 
   const calloutMap = [
-    { key: "design insight", className: "callout--design-insight", icon: "💡" },
-    { key: "expert tip", className: "callout--expert-tip", icon: "⭐" },
-    { key: "common mistake", className: "callout--common-mistake", icon: "⚠️" },
-    { key: "compiler says", className: "callout--compiler-says", icon: "🦀" },
-    { key: "memory model", className: "callout--memory-model", icon: "🧠" },
-    { key: "zero cost proof", className: "callout--zero-cost", icon: "⚡" },
-    { key: "learning objective", className: "callout--learning-objective", icon: "🎯" },
+    { key: "design insight", className: "callout--design-insight", icon: "bulb" },
+    { key: "expert tip", className: "callout--expert-tip", icon: "star" },
+    { key: "common mistake", className: "callout--common-mistake", icon: "warning" },
+    { key: "compiler says", className: "callout--compiler-says", icon: "chip" },
+    { key: "memory model", className: "callout--memory-model", icon: "brain" },
+    { key: "zero cost proof", className: "callout--zero-cost", icon: "bolt" },
+    { key: "learning objective", className: "callout--learning-objective", icon: "target" },
   ];
+
+  function createInlineSvgIcon(icon, ariaLabel) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    svg.classList.add("inline-svg-icon");
+    if (ariaLabel) {
+      svg.setAttribute("aria-label", ariaLabel);
+      svg.setAttribute("role", "img");
+    }
+
+    const makePath = (d, attrs = {}) => {
+      const path = document.createElementNS(ns, "path");
+      path.setAttribute("d", d);
+      Object.entries(attrs).forEach(([key, value]) => path.setAttribute(key, value));
+      return path;
+    };
+
+    const makeCircle = (cx, cy, r, attrs = {}) => {
+      const circle = document.createElementNS(ns, "circle");
+      circle.setAttribute("cx", String(cx));
+      circle.setAttribute("cy", String(cy));
+      circle.setAttribute("r", String(r));
+      Object.entries(attrs).forEach(([key, value]) => circle.setAttribute(key, value));
+      return circle;
+    };
+
+    switch (icon) {
+      case "bulb":
+        svg.appendChild(makeCircle(12, 10, 5, { fill: "currentColor", "fill-opacity": "0.2", stroke: "currentColor", "stroke-width": "1.5" }));
+        svg.appendChild(makePath("M9 16h6M10 19h4", { stroke: "currentColor", "stroke-width": "1.7", "stroke-linecap": "round" }));
+        break;
+      case "star":
+        svg.appendChild(makePath("M12 3.5l2.7 5.47 6.03.88-4.36 4.25 1.03 6.01L12 17.4l-5.4 2.84 1.03-6.01L3.27 9.85l6.03-.88L12 3.5z", { fill: "currentColor", "fill-opacity": "0.25", stroke: "currentColor", "stroke-width": "1.4", "stroke-linejoin": "round" }));
+        break;
+      case "warning":
+        svg.appendChild(makePath("M12 3.8L21 19.2H3L12 3.8z", { fill: "currentColor", "fill-opacity": "0.2", stroke: "currentColor", "stroke-width": "1.5", "stroke-linejoin": "round" }));
+        svg.appendChild(makePath("M12 9.2v4.8M12 17.2h.01", { stroke: "currentColor", "stroke-width": "1.8", "stroke-linecap": "round" }));
+        break;
+      case "chip":
+        svg.appendChild(makePath("M8 8h8v8H8z", { fill: "currentColor", "fill-opacity": "0.2", stroke: "currentColor", "stroke-width": "1.5" }));
+        svg.appendChild(makePath("M10.8 10.8h2.4v2.4h-2.4z", { fill: "currentColor" }));
+        break;
+      case "brain":
+        svg.appendChild(makePath("M10.5 5.8a3 3 0 00-5 2.2 2.8 2.8 0 00.5 5.56A3.2 3.2 0 0010 18v-12zm3 0v12a3.2 3.2 0 004-4.44 2.8 2.8 0 00.5-5.56 3 3 0 00-5-2.2z", { fill: "currentColor", "fill-opacity": "0.18", stroke: "currentColor", "stroke-width": "1.2", "stroke-linejoin": "round" }));
+        break;
+      case "bolt":
+        svg.appendChild(makePath("M13.2 2.8L5.5 13h5.3l-1 8.2L18.5 11h-5.1l-.2-8.2z", { fill: "currentColor", "fill-opacity": "0.22", stroke: "currentColor", "stroke-width": "1.3", "stroke-linejoin": "round" }));
+        break;
+      case "target":
+        svg.appendChild(makeCircle(12, 12, 8.5, { fill: "none", stroke: "currentColor", "stroke-width": "1.6" }));
+        svg.appendChild(makeCircle(12, 12, 4.8, { fill: "none", stroke: "currentColor", "stroke-width": "1.4" }));
+        svg.appendChild(makeCircle(12, 12, 1.6, { fill: "currentColor" }));
+        break;
+      case "leaf":
+        svg.appendChild(makePath("M19.2 4.8c-6.1.3-9.8 3-11.6 7.8-.4 1-.6 2.1-.6 3.2 1.1 0 2.2-.2 3.2-.6 4.9-1.8 7.5-5.4 7.8-11.6-.9.1-1.8.4-2.8 1.2z", { fill: "currentColor", "fill-opacity": "0.2", stroke: "currentColor", "stroke-width": "1.3", "stroke-linejoin": "round" }));
+        break;
+      case "gear":
+        svg.appendChild(makeCircle(12, 12, 3, { fill: "none", stroke: "currentColor", "stroke-width": "1.7" }));
+        svg.appendChild(makePath("M12 3.8v2.2M12 18v2.2M3.8 12H6M18 12h2.2M6.2 6.2l1.5 1.5M16.3 16.3l1.5 1.5M17.8 6.2l-1.5 1.5M7.7 16.3l-1.5 1.5", { stroke: "currentColor", "stroke-width": "1.6", "stroke-linecap": "round" }));
+        break;
+      case "lab":
+        svg.appendChild(makePath("M9 4.4h6M10.4 4.4v4.4l-4.5 7.6A2 2 0 007.6 19h8.8a2 2 0 001.7-2.9l-4.5-7.6V4.4", { fill: "currentColor", "fill-opacity": "0.18", stroke: "currentColor", "stroke-width": "1.4", "stroke-linejoin": "round", "stroke-linecap": "round" }));
+        svg.appendChild(makePath("M8.2 14.2h7.6", { stroke: "currentColor", "stroke-width": "1.4" }));
+        break;
+      default:
+        svg.appendChild(makeCircle(12, 12, 8, { fill: "currentColor", "fill-opacity": "0.2", stroke: "currentColor", "stroke-width": "1.5" }));
+    }
+    return svg;
+  }
 
   function pickConcept(text) {
     const match = conceptMap.find((entry) => entry.match.test(text));
@@ -233,8 +305,29 @@
       blockquote.classList.add("callout", match.className);
       const label = document.createElement("div");
       label.className = "callout__label";
-      label.textContent = `${match.icon} ${raw.replace(/:$/, "")}`;
+      label.appendChild(createInlineSvgIcon(match.icon));
+      const labelText = document.createElement("span");
+      labelText.textContent = raw.replace(/:$/, "");
+      label.appendChild(labelText);
       firstParagraph.replaceWith(label);
+    });
+  }
+
+  function enhanceWideSvgReadability(main) {
+    main.querySelectorAll(".visual-figure .svg-frame").forEach((svg) => {
+      const viewBox = svg.getAttribute("viewBox");
+      if (!viewBox) {
+        return;
+      }
+      const dimensions = viewBox.split(/\s+/).map(Number);
+      if (dimensions.length !== 4 || Number.isNaN(dimensions[2])) {
+        return;
+      }
+      const width = dimensions[2];
+      if (width >= 900) {
+        svg.classList.add("svg-frame--wide");
+        svg.style.setProperty("--svg-min-width", `${Math.round(Math.min(width, 1120))}px`);
+      }
     });
   }
 
@@ -591,7 +684,7 @@
       // Skip incomplete snippets (no fn main, just fragments)
       const btn = document.createElement('a');
       btn.className = 'playground-btn';
-      btn.textContent = '▶ Run';
+      btn.textContent = 'Run';
       btn.title = 'Open in Rust Playground';
       btn.target = '_blank';
       btn.rel = 'noopener';
@@ -654,12 +747,17 @@
       tabBar.className = 'level-tab-bar';
 
       const labels = ['Beginner', 'Engineer', 'Deep Dive'];
-      const icons = ['🌱', '⚙️', '🔬'];
+      const icons = ['leaf', 'gear', 'lab'];
 
       panels.forEach((panel, i) => {
         const tab = document.createElement('button');
         tab.className = 'level-tab' + (i === 0 ? ' level-tab--active' : '');
-        tab.textContent = `${icons[i] || ''} ${labels[i] || panel.dataset.level || `Level ${i+1}`}`;
+        const icon = createInlineSvgIcon(icons[i] || 'gear');
+        icon.classList.add('level-tab__icon');
+        tab.appendChild(icon);
+        const text = document.createElement('span');
+        text.textContent = labels[i] || panel.dataset.level || `Level ${i + 1}`;
+        tab.appendChild(text);
         tab.addEventListener('click', () => {
           container.querySelectorAll('.level-tab').forEach(t => t.classList.remove('level-tab--active'));
           tab.classList.add('level-tab--active');
@@ -682,7 +780,7 @@
 
       const btn = document.createElement('button');
       btn.className = 'anki-export-btn';
-      btn.textContent = '📥 Export for Anki';
+      btn.textContent = 'Export for Anki';
       btn.title = 'Download flashcards as tab-separated text for Anki import';
       btn.addEventListener('click', () => {
         let tsv = '';
@@ -729,5 +827,6 @@
     initSteppers(main);
     initLevelTabs(main);
     initAnkiExport(main);
+    enhanceWideSvgReadability(main);
   });
 })();

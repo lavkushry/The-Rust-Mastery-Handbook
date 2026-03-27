@@ -132,7 +132,7 @@
     circle2.setAttribute("cx", "124");
     circle2.setAttribute("cy", "120");
     circle2.setAttribute("r", "20");
-    circle2.setAttribute("fill", accent);
+    circle2.style.fill = accent;
     svg.appendChild(circle2);
 
     const rect2 = document.createElementNS(svgNS, "rect");
@@ -155,7 +155,7 @@
 
     const path = document.createElementNS(svgNS, "path");
     path.setAttribute("d", "M120 174 L202 230 L312 160 L404 238");
-    path.setAttribute("stroke", accent);
+    path.style.stroke = accent;
     path.setAttribute("stroke-width", "6");
     path.setAttribute("fill", "none");
     path.setAttribute("stroke-linecap", "round");
@@ -165,7 +165,7 @@
     circle3.setAttribute("cx", "202");
     circle3.setAttribute("cy", "230");
     circle3.setAttribute("r", "12");
-    circle3.setAttribute("fill", accent);
+    circle3.style.fill = accent;
     svg.appendChild(circle3);
 
     const circle4 = document.createElementNS(svgNS, "circle");
@@ -179,7 +179,7 @@
     circle5.setAttribute("cx", "404");
     circle5.setAttribute("cy", "238");
     circle5.setAttribute("r", "12");
-    circle5.setAttribute("fill", accent);
+    circle5.style.fill = accent;
     svg.appendChild(circle5);
 
     const rect4 = document.createElementNS(svgNS, "rect");

@@ -300,10 +300,10 @@
       artDiv.setAttribute("aria-hidden", "true");
       artDiv.innerHTML = `
         <svg class="svg-frame" viewBox="0 0 220 120" role="img" aria-label="Memory hook illustration">
-          <rect x="10" y="10" width="200" height="100" rx="22" fill="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 10%, white 90%)" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 60%, white 40%)" stroke-width="3"></rect>
-          <circle cx="60" cy="60" r="22" fill="var(--chapter-accent, var(--compiler))"></circle>
-          <path d="M96 58 H 166" stroke="var(--chapter-accent, var(--compiler))" stroke-width="8" stroke-linecap="round"></path>
-          <path d="M96 78 H 142" stroke="color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%)" stroke-width="8" stroke-linecap="round"></path>
+          <rect x="10" y="10" width="200" height="100" rx="22" style="fill: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 10%, white 90%); stroke: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 60%, white 40%);" stroke-width="3"></rect>
+          <circle cx="60" cy="60" r="22" style="fill: var(--chapter-accent, var(--compiler));"></circle>
+          <path d="M96 58 H 166" style="stroke: var(--chapter-accent, var(--compiler));" stroke-width="8" stroke-linecap="round"></path>
+          <path d="M96 78 H 142" style="stroke: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%);" stroke-width="8" stroke-linecap="round"></path>
         </svg>
       `;
 
@@ -433,13 +433,11 @@
     main.dataset.concept = concept.key;
     main.style.setProperty("--chapter-accent", concept.color);
 
-    const headings = Array.from(main.querySelectorAll("h2, h3"));
-
     upgradeCallouts(main);
-    cardifyRememberOnlyThree(main, headings);
-    enhanceMemoryHooks(main, headings);
-    enhanceFlashcardDecks(main, headings);
-    enhanceCheatSheets(main, headings);
+    cardifyRememberOnlyThree(main);
+    enhanceMemoryHooks(main);
+    enhanceFlashcardDecks(main);
+    enhanceCheatSheets(main);
     styleTables(main);
     createHero(main, title, concept.color, concept.key);
   });

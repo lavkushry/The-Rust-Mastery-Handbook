@@ -206,3 +206,57 @@ test("visual-edition.js - styleTables - idempotent wrapping", () => {
   const wrappers = doc.querySelectorAll(".visual-table-wrapper");
   assert.strictEqual(wrappers.length, 1, "Table should be wrapped exactly once");
 });
+
+test("visual-edition.js - createHero SVG accent elements use inline style, not presentation attribute", () => {
+  const doc = renderWithVisualEdition(`
+    <h1>Borrowing Basics</h1>
+    <p>This paragraph is longer than 60 characters so it can be picked up as a hook by the hero section.</p>
+  `);
+
+  const hero = doc.querySelector(".chapter-hero");
+  assert.ok(hero, "Hero section should be created");
+
+  // The accent-coloured SVG elements must use element.style so CSS custom
+  // properties resolve correctly; presentation attributes do not support them.
+  const svgElements = hero.querySelectorAll("circle, path");
+  let foundStyledElement = false;
+  svgElements.forEach((el) => {
+    const fill = el.style.fill;
+    const stroke = el.style.stroke;
+    if (fill && fill.startsWith("var(")) {
+      // fill is set via inline style — correct
+      assert.ok(!el.getAttribute("fill") || !el.getAttribute("fill").startsWith("var("),
+        "CSS-variable fill must not appear as a presentation attribute");
+      foundStyledElement = true;
+    }
+    if (stroke && stroke.startsWith("var(")) {
+      assert.ok(!el.getAttribute("stroke") || !el.getAttribute("stroke").startsWith("var("),
+        "CSS-variable stroke must not appear as a presentation attribute");
+      foundStyledElement = true;
+    }
+  });
+  assert.ok(foundStyledElement, "At least one SVG element should carry a CSS-variable colour via inline style");
+});
+
+test("visual-edition.js - enhanceMemoryHooks SVG uses style attributes, not presentation attributes, for CSS variables", () => {
+  const doc = renderWithVisualEdition(`
+    <h3>Memory Hook</h3>
+    <p>Think of it like a library book.</p>
+  `);
+
+  const panel = doc.querySelector(".memory-hook-panel");
+  assert.ok(panel, "Memory hook panel should be created");
+
+  const svg = panel.querySelector("svg");
+  assert.ok(svg, "SVG should be present in memory hook panel");
+
+  // None of the SVG elements should use CSS custom properties as bare
+  // presentation attributes — they should all go through inline style.
+  const svgChildren = svg.querySelectorAll("rect, circle, path");
+  svgChildren.forEach((el) => {
+    const fill = el.getAttribute("fill") ?? "";
+    const stroke = el.getAttribute("stroke") ?? "";
+    assert.ok(!fill.includes("var("), `<${el.tagName}> fill presentation attribute must not contain CSS variable: "${fill}"`);
+    assert.ok(!stroke.includes("var("), `<${el.tagName}> stroke presentation attribute must not contain CSS variable: "${stroke}"`);
+  });
+});

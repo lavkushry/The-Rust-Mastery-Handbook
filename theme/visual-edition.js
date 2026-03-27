@@ -435,11 +435,21 @@
       }
 
       const next = getNextSignificantSibling(heading);
-      if (!next || next.tagName !== "TABLE") {
+      if (!next) {
         return;
       }
 
-      const rows = next.querySelectorAll("tbody tr");
+      const table = next.tagName === "TABLE"
+        ? next
+        : next.classList?.contains("table-wrapper")
+          ? next.querySelector("table")
+          : null;
+
+      if (!table) {
+        return;
+      }
+
+      const rows = table.querySelectorAll("tbody tr");
       if (rows.length === 0) {
         return;
       }
@@ -490,7 +500,15 @@
         deck.appendChild(card);
       });
 
-      next.replaceWith(deck);
+      const tableWrapper = table.parentElement?.classList.contains("table-wrapper")
+        ? table.parentElement
+        : null;
+
+      if (tableWrapper) {
+        tableWrapper.replaceWith(deck);
+      } else {
+        table.replaceWith(deck);
+      }
     });
   }
 
@@ -506,15 +524,35 @@
       }
 
       const next = getNextSignificantSibling(heading);
-      if (!next || next.tagName !== "TABLE") {
+      if (!next) {
         return;
       }
 
-      next.classList.add("visual-table", "cheat-sheet-table");
+      const table = next.tagName === "TABLE"
+        ? next
+        : next.classList?.contains("table-wrapper")
+          ? next.querySelector("table")
+          : null;
+
+      if (!table) {
+        return;
+      }
+
+      table.classList.add("visual-table", "cheat-sheet-table");
       const panel = document.createElement("section");
       panel.className = "cheat-sheet-panel";
-      next.replaceWith(panel);
-      panel.appendChild(next);
+
+      const tableWrapper = table.parentElement?.classList.contains("table-wrapper")
+        ? table.parentElement
+        : null;
+
+      if (tableWrapper) {
+        tableWrapper.replaceWith(panel);
+      } else {
+        table.replaceWith(panel);
+      }
+
+      panel.appendChild(table);
     });
   }
 
@@ -572,6 +610,45 @@
         }
       });
   }
+
+    function initHorizontalScrollAffordances(main) {
+      const regions = [];
+
+      const registerRegion = (region, hintText) => {
+        if (!region) {
+          return;
+        }
+
+        region.classList.add("scrollable-x");
+        if (!region.dataset.scrollHint) {
+          region.dataset.scrollHint = hintText;
+        }
+
+        const update = () => {
+          const maxScrollLeft = Math.max(0, region.scrollWidth - region.clientWidth);
+          const isScrollable = maxScrollLeft > 2;
+          const scrollLeft = Math.max(0, region.scrollLeft);
+
+          region.classList.toggle("is-scrollable-x", isScrollable);
+          region.classList.toggle("is-scrolled-start", isScrollable && scrollLeft > 2);
+          region.classList.toggle("is-scrolled-end", !isScrollable || scrollLeft >= maxScrollLeft - 2);
+        };
+
+        update();
+        region.addEventListener("scroll", update, { passive: true });
+        regions.push(update);
+      };
+
+      main.querySelectorAll("pre").forEach((region) => registerRegion(region, "Scroll code"));
+      main.querySelectorAll(".visual-table-wrapper").forEach((region) => registerRegion(region, "Scroll table"));
+      main.querySelectorAll(".visual-figure__body").forEach((region) => registerRegion(region, "Scroll diagram"));
+
+      if (regions.length > 0) {
+        window.addEventListener("resize", () => {
+          regions.forEach((update) => update());
+        }, { passive: true });
+      }
+    }
 
   function initFlashcardFlip(main) {
     main.querySelectorAll('.flashcard-grid').forEach(deck => {
@@ -781,19 +858,53 @@
 
   // ══ 3-LEVEL TABS ═════════════════════════════════════
   function initLevelTabs(main) {
-    main.querySelectorAll('.level-tabs').forEach(container => {
+    main.querySelectorAll('.level-tabs').forEach((container, containerIndex) => {
       const panels = container.querySelectorAll('.level-panel');
       if (panels.length === 0) return;
+      if (container.querySelector('.level-tab-bar')) return;
 
       const tabBar = document.createElement('div');
       tabBar.className = 'level-tab-bar';
+      tabBar.setAttribute('role', 'tablist');
+      tabBar.setAttribute('aria-label', 'Learning depth tabs');
+
+      const baseId = `level-tabs-${containerIndex + 1}`;
+      const tabs = [];
 
       const labels = ['Beginner', 'Engineer', 'Deep Dive'];
       const icons = ['leaf', 'gear', 'lab'];
 
+      const activateTab = (activeIndex, focusTab = false) => {
+        tabs.forEach((tab, i) => {
+          const isActive = i === activeIndex;
+          tab.classList.toggle('level-tab--active', isActive);
+          tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          tab.tabIndex = isActive ? 0 : -1;
+
+          const panel = panels[i];
+          panel.hidden = !isActive;
+          panel.style.display = isActive ? 'block' : 'none';
+        });
+
+        if (focusTab && tabs[activeIndex]) {
+          tabs[activeIndex].focus();
+        }
+      };
+
       panels.forEach((panel, i) => {
         const tab = document.createElement('button');
-        tab.className = 'level-tab' + (i === 0 ? ' level-tab--active' : '');
+        tab.type = 'button';
+        tab.className = 'level-tab';
+        tab.id = `${baseId}-tab-${i + 1}`;
+        panel.id = panel.id || `${baseId}-panel-${i + 1}`;
+        tab.setAttribute('role', 'tab');
+        tab.setAttribute('aria-controls', panel.id);
+        tab.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+        tab.tabIndex = i === 0 ? 0 : -1;
+
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', tab.id);
+
         const iconLabel = labels[i] ? `${labels[i]} level` : `Level ${i + 1}`;
         const icon = createInlineSvgIcon(icons[i] || 'gear', iconLabel);
         icon.classList.add('level-tab__icon');
@@ -802,15 +913,35 @@
         text.textContent = labels[i] || panel.dataset.level || `Level ${i + 1}`;
         tab.appendChild(text);
         tab.addEventListener('click', () => {
-          container.querySelectorAll('.level-tab').forEach(t => t.classList.remove('level-tab--active'));
-          tab.classList.add('level-tab--active');
-          panels.forEach((p, j) => { p.style.display = j === i ? 'block' : 'none'; });
+          activateTab(i);
         });
+        tab.addEventListener('keydown', (event) => {
+          let nextIndex = i;
+
+          if (event.key === 'ArrowRight') {
+            nextIndex = (i + 1) % panels.length;
+          } else if (event.key === 'ArrowLeft') {
+            nextIndex = (i - 1 + panels.length) % panels.length;
+          } else if (event.key === 'Home') {
+            nextIndex = 0;
+          } else if (event.key === 'End') {
+            nextIndex = panels.length - 1;
+          } else {
+            return;
+          }
+
+          event.preventDefault();
+          activateTab(nextIndex, true);
+        });
+
+        tabs.push(tab);
         tabBar.appendChild(tab);
+        panel.hidden = i !== 0;
         panel.style.display = i === 0 ? 'block' : 'none';
       });
 
       container.insertBefore(tabBar, container.firstChild);
+      activateTab(0);
     });
   }
 
@@ -871,6 +1002,7 @@
     initSteppers(main);
     initLevelTabs(main);
     initAnkiExport(main);
+    initHorizontalScrollAffordances(main);
     enhanceWideSvgReadability(main);
   });
 })();

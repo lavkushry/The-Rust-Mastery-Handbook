@@ -177,6 +177,100 @@ test("visible focus states — links are keyboard accessible", async ({ page }) 
   expect(count, "No element received focus after Tab").toBeGreaterThan(0);
 });
 
+test("level tabs support keyboard navigation and tab semantics", async ({ page }) => {
+  await page.goto(PAGES.find((p) => p.name === "unsafe-chapter").path);
+  await page.waitForLoadState("domcontentloaded");
+
+  const tablist = page.locator(".level-tab-bar[role='tablist']").first();
+  await expect(tablist).toBeVisible();
+
+  const tabs = tablist.locator(".level-tab");
+  const tabCount = await tabs.count();
+  expect(tabCount, "Expected at least 3 level tabs").toBeGreaterThanOrEqual(3);
+
+  const firstTab = tabs.nth(0);
+
+  await expect(firstTab).toHaveAttribute("role", "tab");
+  await expect(firstTab).toHaveAttribute("aria-selected", "true");
+  const firstPanelId = await firstTab.getAttribute("aria-controls");
+  expect(firstPanelId, "First tab should reference a panel").toBeTruthy();
+  await expect(page.locator(`#${firstPanelId}`)).toHaveAttribute("role", "tabpanel");
+
+  const keyboardState = await tablist.evaluate((tablistEl) => {
+    const tabButtons = Array.from(tablistEl.querySelectorAll(".level-tab"));
+    const selectedIndex = () => tabButtons.findIndex((tab) => tab.getAttribute("aria-selected") === "true");
+    const semanticsOk = tabButtons.every((tab) => {
+      return tab.getAttribute("role") === "tab" && Boolean(tab.getAttribute("aria-controls"));
+    });
+
+    tabButtons[0]?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    const afterArrowRight = selectedIndex();
+
+    tabButtons[Math.max(0, afterArrowRight)]?.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true }));
+    const afterEnd = selectedIndex();
+
+    tabButtons[Math.max(0, afterEnd)]?.dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true }));
+    const afterHome = selectedIndex();
+
+    return {
+      semanticsOk,
+      afterArrowRight,
+      afterEnd,
+      afterHome,
+      expectedLastIndex: tabButtons.length - 1,
+    };
+  });
+
+  expect(keyboardState.semanticsOk).toBe(true);
+  expect(keyboardState.afterArrowRight).toBe(1);
+  expect(keyboardState.afterEnd).toBe(keyboardState.expectedLastIndex);
+  expect(keyboardState.afterHome).toBe(0);
+});
+
+test("flashcards respect prefers-reduced-motion and remain functional", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto(PAGES.find((p) => p.name === "async-chapter").path);
+  await page.waitForLoadState("domcontentloaded");
+
+  const flashcard = page.locator(".flashcard-grid .flashcard").first();
+  await expect(flashcard).toBeVisible({ timeout: 10000 });
+
+  const maxTransitionSeconds = await flashcard.locator(".flashcard__inner").evaluate((el) => {
+    const value = getComputedStyle(el).transitionDuration || "0s";
+    const durations = value.split(",").map((token) => {
+      const trimmed = token.trim();
+      if (trimmed.endsWith("ms")) {
+        return Number.parseFloat(trimmed) / 1000;
+      }
+      if (trimmed.endsWith("s")) {
+        return Number.parseFloat(trimmed);
+      }
+      return 0;
+    });
+    return Math.max(...durations, 0);
+  });
+
+  expect(
+    maxTransitionSeconds,
+    `Expected near-zero transition duration in reduced-motion mode, got ${maxTransitionSeconds}s`,
+  ).toBeLessThanOrEqual(0.02);
+
+  await flashcard.click();
+  await expect(flashcard).toHaveClass(/flipped/);
+
+  const visibility = await flashcard.evaluate((card) => {
+    const front = card.querySelector(".flashcard__front");
+    const back = card.querySelector(".flashcard__back");
+    return {
+      frontDisplay: front ? getComputedStyle(front).display : "",
+      backDisplay: back ? getComputedStyle(back).display : "",
+    };
+  });
+
+  expect(visibility.frontDisplay).toBe("none");
+  expect(visibility.backDisplay).not.toBe("none");
+});
+
 for (const pageInfo of [
   { name: "title-page", path: "/00_title_and_toc.html" },
   { name: "ownership-chapter", path: "/part-03/chapter-16-ownership-as-resource-management.html" },

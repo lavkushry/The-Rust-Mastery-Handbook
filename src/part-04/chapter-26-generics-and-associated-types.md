@@ -1,4 +1,9 @@
 # Chapter 26: Generics and Associated Types
+<div class="chapter-snapshot">
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-25-traits-rusts-core-abstraction.html">Ch 25: Traits</a></div></div>
+  <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Monomorphization: generics compiled to concrete types</li><li>Associated types vs generic type parameters</li><li>Trait bounds as capability contracts</li></ul></div>
+  <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">35<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min exercises</div></div>
+</div>
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--trait);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Abstraction Choice</div><h2 class="visual-figure__title">Generic Parameter or Associated Type?</h2></div></div>

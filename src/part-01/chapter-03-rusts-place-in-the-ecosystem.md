@@ -1,4 +1,9 @@
 # Chapter 3: Rust's Place in the Ecosystem
+<div class="chapter-snapshot">
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-01/chapter-02-rusts-design-philosophy.html">Ch 2: Philosophy</a></div></div>
+  <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Where Rust fits vs C, C++, Go, and Java</li><li>Rust in systems, web, embedded, and CLI</li><li>The ecosystem: crates.io, rustup, cargo</li></ul></div>
+  <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">20<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 10 min exercises</div></div>
+</div>
 <figure class="visual-figure" style="--chapter-accent: var(--valid);">
   <div class="visual-figure__header">
     <div>

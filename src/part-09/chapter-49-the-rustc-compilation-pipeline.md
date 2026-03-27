@@ -1,4 +1,9 @@
 # Chapter 49: The `rustc` Compilation Pipeline
+<div class="chapter-snapshot">
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-21-the-borrow-checker-how-the-compiler-thinks.html">Ch 21: Borrow Checker</a></div></div>
+  <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Lexing → parsing → HIR → MIR → LLVM IR → machine code</li><li>Where borrow checking happens in the pipeline</li><li>Why MIR matters for optimization and analysis</li></ul></div>
+  <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">35<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 15 min exercises</div></div>
+</div>
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure visual-figure--dark" style="--chapter-accent: var(--compiler);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Compilation Flow</div><h2 class="visual-figure__title">Source Code Through Rustc's Internal Stages</h2></div></div>

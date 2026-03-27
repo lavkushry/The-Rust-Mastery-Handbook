@@ -1,4 +1,9 @@
 # Chapter 4: Environment and Toolchain
+<div class="chapter-snapshot">
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><span style="opacity:0.5;font-size:0.78rem">None — setup chapter</span></div></div>
+  <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Installing rustup and managing toolchains</li><li>rustc, cargo, clippy, rustfmt setup</li><li>Editor and IDE configuration</li></ul></div>
+  <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">15<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 15 min exercises</div></div>
+</div>
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--compiler);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Toolchain Map</div><h2 class="visual-figure__title">How <code>rustup</code>, <code>cargo</code>, and <code>rustc</code> Relate</h2></div></div>

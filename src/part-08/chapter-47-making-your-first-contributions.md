@@ -1,4 +1,9 @@
 # Chapter 47: Making Your First Contributions
+<div class="chapter-snapshot">
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-08/chapter-46-entering-an-unfamiliar-rust-repo.html">Ch 46: Entering a Repo</a></div></div>
+  <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Good first issue selection strategy</li><li>Writing tests, docs, and small fixes</li><li>Code review norms in Rust projects</li></ul></div>
+  <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">25<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 15 min exercises</div></div>
+</div>
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--ownership);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Contribution Ladder</div><h2 class="visual-figure__title">The Safest Path Upward in Scope</h2></div></div>

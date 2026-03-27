@@ -101,4 +101,12 @@
   </figure>
 </div>
 
+## Chapter Resources
+* **Official Source:** [The Rust Reference: Lifetimes](https://doc.rust-lang.org/reference/lifetimes.html)
+* **Rustonomicon:** [Lifetimes](https://doc.rust-lang.org/nomicon/lifetimes.html)
+* **Rust by Example:** [Lifetimes](https://doc.rust-lang.org/rust-by-example/scope/lifetime.html)
+
 ## Step 1 - The Problem
+
+> **Learning Objective**
+> By the end of this chapter, you should be able to explain how lifetimes define relationships between borrowed data, rather than magically extending how long data exists.

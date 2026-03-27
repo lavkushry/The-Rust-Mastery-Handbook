@@ -36,20 +36,40 @@ test.describe('Visual Regression', () => {
         await page.evaluate(() => document.fonts.ready);
         await page.waitForTimeout(1000);
 
+        // Hide elements that cause flaky layout shifts for visual regression tests
+        await page.evaluate(() => {
+          const main = document.querySelector('#mdbook-content main');
+          if (main) main.style.overflow = 'hidden';
+          document.body.style.overflow = 'hidden';
+
+          // Disable smooth scrolling as it can cause rendering differences
+          document.documentElement.style.scrollBehavior = 'auto';
+
+          // Force layout calculation
+          document.body.offsetHeight;
+        });
+        await page.waitForTimeout(500);
+
         await expect(page).toHaveScreenshot(`${pageTest.name}-${viewport.name}-light.png`, {
             fullPage: true,
-            maxDiffPixelRatio: 0.1, // Increase tolerance to avoid flaky sub-pixel rendering failures
+            maxDiffPixelRatio: 0.1, // Relaxed tolerance for sub-pixel rendering across environments but strict enough to catch regressions
+            animations: "disabled",
+            caret: "hide",
+            timeout: 10000,
         });
 
         // Test dark mode
         await page.evaluate(() => {
             document.documentElement.classList.add('navy');
         });
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(500);
 
         await expect(page).toHaveScreenshot(`${pageTest.name}-${viewport.name}-dark.png`, {
             fullPage: true,
             maxDiffPixelRatio: 0.1,
+            animations: "disabled",
+            caret: "hide",
+            timeout: 10000,
         });
       });
     }

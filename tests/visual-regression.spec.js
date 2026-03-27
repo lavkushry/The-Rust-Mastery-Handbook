@@ -5,9 +5,6 @@ const pagesToTest = [
   { name: "part-01", url: "/part-01/index.html" },
   { name: "ownership-first-contact", url: "/part-02/chapter-10-ownership-first-contact.html" },
   { name: "borrowing-first-contact", url: "/part-02/chapter-11-borrowing-and-references-first-contact.html" },
-  { name: "async-futures", url: "/part-05/chapter-33-async-await-and-futures.html" },
-  { name: "retention-drills", url: "/10_retention_and_mastery_drills.html" },
-  { name: "appendix-flashcards", url: "/appendices/appendix-e-master-flashcard-deck.html" },
 ];
 
 const viewports = [

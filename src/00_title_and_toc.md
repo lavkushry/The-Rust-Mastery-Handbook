@@ -188,4 +188,49 @@ The goal is synthesis, not paraphrase. The official docs define what Rust is. Th
 
 ---
 
+## How the Parts Connect
+
+<div style="background:var(--sidebar-bg,#faf8f5);border:1px solid var(--table-border-color,#ddd);border-radius:10px;padding:20px;margin:1.5rem 0;font-size:13px;font-family:var(--font-display,monospace)">
+
+<pre style="margin:0;background:none;padding:0;font-size:12px;line-height:1.8;white-space:pre-wrap">
+PART 1: Why Rust Exists
+  (the motivation — read once, reference often)
+     │
+     ▼
+PART 2: Core Foundations     ←──── START HERE
+  (syntax, types, first ownership contact)
+     │
+     ▼
+PART 3: The Heart ★          ←──── MOST IMPORTANT
+  (ownership, borrowing, lifetimes — deeply)
+     │
+     ├──────────────────────┐
+     ▼                      ▼
+PART 4: Idiomatic Rust   PART 5: Concurrency
+  (write good Rust)        (fearless threads + async)
+     │                      │
+     ▼                      ▼
+PART 6: Advanced Systems   PART 7: API Design
+  (unsafe, FFI, memory)    (traits, macros, typestate)
+     │
+     ▼
+PART 8: Contributing        ←──── Bridge to doing
+  (enter real repos, make PRs)
+     │
+     ▼
+PART 9: Deeper Understanding
+  (compiler, RFCs, language design)
+     │
+     ▼
+PART 10: Mastery Plan
+  (3-6-12 month roadmap)
+</pre>
+
+> **Rule:** Do not skip Part 3. Parts 4–7 assume you understand Part 3 deeply.
+> Parts 2 and 3 together are the foundation. Everything else builds on them.
+
+</div>
+
+---
+
 *Let's begin.*

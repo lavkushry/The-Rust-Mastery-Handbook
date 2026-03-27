@@ -822,6 +822,330 @@ html.ayu .visual-table td {
   border-top: 1px solid rgba(2, 62, 138, 0.14);
 }
 
+/* ─── Interactive Flashcard Flip ──────────────────────────────────────────── */
+
+.fc-counter {
+  font-size: 0.78rem;
+  color: var(--ink);
+  opacity: 0.45;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.5px;
+}
+
+.flashcard-grid .flashcard {
+  perspective: 1200px;
+  cursor: pointer;
+  outline: none;
+  min-height: 160px;
+}
+
+.flashcard-grid .flashcard:focus-visible .flashcard__inner {
+  box-shadow: 0 0 0 3px var(--chapter-accent, var(--compiler));
+}
+
+.flashcard__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.flashcard-grid .flashcard.flipped .flashcard__inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-grid .flashcard .flashcard__front,
+.flashcard-grid .flashcard .flashcard__back {
+  position: absolute;
+  width: 100%;
+  min-height: 160px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.flashcard-grid .flashcard .flashcard__back {
+  transform: rotateY(180deg);
+}
+
+.flashcard-grid .flashcard .flashcard__front::after {
+  content: "tap to flip →";
+  display: block;
+  font-size: 0.68rem;
+  font-family: var(--font-display);
+  opacity: 0.35;
+  margin-top: 0.5rem;
+  text-align: right;
+}
+
+.flashcard-grid .flashcard.seen .flashcard__front::before {
+  content: "✓";
+  position: absolute;
+  top: 0.6rem;
+  right: 0.75rem;
+  font-size: 0.72rem;
+  opacity: 0.45;
+  color: var(--valid);
+}
+
+/* ─── Chapter Snapshot Card ───────────────────────────────────────────────── */
+
+.chapter-snapshot {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+  background: var(--paper-strong, #fff6eb);
+  border: 1px solid var(--card-border);
+  border-top: 4px solid var(--chapter-accent, var(--compiler));
+  border-radius: 0 0 0.75rem 0.75rem;
+  padding: 1rem 1.15rem;
+  margin: 0 0 2rem;
+  font-size: 0.85rem;
+}
+
+.snapshot-cell h4 {
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.55;
+  font-family: var(--font-display);
+  margin: 0 0 0.4rem;
+  font-weight: 600;
+}
+
+.snapshot-cell ul {
+  margin: 0;
+  padding-left: 1rem;
+  line-height: 1.7;
+}
+
+.snapshot-cell ul li {
+  font-size: 0.82rem !important;
+  margin-bottom: 0.2rem !important;
+}
+
+.snapshot-time {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--chapter-accent, var(--compiler));
+  line-height: 1;
+  margin-bottom: 0.15rem;
+  font-family: var(--font-display);
+}
+
+.snapshot-time-unit {
+  font-size: 0.72rem;
+  opacity: 0.5;
+}
+
+.snapshot-prereq a {
+  color: var(--chapter-accent, var(--compiler));
+  font-size: 0.78rem;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+body.navy .chapter-snapshot,
+body.coal .chapter-snapshot,
+body.ayu .chapter-snapshot {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ─── Cross-Chapter Link Callouts ─────────────────────────────────────────── */
+
+.concept-link {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  margin: 1.2rem 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.concept-link-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.concept-link-body strong {
+  display: block;
+  font-size: 0.68rem;
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.concept-link-body a {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.builds-on {
+  background: color-mix(in srgb, var(--borrow-shared) 8%, white 92%);
+  border-left: 3px solid var(--borrow-shared);
+}
+
+.builds-on .concept-link-body strong {
+  color: var(--borrow-shared);
+}
+
+.needed-for {
+  background: color-mix(in srgb, var(--ownership) 8%, white 92%);
+  border-left: 3px solid var(--ownership);
+}
+
+.needed-for .concept-link-body strong {
+  color: var(--ownership);
+}
+
+body.navy .builds-on,
+body.coal .builds-on,
+body.ayu .builds-on {
+  background: rgba(69, 123, 157, 0.12);
+}
+
+body.navy .needed-for,
+body.coal .needed-for,
+body.ayu .needed-for {
+  background: rgba(230, 57, 70, 0.12);
+}
+
+/* ─── Error Decoder Cards ─────────────────────────────────────────────────── */
+
+.error-card {
+  background: var(--paper-strong, #fff6eb);
+  border: 1px solid var(--error);
+  border-left: 6px solid var(--error);
+  border-radius: 0 0.75rem 0.75rem 0;
+  padding: 1rem 1.15rem;
+  margin: 1.5rem 0;
+}
+
+.error-code {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--error);
+  font-family: var(--font-display);
+  line-height: 1;
+  margin-bottom: 0.15rem;
+}
+
+.error-name {
+  font-size: 0.85rem;
+  opacity: 0.6;
+  font-style: italic;
+  margin-bottom: 0.75rem;
+}
+
+.error-invariant {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  margin-bottom: 0.75rem;
+}
+
+.error-fix {
+  background: color-mix(in srgb, var(--valid) 10%, white 90%);
+  border: 1px solid var(--valid);
+  border-radius: 0.4rem;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.error-fix::before {
+  content: "✓ Fix: ";
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--valid);
+}
+
+body.navy .error-card,
+body.coal .error-card,
+body.ayu .error-card {
+  background: rgba(214, 40, 40, 0.08);
+  border-color: rgba(214, 40, 40, 0.5);
+}
+
+body.navy .error-fix,
+body.coal .error-fix,
+body.ayu .error-fix {
+  background: rgba(82, 183, 136, 0.1);
+  border-color: rgba(82, 183, 136, 0.4);
+  color: #d9fbe9;
+}
+
+/* ─── Progress Tracker ────────────────────────────────────────────────────── */
+
+.progress-cta {
+  margin: 3rem 0 1rem;
+  padding: 1rem;
+  background: var(--paper-strong, #fff6eb);
+  border-radius: 0.75rem;
+  border: 1px solid var(--card-border);
+  text-align: center;
+}
+
+body.navy .progress-cta,
+body.coal .progress-cta,
+body.ayu .progress-cta {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.progress-btn {
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: var(--valid);
+  color: #fff;
+  border: none;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: opacity 0.15s ease;
+}
+
+.progress-btn:hover {
+  opacity: 0.88;
+}
+
+.progress-done {
+  color: var(--valid);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.progress-unmark {
+  margin-left: 1rem;
+  font-size: 0.75rem;
+  opacity: 0.5;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+.sidebar-check {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  color: var(--valid);
+}
+
 @media (max-width: 960px) {
   .chapter-hero__grid,
   .part-spread__grid,
@@ -831,7 +1155,8 @@ html.ayu .visual-table td {
   .concept-card-row,
   .caption-grid,
   .flashcard-grid,
-  .memory-hook-panel {
+  .memory-hook-panel,
+  .chapter-snapshot {
     grid-template-columns: 1fr;
   }
 

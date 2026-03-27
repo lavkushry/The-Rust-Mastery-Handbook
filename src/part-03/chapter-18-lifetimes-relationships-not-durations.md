@@ -1,4 +1,43 @@
 # Chapter 18: Lifetimes, Relationships Not Durations
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-02/chapter-11-borrowing-and-references-first-contact.html">Ch 11: Borrowing</a>
+      <a href="../part-03/chapter-17-borrowing-constrained-access.html">Ch 17: Borrow Rules</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>Lifetimes as relationship contracts, not durations</li>
+      <li>The three elision rules and when to annotate</li>
+      <li>Why <code>'static</code> does not mean "lives forever"</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">45<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div>
+  </div>
+</div>
+<div class="concept-link builds-on">
+  <div class="concept-link-icon">←</div>
+  <div class="concept-link-body">
+    <strong>Builds on Chapter 11</strong>
+    A lifetime annotation makes explicit what the compiler already checks: every reference must be valid for as long as it is used.
+    <a href="../part-02/chapter-11-borrowing-and-references-first-contact.html">Revisit Ch 11 →</a>
+  </div>
+</div>
+<div class="concept-link needed-for">
+  <div class="concept-link-icon">→</div>
+  <div class="concept-link-body">
+    <strong>You'll need this for Chapter 39</strong>
+    Ch 39 explores advanced lifetime patterns: higher-ranked trait bounds, lifetime variance, and subtyping — all built on the model you learn here.
+    <a href="../part-06/chapter-39-lifetimes-in-depth.html">Ch 39: Lifetimes in Depth →</a>
+  </div>
+</div>
+
 <figure class="visual-figure" style="--chapter-accent: var(--lifetime);">
   <div class="visual-figure__header">
     <div>

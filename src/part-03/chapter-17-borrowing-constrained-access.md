@@ -1,4 +1,43 @@
 # Chapter 17: Borrowing, Constrained Access
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a>
+      <a href="../part-02/chapter-11-borrowing-and-references-first-contact.html">Ch 11: Borrowing Intro</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>Aliasing XOR mutation as a formal invariant</li>
+      <li>Why iterator invalidation is impossible in Rust</li>
+      <li>How NLL changed Rust 2018 borrow scoping</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">40<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div>
+  </div>
+</div>
+<div class="concept-link builds-on">
+  <div class="concept-link-icon">←</div>
+  <div class="concept-link-body">
+    <strong>Builds on Chapters 10 and 11</strong>
+    This chapter formalizes what Ch 10 introduced informally. The aliasing-XOR-mutation rule is the reason Ch 10's "one owner" works: shared mutation would mean two owners.
+    <a href="../part-02/chapter-10-ownership-first-contact.html">Revisit Ch 10 →</a>
+  </div>
+</div>
+<div class="concept-link needed-for">
+  <div class="concept-link-icon">→</div>
+  <div class="concept-link-body">
+    <strong>You'll need this for Chapters 21 and 32</strong>
+    The borrow checker (Ch 21) enforces these rules at MIR level. Send/Sync (Ch 32) extend aliasing-XOR-mutation to thread boundaries.
+    <a href="../part-03/chapter-21-the-borrow-checker-how-the-compiler-thinks.html">Ch 21: Borrow Checker →</a>
+  </div>
+</div>
+
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--borrow-shared);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Aliasing Problem</div><h2 class="visual-figure__title">Two Readers Is Stable, Reader Plus Writer Is Not</h2></div></div>

@@ -1,4 +1,27 @@
 # Chapter 21: The Borrow Checker, How the Compiler Thinks
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-03/chapter-16-ownership-as-resource-management.html">Ch 16: Ownership as RAII</a>
+      <a href="../part-03/chapter-17-borrowing-constrained-access.html">Ch 17: Borrowing Rules</a>
+      <a href="../part-03/chapter-18-lifetimes-relationships-not-durations.html">Ch 18: Lifetimes</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>Where borrow checking runs in the compiler pipeline</li>
+      <li>How to simulate borrow errors mentally</li>
+      <li>What E0382, E0502, and E0505 really mean</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">45<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div>
+  </div>
+</div>
 
 <figure class="visual-figure" style="--chapter-accent: var(--compiler);">
   <div class="visual-figure__header">
@@ -107,6 +130,45 @@
       </svg>
     </div>
   </figure>
+</div>
+<div class="error-card">
+  <div class="error-code">E0382</div>
+  <div class="error-name">use of moved value</div>
+  <div class="error-invariant">
+    You attempted to use a binding after its ownership was transferred. The compiler
+    statically tracks every move and invalidates the original binding at that point.
+    The moved-from name still exists in the source text but has no authority.
+  </div>
+  <div class="error-fix">
+    Borrow instead of moving: <code>&amp;s1</code>. Or restructure so you use <code>s1</code> before the move.
+    Or call <code>.clone()</code> if you genuinely need two independent copies.
+  </div>
+</div>
+<div class="error-card">
+  <div class="error-code">E0502</div>
+  <div class="error-name">cannot borrow as mutable because it is also borrowed as immutable</div>
+  <div class="error-invariant">
+    A shared reference (<code>&amp;T</code>) is alive while you try to take an exclusive reference (<code>&amp;mut T</code>).
+    Aliasing XOR mutation: the compiler refuses to let both exist simultaneously because
+    the mutable borrow could invalidate what the shared reference sees.
+  </div>
+  <div class="error-fix">
+    Shorten the shared borrow's lifetime — move its last use before the mutable borrow.
+    NLL (Non-Lexical Lifetimes) makes this easier: a reference dies at its last use, not at scope end.
+  </div>
+</div>
+<div class="error-card">
+  <div class="error-code">E0505</div>
+  <div class="error-name">cannot move out of value because it is borrowed</div>
+  <div class="error-invariant">
+    A reference still points into a value you are trying to move (transfer ownership).
+    Moving would invalidate the reference, creating a dangling pointer — exactly what
+    Rust's borrow checker exists to prevent.
+  </div>
+  <div class="error-fix">
+    Ensure no references are alive at the point of the move. Restructure the code so
+    borrows end before ownership transfer, or use <code>.clone()</code> to make the reference independent.
+  </div>
 </div>
 
 ## Step 1 - The Problem

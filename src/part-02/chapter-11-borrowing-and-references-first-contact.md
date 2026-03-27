@@ -1,4 +1,34 @@
 # Chapter 11: Borrowing and References, First Contact
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li><code>&amp;T</code> vs <code>&amp;mut T</code> — shared vs exclusive</li>
+      <li>Why references cannot outlive their owner</li>
+      <li>How NLL shortened borrow lifetimes</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">25<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 15 min exercises</div>
+  </div>
+</div>
+<div class="concept-link builds-on">
+  <div class="concept-link-icon">←</div>
+  <div class="concept-link-body">
+    <strong>Builds on Chapter 10</strong>
+    Borrowing exists because of ownership — a reference borrows the owner's data without taking ownership.
+    <a href="../part-02/chapter-10-ownership-first-contact.html">Revisit Ch 10 →</a>
+  </div>
+</div>
+
 <figure class="visual-figure" style="--chapter-accent: var(--borrow-shared);">
   <div class="visual-figure__header">
     <div>

@@ -1,4 +1,43 @@
 # Chapter 33: Async/Await and Futures
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-05/chapter-31-threads-and-message-passing.html">Ch 31: Threads</a>
+      <a href="../part-04/chapter-25-traits-rusts-core-abstraction.html">Ch 25: Traits</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>How <code>async fn</code> compiles to a state machine</li>
+      <li>The Future trait and polling model</li>
+      <li><code>join!</code> vs <code>tokio::spawn</code> for concurrency</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">45<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div>
+  </div>
+</div>
+<div class="concept-link builds-on">
+  <div class="concept-link-icon">←</div>
+  <div class="concept-link-body">
+    <strong>Builds on Chapter 31</strong>
+    Async solves the same concurrency problem as threads but with cooperative scheduling instead of OS preemption. The ownership model (Send + 'static) applies identically.
+    <a href="../part-05/chapter-31-threads-and-message-passing.html">Revisit Ch 31 →</a>
+  </div>
+</div>
+<div class="concept-link needed-for">
+  <div class="concept-link-icon">→</div>
+  <div class="concept-link-body">
+    <strong>You'll need this for Chapter 35</strong>
+    Pin exists because async state machines must not be moved in memory while references span await points. Ch 35 explains why.
+    <a href="../part-05/chapter-35-pin-and-why-async-is-hard.html">Ch 35: Pin →</a>
+  </div>
+</div>
+
 <figure class="visual-figure" style="--chapter-accent: var(--async);">
   <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">State Machine</div><h2 class="visual-figure__title">An `async fn` Becomes a Pollable Future</h2></div></div>
   <div class="visual-figure__body">

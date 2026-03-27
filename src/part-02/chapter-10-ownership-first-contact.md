@@ -1,4 +1,34 @@
 # Chapter 10: Ownership, First Contact
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-02/chapter-06-variables-mutability-and-shadowing.html">Ch 6: Variables &amp; Mutability</a>
+      <a href="../part-02/chapter-07-types-scalars-compounds-and-the-unit-type.html">Ch 7: Types</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>The three ownership rules</li>
+      <li>Why assignment moves, not copies</li>
+      <li>How scope triggers <code>drop</code></li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">30<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min exercises</div>
+  </div>
+</div>
+<div class="concept-link needed-for">
+  <div class="concept-link-icon">→</div>
+  <div class="concept-link-body">
+    <strong>You'll need this for Chapters 11, 16, and 17</strong>
+    Ownership is the foundation of borrowing. Ch 11 introduces references as borrowed access, Ch 16 formalizes ownership as RAII, and Ch 17 gives the aliasing-XOR-mutation rule.
+    <a href="../part-02/chapter-11-borrowing-and-references-first-contact.html">Ch 11: Borrowing →</a>
+  </div>
+</div>
 
 <figure class="visual-figure" style="--chapter-accent: var(--ownership);">
   <div class="visual-figure__header">

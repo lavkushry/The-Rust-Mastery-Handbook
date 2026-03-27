@@ -1,4 +1,35 @@
 # Chapter 25: Traits, Rust's Core Abstraction
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-02/chapter-12-structs.html">Ch 12: Structs</a>
+      <a href="../part-02/chapter-13-enums-and-pattern-matching.html">Ch 13: Enums</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>Traits as named capabilities, not interfaces</li>
+      <li>Static dispatch via monomorphization</li>
+      <li>When to use <code>impl Trait</code> vs <code>dyn Trait</code></li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">35<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min exercises</div>
+  </div>
+</div>
+<div class="concept-link needed-for">
+  <div class="concept-link-icon">→</div>
+  <div class="concept-link-body">
+    <strong>You'll need this for Chapter 42</strong>
+    Advanced traits (trait objects, GATs, supertraits) build directly on the capability model you learn here.
+    <a href="../part-07/chapter-42-advanced-traits-trait-objects-and-gats.html">Ch 42: Advanced Traits →</a>
+  </div>
+</div>
+
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--trait);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Capability Map</div><h2 class="visual-figure__title">Traits as Named Capabilities</h2></div></div>

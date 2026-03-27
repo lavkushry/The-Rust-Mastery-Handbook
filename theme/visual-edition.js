@@ -434,6 +434,150 @@
     });
   }
 
+  function initFlashcardFlip(main) {
+    main.querySelectorAll('.flashcard-grid').forEach(deck => {
+      const cards = deck.querySelectorAll('.flashcard');
+      if (cards.length === 0) return;
+      let reviewedCount = 0;
+
+      // Add counter
+      const counter = document.createElement('div');
+      counter.className = 'fc-counter';
+      counter.textContent = `0 / ${cards.length} reviewed`;
+      deck.insertBefore(counter, deck.firstChild);
+
+      cards.forEach((card, i) => {
+        // Wrap existing front/back in an inner container for 3D flip
+        const front = card.querySelector('.flashcard__front');
+        const back = card.querySelector('.flashcard__back');
+        if (!front || !back) return;
+
+        // Only wrap if not already wrapped
+        if (!card.querySelector('.flashcard__inner')) {
+          const inner = document.createElement('div');
+          inner.className = 'flashcard__inner';
+          inner.appendChild(front);
+          inner.appendChild(back);
+          card.appendChild(inner);
+        }
+
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', 'Flashcard — press Enter to flip');
+
+        const flip = () => {
+          const wasFlipped = card.classList.contains('flipped');
+          card.classList.toggle('flipped');
+          if (!wasFlipped && !card.classList.contains('seen')) {
+            reviewedCount++;
+            counter.textContent = `${reviewedCount} / ${cards.length} reviewed`;
+            card.classList.add('seen');
+            try {
+              const key = `fc_${window.location.pathname}_${i}`;
+              localStorage.setItem(key, '1');
+            } catch (e) { /* localStorage unavailable */ }
+          }
+        };
+
+        card.addEventListener('click', flip);
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
+          if (e.key === 'ArrowRight' && cards[i + 1]) cards[i + 1].focus();
+          if (e.key === 'ArrowLeft' && cards[i - 1]) cards[i - 1].focus();
+        });
+
+        // Restore seen state
+        try {
+          if (localStorage.getItem(`fc_${window.location.pathname}_${i}`)) {
+            card.classList.add('seen');
+            reviewedCount++;
+          }
+        } catch (e) { /* localStorage unavailable */ }
+      });
+
+      counter.textContent = `${reviewedCount} / ${cards.length} reviewed`;
+    });
+  }
+
+  function initProgressTracker(main) {
+    const STORAGE_KEY = 'rmh_progress';
+    const chapterPath = window.location.pathname;
+
+    function getProgress() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+      catch { return {}; }
+    }
+
+    function setProgress(p) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); }
+      catch { /* localStorage unavailable */ }
+    }
+
+    // Only show on chapter pages, not index pages
+    const h1 = main.querySelector('h1');
+    if (!h1 || /^PART\s+\d+/i.test(h1.textContent)) return;
+
+    const progress = getProgress();
+    const isDone = progress[chapterPath];
+
+    const cta = document.createElement('div');
+    cta.className = 'progress-cta';
+
+    if (isDone) {
+      const span = document.createElement('span');
+      span.className = 'progress-done';
+      span.textContent = '✓ Chapter complete — well done!';
+      cta.appendChild(span);
+
+      const unBtn = document.createElement('button');
+      unBtn.className = 'progress-unmark';
+      unBtn.textContent = 'unmark';
+      unBtn.addEventListener('click', () => {
+        const p = getProgress();
+        delete p[chapterPath];
+        setProgress(p);
+        location.reload();
+      });
+      cta.appendChild(unBtn);
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'progress-btn';
+      btn.textContent = 'Mark chapter complete ✓';
+      btn.addEventListener('click', () => {
+        const p = getProgress();
+        p[chapterPath] = true;
+        setProgress(p);
+        location.reload();
+      });
+      cta.appendChild(btn);
+
+      const hint = document.createElement('div');
+      hint.style.cssText = 'font-size:0.75rem;opacity:0.4;margin-top:0.5rem;';
+      hint.textContent = 'Saves your progress in this browser';
+      cta.appendChild(hint);
+    }
+
+    main.appendChild(cta);
+
+    // Inject checkmarks into sidebar
+    setTimeout(() => {
+      const prog = getProgress();
+      document.querySelectorAll('#sidebar .sidebar-scrollbox a[href]').forEach(link => {
+        try {
+          const href = new URL(link.href, window.location.href).pathname;
+          if (prog[href]) {
+            link.style.position = 'relative';
+            link.style.paddingRight = '1.25rem';
+            const dot = document.createElement('span');
+            dot.className = 'sidebar-check';
+            dot.textContent = '✓';
+            link.appendChild(dot);
+          }
+        } catch { /* ignore bad URLs */ }
+      });
+    }, 150);
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     const main = document.querySelector("#mdbook-content main");
     if (!main) {
@@ -454,5 +598,7 @@
     enhanceCheatSheets(main);
     styleTables(main);
     createHero(main, title, concept.color, concept.key);
+    initFlashcardFlip(main);
+    initProgressTracker(main);
   });
 })();

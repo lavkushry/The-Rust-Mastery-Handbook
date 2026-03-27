@@ -191,4 +191,18 @@ test("visual-edition.js - styleTables", () => {
 
   const table = doc.querySelector("table");
   assert.ok(table.classList.contains("visual-table"));
+
+  // Table should be wrapped in a scrollable container
+  const wrapper = table.parentElement;
+  assert.ok(wrapper.classList.contains("visual-table-wrapper"), "Table should be wrapped in .visual-table-wrapper");
+});
+
+test("visual-edition.js - styleTables - idempotent wrapping", () => {
+  // Verify that running styleTables twice does not double-wrap the table
+  const doc = renderWithVisualEdition(`
+    <table><tbody><tr><td>Standard Table</td></tr></tbody></table>
+  `);
+
+  const wrappers = doc.querySelectorAll(".visual-table-wrapper");
+  assert.strictEqual(wrappers.length, 1, "Table should be wrapped exactly once");
 });

@@ -1,4 +1,10 @@
 # Chapter 37: Unsafe Rust, Power and Responsibility
+<div class="chapter-snapshot">
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-17-borrowing-constrained-access.html">Ch 17: Borrow Rules</a><a href="../part-03/chapter-19-stack-vs-heap-where-data-lives.html">Ch 19: Stack/Heap</a></div></div>
+  <div class="snapshot-cell"><h4>You will understand</h4><ul><li>The 5 unsafe superpowers and nothing more</li><li>Safe abstraction over unsafe implementation</li><li>Sound wrappers: prove preconditions, expose safe API</li></ul></div>
+  <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">40<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min exercises</div></div>
+</div>
+
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--unsafe);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Superpowers</div><h2 class="visual-figure__title">The Five Unsafe Capabilities</h2></div></div>

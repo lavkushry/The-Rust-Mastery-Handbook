@@ -1,4 +1,10 @@
 # Chapter 22: Collections, `Vec`, `String`, and `HashMap`
+<div class="chapter-snapshot">
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a><a href="../part-02/chapter-11-borrowing-and-references-first-contact.html">Ch 11: Borrowing</a></div></div>
+  <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>String</code> vs <code>&amp;str</code> — ownership vs borrowing text</li><li>The Entry API for idiomatic HashMap use</li><li>Three ownership modes of iteration</li></ul></div>
+  <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">40<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div></div>
+</div>
+
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--stack);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Collection Roles</div><h2 class="visual-figure__title">Choose by Ownership and Access Pattern</h2></div></div>

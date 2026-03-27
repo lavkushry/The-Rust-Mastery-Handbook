@@ -1,4 +1,12 @@
 # Chapter 30: Smart Pointers and Interior Mutability
+<div class="chapter-snapshot">
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.html">Ch 20: Move/Copy/Clone</a><a href="../part-03/chapter-17-borrowing-constrained-access.html">Ch 17: Borrow Rules</a></div></div>
+  <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>Box</code>, <code>Rc</code>, <code>Arc</code> — different ownership counts</li><li>Interior mutability: rule relocation, not removal</li><li>Why <code>Rc&lt;RefCell&lt;T&gt;&gt;</code> is sometimes a code smell</li></ul></div>
+  <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">45<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div></div>
+</div>
+<div class="concept-link builds-on"><div class="concept-link-icon">←</div><div class="concept-link-body"><strong>Builds on Chapter 20</strong>Move/Copy/Clone defined the transfer events. Smart pointers are the engineered alternatives: <code>Box</code> for heap, <code>Rc</code>/<code>Arc</code> for shared ownership, <code>RefCell</code>/<code>Mutex</code> for interior mutability.<a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.html">Revisit Ch 20 →</a></div></div>
+<div class="concept-link needed-for"><div class="concept-link-icon">→</div><div class="concept-link-body"><strong>You'll need this for Chapter 32</strong><code>Arc&lt;Mutex&lt;T&gt;&gt;</code> is the standard pattern for shared mutable state across threads. Ch 32 shows when to use it vs message passing.<a href="../part-05/chapter-32-shared-state-arc-mutex-and-send-sync.html">Ch 32: Shared State →</a></div></div>
+
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--ownership);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Ownership Shapes</div><h2 class="visual-figure__title">Different Pointers Encode Different Meanings</h2></div></div>

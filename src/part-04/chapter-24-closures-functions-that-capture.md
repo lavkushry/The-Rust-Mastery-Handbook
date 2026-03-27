@@ -1,4 +1,5 @@
 # Chapter 24: Closures, Functions That Capture
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a><a href="../part-04/chapter-25-traits-rusts-core-abstraction.html">Ch 25: Traits</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Closures as code + captured environment</li><li><code>Fn</code>, <code>FnMut</code>, <code>FnOnce</code> — the callable trait family</li><li>Why <code>move</code> is needed at thread/async boundaries</li></ul></div>
@@ -15,6 +16,26 @@
     <div class="visual-figure__body"><svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Three callable trait cards showing shared borrow, mutable borrow, and consuming move"><rect x="24" y="24" width="492" height="372" rx="24" fill="#101827" stroke="rgba(255,255,255,0.08)"></rect><rect x="42" y="118" width="136" height="170" rx="18" fill="#172554" stroke="#3a86ff" stroke-width="3"></rect><text x="94" y="152" class="svg-small" style="fill:#dbeafe;">Fn</text><text x="70" y="186" class="svg-small" style="fill:#dbeafe;">reads captured data</text><text x="72" y="212" class="svg-small" style="fill:#dbeafe;">call many times</text><rect x="202" y="118" width="136" height="170" rx="18" fill="#3a2a14" stroke="#f4a261" stroke-width="3"></rect><text x="244" y="152" class="svg-small" style="fill:#ffe0bf;">FnMut</text><text x="220" y="186" class="svg-small" style="fill:#ffe0bf;">mutates capture</text><text x="230" y="212" class="svg-small" style="fill:#ffe0bf;">needs &amp;mut self</text><rect x="362" y="118" width="136" height="170" rx="18" fill="#3a1c17" stroke="#e63946" stroke-width="3"></rect><text x="402" y="152" class="svg-small" style="fill:#ffd8cc;">FnOnce</text><text x="382" y="186" class="svg-small" style="fill:#ffd8cc;">consumes capture</text><text x="392" y="212" class="svg-small" style="fill:#ffd8cc;">one safe call</text></svg></div>
   </figure>
 </div>
+
+## Readiness Check - Closure Capture and Trait Bounds
+
+| Skill                     | Level 0                               | Level 1                             | Level 2                                                     | Level 3                                                                    |
+| ------------------------- | ------------------------------------- | ----------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Identify capture behavior | I treat closures as syntax sugar only | I can tell when values are captured | I can explain borrow vs mutable borrow vs move capture      | I can design closure-heavy APIs with intentional capture strategy          |
+| Select callable bounds    | I guess between `Fn`/`FnMut`/`FnOnce` | I know the rough differences        | I can map call-site requirements to the right bound         | I can evolve abstractions without over-constraining callables              |
+| Use `move` at boundaries  | I add/remove `move` randomly          | I know `move` captures by value     | I can reason about thread/task boundary ownership correctly | I can avoid both unnecessary clones and invalid borrows in concurrent code |
+
+Target Level 2+ before advanced async callback orchestration.
+
+## Compiler Error Decoder - Closures and Capture
+
+| Error code | What it usually means                                                        | Typical fix direction                                                       |
+| ---------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| E0373      | Closure may outlive current scope while borrowing local data                 | Use `move` and own captured values for `'static` boundary requirements      |
+| E0525      | Closure trait mismatch (expected `Fn`/`FnMut`, got more restrictive closure) | Reduce consumption/mutation, or relax API bound to required trait           |
+| E0382      | Captured value moved and then used later                                     | Clone before move boundary or redesign ownership so post-use is unnecessary |
+
+When closures fail to type-check, inspect capture mode first, then callable trait bound, then lifetime boundary.
 
 ## Step 1 - The Problem
 
@@ -86,7 +107,6 @@ This closure moves `name` out when called, so it is only `FnOnce`.
 
 ## Step 6 - Three-Level Explanation
 
-
 <div class="level-tabs">
 <div class="level-panel" data-level="Beginner">
 
@@ -110,7 +130,6 @@ A closure is a compiler-generated struct plus one or more trait impls from the `
 
 </div>
 </div>
-
 
 ## `move` Closures
 
@@ -250,25 +269,25 @@ A closure is a backpacked function. What is in the backpack, and whether it gets
 
 ## Flashcard Deck
 
-| Question | Answer |
-|---|---|
-| What extra thing does a closure have that a plain function usually does not? | Captured environment. |
-| What does `Fn` mean? | The closure can be called repeatedly without mutating or consuming captures. |
-| What does `FnMut` mean? | The closure may mutate captured state between calls. |
-| What does `FnOnce` mean? | The closure may consume captured state and therefore can only be called once safely. |
-| What does `move` do? | Captures values by value rather than by borrow. |
-| Why is `move` common in thread or task APIs? | The closure must own its captured data across the execution boundary. |
-| Can a closure implement more than one `Fn*` trait? | Yes. A non-consuming closure can implement `Fn`, `FnMut`, and `FnOnce` hierarchically. |
-| When might you return `Box<dyn Fn(...)>`? | When you need runtime-erased callable values with a uniform interface. |
+| Question                                                                     | Answer                                                                                 |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| What extra thing does a closure have that a plain function usually does not? | Captured environment.                                                                  |
+| What does `Fn` mean?                                                         | The closure can be called repeatedly without mutating or consuming captures.           |
+| What does `FnMut` mean?                                                      | The closure may mutate captured state between calls.                                   |
+| What does `FnOnce` mean?                                                     | The closure may consume captured state and therefore can only be called once safely.   |
+| What does `move` do?                                                         | Captures values by value rather than by borrow.                                        |
+| Why is `move` common in thread or task APIs?                                 | The closure must own its captured data across the execution boundary.                  |
+| Can a closure implement more than one `Fn*` trait?                           | Yes. A non-consuming closure can implement `Fn`, `FnMut`, and `FnOnce` hierarchically. |
+| When might you return `Box<dyn Fn(...)>`?                                    | When you need runtime-erased callable values with a uniform interface.                 |
 
 ## Chapter Cheat Sheet
 
-| Need | Bound or tool | Why |
-|---|---|---|
-| Reusable read-only callback | `Fn` | no mutation or consumption |
-| Stateful callback | `FnMut` | mutable captured state |
-| One-shot consuming callback | `FnOnce` | captured ownership is consumed |
-| Spawn thread/task with captures | `move` closure | own the environment |
-| Hide closure concrete type | `impl Fn` or `Box<dyn Fn>` | opaque or dynamic callable |
+| Need                            | Bound or tool              | Why                            |
+| ------------------------------- | -------------------------- | ------------------------------ |
+| Reusable read-only callback     | `Fn`                       | no mutation or consumption     |
+| Stateful callback               | `FnMut`                    | mutable captured state         |
+| One-shot consuming callback     | `FnOnce`                   | captured ownership is consumed |
+| Spawn thread/task with captures | `move` closure             | own the environment            |
+| Hide closure concrete type      | `impl Fn` or `Box<dyn Fn>` | opaque or dynamic callable     |
 
 ---

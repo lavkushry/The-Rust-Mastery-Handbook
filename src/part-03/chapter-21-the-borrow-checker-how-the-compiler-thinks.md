@@ -1,4 +1,5 @@
 # Chapter 21: The Borrow Checker, How the Compiler Thinks
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -171,7 +172,6 @@
   </div>
 </div>
 
-
 <div class="annotated-code" style="--chapter-accent: var(--lifetime);">
 
 ```rust
@@ -196,5 +196,25 @@ println!("{r}");             // borrow extends to here
   </div>
 </div>
 </div>
+
+## Readiness Check - Borrow Checker Mental Simulation
+
+| Skill                        | Level 0                    | Level 1                             | Level 2                                        | Level 3                                                      |
+| ---------------------------- | -------------------------- | ----------------------------------- | ---------------------------------------------- | ------------------------------------------------------------ |
+| Trace ownership and borrows  | I only react to error text | I can identify owner and references | I can mark borrow start and last-use points    | I can predict likely errors before compiling                 |
+| Decode compiler diagnostics  | I copy fixes blindly       | I can interpret one common error    | I can map multiple errors to one root conflict | I can choose minimal structural fixes confidently            |
+| Restructure conflicting code | I use random clones/moves  | I can fix simple overlap conflicts  | I can refactor borrow scopes intentionally     | I can design APIs that avoid borrow friction by construction |
+
+Target Level 2+ before advancing into larger async/concurrency ownership scenarios.
+
+## Compiler Error Decoder - Borrow Checker Core
+
+| Error code | What it usually means                       | Typical fix direction                                                      |
+| ---------- | ------------------------------------------- | -------------------------------------------------------------------------- |
+| E0502      | Shared and mutable borrow overlap           | End shared borrow earlier or split scope before mutable operation          |
+| E0505      | Move attempted while borrowed               | Reorder to end borrow first, or clone if independent ownership is required |
+| E0515      | Returning reference to local/temporary data | Return owned value or borrow from caller-provided input                    |
+
+Use one worksheet for every failure: owner, borrow region, conflicting operation, smallest safe rewrite.
 
 ## Step 1 - The Problem

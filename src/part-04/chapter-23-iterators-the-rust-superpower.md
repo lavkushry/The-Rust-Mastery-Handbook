@@ -67,4 +67,24 @@
   </div>
 </figure>
 
+## Readiness Check - Iterator Pipeline Reasoning
+
+| Skill                             | Level 0                                 | Level 1                                    | Level 2                                                | Level 3                                                       |
+| --------------------------------- | --------------------------------------- | ------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------- |
+| Understand laziness               | I assume each adapter runs immediately  | I know consumers trigger execution         | I can explain when and why work is deferred            | I can predict runtime behavior of complex chains confidently  |
+| Track ownership through iteration | I confuse `iter`/`iter_mut`/`into_iter` | I can name borrow vs move differences      | I can select iteration mode intentionally per use case | I can refactor loops and chains without ownership regressions |
+| Diagnose type flow in chains      | I patch until compile passes            | I can read one adapter signature at a time | I can locate exact type mismatch stage in a long chain | I can design reusable iterator-based APIs with clean bounds   |
+
+Target Level 2+ before trait-heavy iterator implementation work.
+
+## Compiler Error Decoder - Iterator Chains
+
+| Error code | What it usually means                                  | Typical fix direction                                                               |
+| ---------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| E0282      | Type inference is ambiguous (often around `collect`)   | Add target type annotation (`Vec<_>`, `HashMap<_, _>`, etc.) at collection boundary |
+| E0599      | Adapter/consumer not available on current type         | Confirm you are on an iterator (call `iter()`/`into_iter()` when needed)            |
+| E0382      | Value moved unexpectedly by ownership-taking iteration | Borrow with `iter()` or clone intentionally if ownership must be retained           |
+
+Debug chain failures by splitting the pipeline into named intermediate variables and checking each type.
+
 ## Step 1 - The Problem

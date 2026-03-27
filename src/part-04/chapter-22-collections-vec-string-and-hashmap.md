@@ -16,6 +16,26 @@
   </figure>
 </div>
 
+## Readiness Check - Collection Selection and Ownership
+
+| Skill                           | Level 0                               | Level 1                       | Level 2                                                    | Level 3                                                            |
+| ------------------------------- | ------------------------------------- | ----------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ |
+| Choose the right collection     | I default to one structure everywhere | I can name basic tradeoffs    | I can justify choice by ownership, lookup, and order needs | I can redesign data flow to make collection semantics explicit     |
+| Handle text ownership correctly | I mix `String` and `&str` blindly     | I know owned vs borrowed text | I design APIs that accept `&str` and own only when needed  | I optimize hot paths to minimize unnecessary allocation            |
+| Update maps idiomatically       | I branch with repetitive lookups      | I can use `insert` and `get`  | I use `entry` for single-pass update patterns              | I enforce invariants and absence handling cleanly with typed flows |
+
+Target Level 2+ before performance tuning or parser-heavy chapters.
+
+## Compiler Error Decoder - Collections and Strings
+
+| Error code | What it usually means                                                 | Typical fix direction                                                            |
+| ---------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| E0277      | Invalid operation for type (for example indexing `String` by integer) | Use iterator/grapheme logic or byte APIs intentionally; avoid fake char indexing |
+| E0308      | Mismatched types (`String` vs `&str`, wrong map key/value type)       | Align API boundary types and convert at ownership boundaries, not everywhere     |
+| E0599      | Method not found on current collection/view type                      | Verify whether you have owned collection, reference, iterator, or entry handle   |
+
+When debugging: write down collection type, ownership mode, and operation expectation before changing code.
+
 ## Step 1 - The Problem
 
 Real programs spend much of their time moving through collections. That sounds mundane, but collection choice controls:
@@ -326,25 +346,25 @@ A `String` is the full book on your shelf. A `&str` is a bookmark to pages insid
 
 ## Flashcard Deck
 
-| Question | Answer |
-|---|---|
-| What is the core distinction between `String` and `&str`? | `String` owns UTF-8 text; `&str` borrows it. |
-| Why does Rust not allow direct character indexing into `String`? | UTF-8 is variable-width, so byte offsets are not character positions. |
-| What is the difference between vector length and capacity? | Length is initialized elements; capacity is allocated space before reallocation. |
-| When should you use `HashMap::entry`? | When lookup and insertion/update are one logical operation. |
-| Why is `map.get("key")` useful when keys are `String`? | Borrowed lookup avoids allocating a temporary owned key. |
-| When might `BTreeMap` be preferable to `HashMap`? | When ordered or deterministic iteration matters. |
-| What does iterating `for x in vec` do? | It consumes the vector and moves out each element. |
-| What is a common API smell around strings in Rust? | Accepting `&String` where `&str` would be more flexible. |
+| Question                                                         | Answer                                                                           |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| What is the core distinction between `String` and `&str`?        | `String` owns UTF-8 text; `&str` borrows it.                                     |
+| Why does Rust not allow direct character indexing into `String`? | UTF-8 is variable-width, so byte offsets are not character positions.            |
+| What is the difference between vector length and capacity?       | Length is initialized elements; capacity is allocated space before reallocation. |
+| When should you use `HashMap::entry`?                            | When lookup and insertion/update are one logical operation.                      |
+| Why is `map.get("key")` useful when keys are `String`?           | Borrowed lookup avoids allocating a temporary owned key.                         |
+| When might `BTreeMap` be preferable to `HashMap`?                | When ordered or deterministic iteration matters.                                 |
+| What does iterating `for x in vec` do?                           | It consumes the vector and moves out each element.                               |
+| What is a common API smell around strings in Rust?               | Accepting `&String` where `&str` would be more flexible.                         |
 
 ## Chapter Cheat Sheet
 
-| Need | Prefer | Why |
-|---|---|---|
-| Growable contiguous list | `Vec<T>` | cache-friendly general-purpose storage |
-| Owned text | `String` | own and mutate UTF-8 bytes |
-| Borrowed text | `&str` | flexible non-owning text input |
-| Count or aggregate by key | `HashMap` + `entry` | efficient update pattern |
-| Stable ordered output | `BTreeMap` | deterministic traversal |
+| Need                      | Prefer              | Why                                    |
+| ------------------------- | ------------------- | -------------------------------------- |
+| Growable contiguous list  | `Vec<T>`            | cache-friendly general-purpose storage |
+| Owned text                | `String`            | own and mutate UTF-8 bytes             |
+| Borrowed text             | `&str`              | flexible non-owning text input         |
+| Count or aggregate by key | `HashMap` + `entry` | efficient update pattern               |
+| Stable ordered output     | `BTreeMap`          | deterministic traversal                |
 
 ---

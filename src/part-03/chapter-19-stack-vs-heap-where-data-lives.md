@@ -1,4 +1,5 @@
 # Chapter 19: Stack vs Heap, Where Data Lives
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a><a href="../part-03/chapter-16-ownership-as-resource-management.html">Ch 16: RAII</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Stack frames, heap allocation, and static data</li><li>Thin vs fat pointers in Rust</li><li>Why "String lives on the heap" is incomplete</li></ul></div>
@@ -96,5 +97,27 @@
   </div>
   <figcaption class="visual-figure__caption">Rust needs size information to lay out values. Fat pointers are how the language carries enough metadata to talk about dynamically sized or dynamically dispatched things without hiding the representation from you.</figcaption>
 </figure>
+
+## Readiness Check - Memory Model Reasoning
+
+Use this checkpoint before moving on to move/copy/clone semantics.
+
+| Skill                             | Level 0                                      | Level 1                                  | Level 2                                                   | Level 3                                                    |
+| --------------------------------- | -------------------------------------------- | ---------------------------------------- | --------------------------------------------------------- | ---------------------------------------------------------- |
+| Explain stack vs heap accurately  | I confuse value and allocation location      | I can describe stack and heap separately | I can explain where owner metadata and owned bytes live   | I can predict layout implications in unfamiliar code       |
+| Reason about pointer metadata     | I treat all references as identical pointers | I recognize slices carry extra metadata  | I can explain thin vs fat pointers correctly              | I can use pointer-shape reasoning to debug APIs and errors |
+| Connect memory model to ownership | I memorize facts without transfer reasoning  | I know ownership controls cleanup        | I can explain how ownership metadata drives drop behavior | I can design data flow to avoid accidental allocations     |
+
+Target Level 2+ before continuing to Chapter 20.
+
+## Compiler Error Decoder - Memory Layout and Access
+
+| Error code | What it usually means                                    | Typical fix direction                                                           |
+| ---------- | -------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| E0277      | Type does not satisfy required trait bound               | Ensure required trait implementations or change API constraints                 |
+| E0308      | Type mismatch from wrong data representation assumptions | Align concrete type (`String`, `&str`, slices, trait objects) with API contract |
+| E0609      | Tried to access field that does not exist on value shape | Re-check whether you have a concrete struct, reference, or trait object         |
+
+When these appear, inspect the value shape first: ownership, pointer metadata, and concrete type.
 
 ## Step 1 - The Problem

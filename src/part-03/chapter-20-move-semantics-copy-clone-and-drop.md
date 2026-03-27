@@ -1,4 +1,5 @@
 # Chapter 20: Move Semantics, `Copy`, `Clone`, and `Drop`
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -49,7 +50,6 @@
   </figure>
 </div>
 
-
 <div class="annotated-code" style="--chapter-accent: var(--ownership);">
 
 ```rust
@@ -80,7 +80,6 @@ println!("{s2} {s3}");
   </div>
 </div>
 </div>
-
 
 ### In Your Language: Move vs Copy
 
@@ -133,9 +132,27 @@ t := s           // both valid (GC manages)
 </div>
 </div>
 
+## Readiness Check - Transfer Semantics Mastery
+
+| Skill                       | Level 0                            | Level 1                          | Level 2                                                         | Level 3                                                |
+| --------------------------- | ---------------------------------- | -------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------ |
+| Distinguish move/copy/clone | I mix them up                      | I can name each one              | I can predict which event happens at assignment/call sites      | I can design APIs that express transfer intent clearly |
+| Use clone intentionally     | I add clone to silence errors      | I know clone creates a duplicate | I can justify each clone by ownership need or boundary crossing | I can remove unnecessary clones in hot paths           |
+| Reason about drop safety    | I treat cleanup as hidden behavior | I know drop runs at scope end    | I can explain why `Copy` and `Drop` conflict                    | I can model teardown order in composed types           |
+
+Target Level 2+ before moving to borrow-checker internals.
+
+## Compiler Error Decoder - Move and Drop Semantics
+
+| Error code | What it usually means                                       | Typical fix direction                                                       |
+| ---------- | ----------------------------------------------------------- | --------------------------------------------------------------------------- |
+| E0382      | Used value after it moved                                   | Borrow instead, reorder usage before move, or clone intentionally           |
+| E0505      | Tried to move a value while references to it are still live | End borrows first, then move; or clone for independent ownership            |
+| E0509      | Tried to move out of a type that implements `Drop`          | Borrow fields, use explicit extraction patterns, or redesign data ownership |
+
+First diagnose the transfer event, then decide whether ownership should move, be borrowed, or be duplicated.
+
 ## Step 1 - The Problem
-
-
 
 Once you know that ownership can move, the next questions are:
 
@@ -370,25 +387,25 @@ Move is handing over the only house key. `Copy` is photocopying a public handout
 
 ## Flashcard Deck
 
-| Question | Answer |
-|---|---|
-| What does move mean? | Ownership transfers to a new binding or callee. |
-| What does `Copy` mean? | The value may be duplicated implicitly because that is cheap and semantically safe. |
-| Why is `String` not `Copy`? | It owns heap data and implicit duplication would create double-drop ambiguity. |
-| Why is `Clone` explicit? | Duplication may allocate or carry semantic cost. |
-| Can a `Drop` type also be `Copy`? | No. Destructor semantics conflict with implicit duplication. |
-| Are references `Copy`? | Yes, shared references are cheap, non-owning values. |
-| What is a common smell involving `clone()`? | Using it as a reflex to silence ownership confusion. |
-| What does `ManuallyDrop` do conceptually? | It suppresses automatic destruction until low-level code chooses otherwise. |
+| Question                                    | Answer                                                                              |
+| ------------------------------------------- | ----------------------------------------------------------------------------------- |
+| What does move mean?                        | Ownership transfers to a new binding or callee.                                     |
+| What does `Copy` mean?                      | The value may be duplicated implicitly because that is cheap and semantically safe. |
+| Why is `String` not `Copy`?                 | It owns heap data and implicit duplication would create double-drop ambiguity.      |
+| Why is `Clone` explicit?                    | Duplication may allocate or carry semantic cost.                                    |
+| Can a `Drop` type also be `Copy`?           | No. Destructor semantics conflict with implicit duplication.                        |
+| Are references `Copy`?                      | Yes, shared references are cheap, non-owning values.                                |
+| What is a common smell involving `clone()`? | Using it as a reflex to silence ownership confusion.                                |
+| What does `ManuallyDrop` do conceptually?   | It suppresses automatic destruction until low-level code chooses otherwise.         |
 
 ## Chapter Cheat Sheet
 
-| Operation | Meaning | Typical cost story |
-|---|---|---|
-| assignment of `Copy` type | implicit duplicate | cheap value copy |
-| assignment of non-`Copy` type | move | ownership transfer |
-| `.clone()` | explicit duplicate | may allocate or do real work |
-| scope exit | `Drop` runs | cleanup of owned resources |
-| `Drop` + implicit copy | forbidden | would break destructor semantics |
+| Operation                     | Meaning            | Typical cost story               |
+| ----------------------------- | ------------------ | -------------------------------- |
+| assignment of `Copy` type     | implicit duplicate | cheap value copy                 |
+| assignment of non-`Copy` type | move               | ownership transfer               |
+| `.clone()`                    | explicit duplicate | may allocate or do real work     |
+| scope exit                    | `Drop` runs        | cleanup of owned resources       |
+| `Drop` + implicit copy        | forbidden          | would break destructor semantics |
 
 ---

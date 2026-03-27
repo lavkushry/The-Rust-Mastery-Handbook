@@ -246,7 +246,54 @@ Think of ownership like a library checkout card for a rare, one-of-a-kind book.
 2. **Move:** If you give the book to a friend, you *must* also hand over the checkout card. You are no longer responsible for it, and the library will not accept it from you.
 3. **Drop:** When the person holding the card leaves town (goes out of scope), they *must* return the book to the library.
 
+
+### In Your Language: Ownership vs Garbage Collection
+
+<div class="lang-compare">
+<div class="lang-panel">
+<span class="lang-label lang-label--rust">Rust — ownership</span>
+
+```rust
+let s1 = String::from("hello");
+let s2 = s1;       // s1 MOVED, now invalid
+// s1 can't be used here
+drop(s2);           // freed deterministically
+```
+
+</div>
+<div class="lang-panel">
+<span class="lang-label lang-label--python">Python — GC</span>
+
+```python
+s1 = "hello"
+s2 = s1        # both point to same object
+print(s1)      # still works — refcount = 2
+del s2         # refcount = 1, not freed yet
+# GC decides when to free (non-deterministic)
+```
+
+</div>
+</div>
+
+### Walk Through: What Happens During a Move
+
+<div class="stepper">
+<div class="stepper-step">
+<strong>Step 1: Allocation</strong>
+<code>let s1 = String::from("hello");</code> — The allocator places <code>"hello"</code> on the heap. <code>s1</code>'s stack frame stores pointer, length (5), and capacity (5). <code>s1</code> is the sole owner.
+</div>
+<div class="stepper-step">
+<strong>Step 2: Move</strong>
+<code>let s2 = s1;</code> — The 24 bytes of stack metadata (ptr, len, cap) are copied into <code>s2</code>'s stack slot. The compiler marks <code>s1</code> as uninitialized. The heap allocation is NOT duplicated.
+</div>
+<div class="stepper-step">
+<strong>Step 3: Drop</strong>
+When <code>s2</code> leaves scope, <code>Drop::drop</code> runs, freeing the heap buffer. Because only <code>s2</code> is live, exactly one <code>free()</code> call happens. No double-free, no leak.
+</div>
+</div>
+
 ## Step 1 - The Problem
+
 
 > **Learning Objective**
 > By the end of this step, you should be able to explain the core problem ownership solves: tracking responsibility for dynamically allocated memory without a garbage collector.

@@ -1379,3 +1379,209 @@ html.mocha blockquote.callout--learning-objective .callout__label,
 html.ayu blockquote.callout--learning-objective .callout__label {
   color: #86efac;
 }
+
+/* ═══ PLAYGROUND BUTTONS ═══════════════════════════════ */
+.playground-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+  color: #fff;
+  background: var(--ownership, #E63946);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+  z-index: 2;
+}
+
+.playground-btn:hover {
+  opacity: 1;
+  text-decoration: none;
+  color: #fff;
+}
+
+/* ═══ INTERACTIVE STEPPERS ═════════════════════════════ */
+.stepper {
+  background: var(--quote-bg, rgba(0,0,0,0.03));
+  border: 1px solid var(--card-border, rgba(0,0,0,0.1));
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.stepper-step {
+  min-height: 80px;
+}
+
+.stepper-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--card-border, rgba(0,0,0,0.08));
+}
+
+.stepper-btn {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--card-border, rgba(0,0,0,0.15));
+  border-radius: 6px;
+  background: var(--sidebar-bg, #f8f9fa);
+  color: var(--fg, #333);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.stepper-btn:hover:not(:disabled) {
+  background: var(--links, #4183c4);
+  color: #fff;
+  border-color: transparent;
+}
+
+.stepper-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.stepper-counter {
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  opacity: 0.5;
+}
+
+/* ═══ 3-LEVEL TABS ═════════════════════════════════════ */
+.level-tabs {
+  margin: 1.5rem 0;
+  border: 1px solid var(--card-border, rgba(0,0,0,0.1));
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.level-tab-bar {
+  display: flex;
+  background: var(--sidebar-bg, #f8f9fa);
+  border-bottom: 1px solid var(--card-border, rgba(0,0,0,0.1));
+}
+
+.level-tab {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--fg, #333);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.level-tab:hover {
+  background: rgba(0,0,0,0.03);
+}
+
+.level-tab--active {
+  border-bottom-color: var(--chapter-accent, var(--links, #4183c4));
+  background: var(--bg, #fff);
+}
+
+.level-panel {
+  padding: 1.25rem;
+}
+
+/* ═══ ANKI EXPORT ══════════════════════════════════════ */
+.anki-export-btn {
+  display: block;
+  margin: 12px auto 0;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--card-border, rgba(0,0,0,0.12));
+  border-radius: 6px;
+  background: var(--sidebar-bg, #f8f9fa);
+  color: var(--fg, #555);
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.2s;
+}
+
+.anki-export-btn:hover {
+  opacity: 1;
+  border-color: var(--links, #4183c4);
+  color: var(--links, #4183c4);
+}
+
+/* ═══ LANGUAGE COMPARISON BOXES ════════════════════════ */
+.lang-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--card-border, rgba(0,0,0,0.1));
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+
+.lang-panel {
+  padding: 0;
+}
+
+.lang-panel pre {
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+}
+
+.lang-label {
+  display: block;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--card-border, rgba(0,0,0,0.08));
+}
+
+.lang-label--rust {
+  background: rgba(230,57,70,0.08);
+  color: var(--ownership, #E63946);
+}
+
+.lang-label--python {
+  background: rgba(69,123,157,0.08);
+  color: var(--borrow-shared, #457B9D);
+}
+
+.lang-label--go {
+  background: rgba(0,180,216,0.08);
+  color: var(--async, #00B4D8);
+}
+
+.lang-label--java {
+  background: rgba(244,162,97,0.08);
+  color: var(--borrow-mut, #F4A261);
+}
+
+.lang-panel + .lang-panel {
+  border-left: 1px solid var(--card-border, rgba(0,0,0,0.1));
+}
+
+@media (max-width: 700px) {
+  .lang-compare {
+    grid-template-columns: 1fr;
+  }
+  .lang-panel + .lang-panel {
+    border-left: none;
+    border-top: 1px solid var(--card-border, rgba(0,0,0,0.1));
+  }
+}

@@ -582,6 +582,127 @@
     }, 150);
   }
 
+  // ══ PLAYGROUND BUTTONS ═══════════════════════════════
+  function initPlaygroundButtons(main) {
+    main.querySelectorAll('pre > code.language-rust').forEach(codeEl => {
+      const pre = codeEl.parentElement;
+      if (pre.querySelector('.playground-btn')) return;
+      const code = codeEl.textContent;
+      // Skip incomplete snippets (no fn main, just fragments)
+      const btn = document.createElement('a');
+      btn.className = 'playground-btn';
+      btn.textContent = '▶ Run';
+      btn.title = 'Open in Rust Playground';
+      btn.target = '_blank';
+      btn.rel = 'noopener';
+      btn.href = 'https://play.rust-lang.org/?edition=2021&code=' + encodeURIComponent(code);
+      pre.style.position = 'relative';
+      pre.appendChild(btn);
+    });
+  }
+
+  // ══ INTERACTIVE STEPPERS ═════════════════════════════
+  function initSteppers(main) {
+    main.querySelectorAll('.stepper').forEach(stepper => {
+      const steps = stepper.querySelectorAll('.stepper-step');
+      if (steps.length === 0) return;
+      let current = 0;
+
+      // Show only first step
+      steps.forEach((s, i) => { s.style.display = i === 0 ? 'block' : 'none'; });
+
+      const nav = document.createElement('div');
+      nav.className = 'stepper-nav';
+
+      const counter = document.createElement('span');
+      counter.className = 'stepper-counter';
+      counter.textContent = `Step 1 of ${steps.length}`;
+
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'stepper-btn';
+      prevBtn.textContent = '← Prev';
+      prevBtn.disabled = true;
+
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'stepper-btn';
+      nextBtn.textContent = 'Next →';
+
+      function update() {
+        steps.forEach((s, i) => { s.style.display = i === current ? 'block' : 'none'; });
+        counter.textContent = `Step ${current + 1} of ${steps.length}`;
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === steps.length - 1;
+      }
+
+      prevBtn.addEventListener('click', () => { if (current > 0) { current--; update(); } });
+      nextBtn.addEventListener('click', () => { if (current < steps.length - 1) { current++; update(); } });
+
+      nav.appendChild(prevBtn);
+      nav.appendChild(counter);
+      nav.appendChild(nextBtn);
+      stepper.appendChild(nav);
+    });
+  }
+
+  // ══ 3-LEVEL TABS ═════════════════════════════════════
+  function initLevelTabs(main) {
+    main.querySelectorAll('.level-tabs').forEach(container => {
+      const panels = container.querySelectorAll('.level-panel');
+      if (panels.length === 0) return;
+
+      const tabBar = document.createElement('div');
+      tabBar.className = 'level-tab-bar';
+
+      const labels = ['Beginner', 'Engineer', 'Deep Dive'];
+      const icons = ['🌱', '⚙️', '🔬'];
+
+      panels.forEach((panel, i) => {
+        const tab = document.createElement('button');
+        tab.className = 'level-tab' + (i === 0 ? ' level-tab--active' : '');
+        tab.textContent = `${icons[i] || ''} ${labels[i] || panel.dataset.level || `Level ${i+1}`}`;
+        tab.addEventListener('click', () => {
+          container.querySelectorAll('.level-tab').forEach(t => t.classList.remove('level-tab--active'));
+          tab.classList.add('level-tab--active');
+          panels.forEach((p, j) => { p.style.display = j === i ? 'block' : 'none'; });
+        });
+        tabBar.appendChild(tab);
+        panel.style.display = i === 0 ? 'block' : 'none';
+      });
+
+      container.insertBefore(tabBar, container.firstChild);
+    });
+  }
+
+  // ══ ANKI EXPORT ══════════════════════════════════════
+  function initAnkiExport(main) {
+    main.querySelectorAll('.flashcard-grid').forEach(deck => {
+      if (deck.querySelector('.anki-export-btn')) return;
+      const cards = deck.querySelectorAll('.flashcard');
+      if (cards.length === 0) return;
+
+      const btn = document.createElement('button');
+      btn.className = 'anki-export-btn';
+      btn.textContent = '📥 Export for Anki';
+      btn.title = 'Download flashcards as tab-separated text for Anki import';
+      btn.addEventListener('click', () => {
+        let tsv = '';
+        cards.forEach(card => {
+          const q = (card.querySelector('.flashcard__question') || card.querySelector('.flashcard__front'))?.textContent?.trim() || '';
+          const a = (card.querySelector('.flashcard__answer') || card.querySelector('.flashcard__back'))?.textContent?.trim() || '';
+          if (q && a) tsv += q.replace(/\t/g, ' ') + '\t' + a.replace(/\t/g, ' ') + '\n';
+        });
+        const blob = new Blob([tsv], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'rust-flashcards.txt';
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+      deck.appendChild(btn);
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     const main = document.querySelector("#mdbook-content main");
     if (!main) {
@@ -604,5 +725,9 @@
     createHero(main, title, concept.color, concept.key);
     initFlashcardFlip(main);
     initProgressTracker(main);
+    initPlaygroundButtons(main);
+    initSteppers(main);
+    initLevelTabs(main);
+    initAnkiExport(main);
   });
 })();

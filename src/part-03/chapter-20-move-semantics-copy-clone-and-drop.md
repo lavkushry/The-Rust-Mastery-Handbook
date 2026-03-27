@@ -81,7 +81,60 @@ println!("{s2} {s3}");
 </div>
 </div>
 
+
+### In Your Language: Move vs Copy
+
+<div class="lang-compare">
+<div class="lang-panel">
+<span class="lang-label lang-label--rust">Rust — explicit</span>
+
+```rust
+let a = 42;             // Copy (i32 is Copy)
+let b = a;              // both valid
+
+let s = String::from("x");
+let t = s;              // Move — s is dead
+let u = t.clone();      // Clone — explicit copy
+```
+
+</div>
+<div class="lang-panel">
+<span class="lang-label lang-label--go">Go — implicit</span>
+
+```go
+a := 42
+b := a           // value copy (always)
+
+s := "hello"
+t := s           // both valid (GC manages)
+// No move concept — everything is copied or ref-counted
+```
+
+</div>
+</div>
+
+### Three-Level Explanation
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
+
+**Beginner:** When you assign a `String` to another variable, the original becomes invalid. Think of it like passing a physical key — only one person can hold it. For simple numbers (`i32`, `bool`), Rust copies them automatically because they're cheap.
+
+</div>
+<div class="level-panel" data-level="Engineer">
+
+**Engineer:** Types that are `Copy` (all scalar types, `&T`) are bitwise-copied on assignment. Non-`Copy` types (anything owning heap data: `String`, `Vec`, `Box`) are moved — the source is invalidated. `.clone()` performs a deep copy by calling the `Clone` trait implementation, allocating new heap memory.
+
+</div>
+<div class="level-panel" data-level="Deep Dive">
+
+**Deep Dive:** At the MIR level, a move is a `memcpy` of the stack representation followed by marking the source as *uninitialized*. The compiler inserts drop flags (`bool`) to track whether a binding is live. `Copy` is a marker trait with no methods — it simply tells the compiler "bitwise copy is semantically correct for this type." `Clone` is a regular trait with `fn clone(&self) -> Self`. Types can be `Clone` without being `Copy` when they need custom duplication logic (e.g., allocating new heap memory).
+
+</div>
+</div>
+
 ## Step 1 - The Problem
+
 
 
 Once you know that ownership can move, the next questions are:

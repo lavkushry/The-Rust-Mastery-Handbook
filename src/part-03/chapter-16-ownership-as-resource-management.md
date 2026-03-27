@@ -112,4 +112,16 @@
 - [Rust Book: The Drop Trait](https://doc.rust-lang.org/book/ch15-03-drop.html)
 - Codebase study: Look at how `std::fs::File` implements `Drop` to automatically close file handles.
 
+## Readiness Check - Ownership Mastery
+
+Use this quick rubric before moving on. Aim for at least Level 2 in each row.
+
+| Skill                              | Level 0                          | Level 1                             | Level 2                                                | Level 3                                                    |
+| ---------------------------------- | -------------------------------- | ----------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------- |
+| Explain ownership in plain English | I repeat rules only              | I explain one-owner cleanup         | I connect ownership to resource lifecycle              | I can predict cleanup/transfer behavior in unfamiliar code |
+| Spot ownership bugs in code        | I rely on compiler messages only | I can identify moved-value mistakes | I can refactor to remove accidental moves              | I can redesign APIs to avoid ownership friction            |
+| Reason about Drop and scope end    | I treat Drop as magic            | I know scope end triggers cleanup   | I can explain reverse drop order and RAII implications | I can design deterministic teardown for complex structs    |
+
+If you are below Level 2 in any row, revisit the code reading drills in this chapter and Drill Deck 1.
+
 ## Step 1 - The Problem

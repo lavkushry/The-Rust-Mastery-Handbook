@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "assignments": [
+    {
+      "assignment_id": "assign-20260327-181906",
+      "timestamp": "2026-03-27T18:19:06Z",
+      "universe": "dune",
+      "members": [
+        { "role": "Lead", "name": "Paul" },
+        { "role": "Rust Curriculum Engineer", "name": "Jessica" },
+        { "role": "UI and Readability Engineer", "name": "Duncan" },
+        { "role": "Regression and QA Engineer", "name": "Chani" },
+        { "role": "DevRel and Discoverability Engineer", "name": "Gurney" },
+        { "role": "Session Logger", "name": "Scribe" },
+        { "role": "Work Monitor", "name": "Ralph" }
+      ],
+      "approved_by": "Lavkus Kumar"
+    }
+  ]
+}

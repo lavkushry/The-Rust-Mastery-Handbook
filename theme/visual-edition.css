@@ -1605,3 +1605,39 @@ html.ayu blockquote.callout--learning-objective .callout__label {
     border-top: 1px solid var(--card-border, rgba(0,0,0,0.1));
   }
 }
+
+@media (max-width: 900px) {
+  .chapter-hero__grid,
+  .part-spread__grid,
+  .annotated-code,
+  .memory-hook-panel,
+  .flashcard-grid,
+  .diagram-grid--three,
+  .concept-card-row {
+    grid-template-columns: 1fr;
+  }
+
+  .chapter-hero,
+  .part-spread {
+    padding: 1.2rem;
+  }
+}
+
+@media (max-width: 560px) {
+  #mdbook-content main p,
+  #mdbook-content main li {
+    font-size: 0.97rem;
+    line-height: 1.68;
+  }
+
+  .chapter-hero__title,
+  .part-spread__title {
+    font-size: clamp(1.5rem, 6vw, 2.3rem);
+  }
+
+  .chapter-hero__hook,
+  .part-spread__hook {
+    font-size: 0.96rem;
+    line-height: 1.6;
+  }
+}

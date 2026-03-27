@@ -9,7 +9,7 @@ This repository publishes a multi-part Rust learning handbook built with mdBook,
 
 ## Start Here
 
-- Read online: https://lavkushry.github.io/The-Rust-Mastery-Handbook/
+- Read online: <https://lavkushry.github.io/The-Rust-Mastery-Handbook/>
 - Build locally: [Getting Started](docs/getting-started.md)
 - Export PDF: [Installation](docs/installation.md) and [Troubleshooting](docs/troubleshooting.md)
 - Contribute: [CONTRIBUTING.md](CONTRIBUTING.md), [Contribution Ladder](docs/contribution-ladder.md), [Good First Issues](docs/good-first-issues.md)
@@ -266,9 +266,11 @@ For repeatable release checks, use [docs/jules-regression-playbook.md](docs/jule
 - Support policy: [docs/support-policy.md](docs/support-policy.md)
 - Versioning policy: [docs/versioning-policy.md](docs/versioning-policy.md)
 - Editorial style guide: [docs/editorial-style-guide.md](docs/editorial-style-guide.md)
+- Chapter assessment template: [docs/chapter-assessment-template.md](docs/chapter-assessment-template.md)
 - Rust resource atlas: [docs/rust-resource-atlas.md](docs/rust-resource-atlas.md)
 - Review checklist: [docs/review-checklist.md](docs/review-checklist.md)
 - Release checklist: [docs/release-checklist.md](docs/release-checklist.md)
+- World-class 90-day program: [docs/world-class-rust-learning-program.md](docs/world-class-rust-learning-program.md)
 
 ## Screenshots and Visual Assets
 
@@ -296,6 +298,7 @@ Contribution entry points:
 Planned OSS-quality and content expansion tasks are tracked in:
 
 - [docs/oss-growth-roadmap.md](docs/oss-growth-roadmap.md)
+- [docs/world-class-rust-learning-program.md](docs/world-class-rust-learning-program.md)
 
 ## Contributing
 

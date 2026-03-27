@@ -1,4 +1,5 @@
 # Chapter 18: Lifetimes, Relationships Not Durations
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -141,10 +142,10 @@
 </div>
 
 ## Chapter Resources
+
 * **Official Source:** [The Rust Reference: Lifetimes](https://doc.rust-lang.org/reference/lifetimes.html)
 * **Rustonomicon:** [Lifetimes](https://doc.rust-lang.org/nomicon/lifetimes.html)
 * **Rust by Example:** [Lifetimes](https://doc.rust-lang.org/rust-by-example/scope/lifetime.html)
-
 
 <div class="annotated-code" style="--chapter-accent: var(--lifetime);">
 
@@ -178,7 +179,6 @@ let s1 = String::from("long");
 </div>
 </div>
 
-
 ### In Your Language: Lifetimes vs Garbage Collection
 
 <div class="lang-compare">
@@ -208,9 +208,19 @@ func longest(x, y string) string {
 </div>
 </div>
 
+## Readiness Check - Lifetime Reasoning
+
+Use this checkpoint to confirm you can reason about reference relationships, not just syntax.
+
+| Skill                         | Level 0                              | Level 1                                    | Level 2                                                       | Level 3                                                       |
+| ----------------------------- | ------------------------------------ | ------------------------------------------ | ------------------------------------------------------------- | ------------------------------------------------------------- |
+| Explain what a lifetime means | I think it is a time duration        | I know it describes validity scope         | I can explain it as a relationship between borrows and owners | I can teach why annotations do not extend object lifetime     |
+| Read lifetime signatures      | I avoid annotated signatures         | I can parse single-input/output signatures | I can explain multi-input relationships like `longest<'a>`    | I can redesign signatures to express clearer borrow contracts |
+| Diagnose lifetime errors      | I guess and add annotations randomly | I can recognize outlives problems          | I can pinpoint the dropped owner causing E0597/E0515          | I can choose when returning owned values is the better design |
+
+If any row is below Level 2, revisit Chapter 11 and run Drill Deck 2 again.
+
 ## Step 1 - The Problem
-
-
 
 > **Learning Objective**
 > By the end of this chapter, you should be able to explain how lifetimes define relationships between borrowed data, rather than magically extending how long data exists.

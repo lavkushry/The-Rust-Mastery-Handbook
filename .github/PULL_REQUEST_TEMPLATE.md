@@ -34,6 +34,8 @@ Closes #
 - [ ] I ran mdbook build successfully.
 - [ ] I previewed changed pages locally when relevant.
 - [ ] I checked links and headings in modified sections.
+- [ ] I verified readability on mobile and desktop for UI-affecting changes.
+- [ ] I checked keyboard focus visibility for interactive/navigation elements.
 - [ ] I avoided unrelated edits.
 - [ ] I kept scope focused and reviewable.
 - [ ] I maintained the handbook's technical voice.

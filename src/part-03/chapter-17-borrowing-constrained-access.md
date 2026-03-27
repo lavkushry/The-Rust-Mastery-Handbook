@@ -177,4 +177,16 @@ The borrow checker sees that <code>first</code> holds <code>&v</code> (shared bo
 </div>
 </div>
 
+## Readiness Check - Borrowing Confidence
+
+Before proceeding, self-check your ability to reason about aliasing and mutation.
+
+| Skill                         | Level 0                    | Level 1                               | Level 2                                                      | Level 3                                                  |
+| ----------------------------- | -------------------------- | ------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------- |
+| Explain aliasing XOR mutation | I memorize the phrase only | I can explain many-readers/one-writer | I can identify why a specific borrow conflict occurs         | I can predict borrow regions before compiling            |
+| Debug borrow conflicts        | I try random edits         | I can fix one obvious E0502 case      | I can choose between borrow narrowing and ownership transfer | I can refactor APIs to make borrow discipline obvious    |
+| Design mutation flow safely   | I mutate where convenient  | I can isolate mutation blocks         | I can structure code to minimize overlapping borrows         | I can review code for hidden iterator invalidation risks |
+
+Target Level 2+ before moving to Chapter 21.
+
 ## Step 1 - The Problem

@@ -26,12 +26,14 @@
     const ns = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(ns, "svg");
     svg.setAttribute("viewBox", "0 0 24 24");
-    svg.setAttribute("aria-hidden", "true");
     svg.setAttribute("focusable", "false");
     svg.classList.add("inline-svg-icon");
     if (ariaLabel) {
       svg.setAttribute("aria-label", ariaLabel);
       svg.setAttribute("role", "img");
+      svg.removeAttribute("aria-hidden");
+    } else {
+      svg.setAttribute("aria-hidden", "true");
     }
 
     const makePath = (d, attrs = {}) => {
@@ -305,7 +307,7 @@
       blockquote.classList.add("callout", match.className);
       const label = document.createElement("div");
       label.className = "callout__label";
-      label.appendChild(createInlineSvgIcon(match.icon));
+      label.appendChild(createInlineSvgIcon(match.icon, raw.replace(/:$/, "")));
       const labelText = document.createElement("span");
       labelText.textContent = raw.replace(/:$/, "");
       label.appendChild(labelText);
@@ -752,7 +754,8 @@
       panels.forEach((panel, i) => {
         const tab = document.createElement('button');
         tab.className = 'level-tab' + (i === 0 ? ' level-tab--active' : '');
-        const icon = createInlineSvgIcon(icons[i] || 'gear');
+        const iconLabel = labels[i] ? `${labels[i]} level` : `Level ${i + 1}`;
+        const icon = createInlineSvgIcon(icons[i] || 'gear', iconLabel);
         icon.classList.add('level-tab__icon');
         tab.appendChild(icon);
         const text = document.createElement('span');

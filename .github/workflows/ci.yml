@@ -22,6 +22,22 @@ jobs:
       - name: Build
         run: mdbook build
 
+  markdown-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint markdown files
+        uses: DavidAnson/markdownlint-cli2-action@v20
+        with:
+          globs: |
+            README.md
+            CONTRIBUTING.md
+            CHANGELOG.md
+            docs/**/*.md
+            src/**/*.md
+
   js-tests:
     runs-on: ubuntu-latest
     steps:
@@ -39,6 +55,22 @@ jobs:
 
       - name: Run JS and structure tests
         run: npm test
+
+  external-link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check external links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --verbose
+            --no-progress
+            --accept 200,206,301,302,307,308,403,429
+            --exclude-mail
+            README.md CONTRIBUTING.md docs/**/*.md src/**/*.md
 
   playwright-regression:
     runs-on: ubuntu-latest

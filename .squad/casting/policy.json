@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "selectedUniverse": "dune",
+  "allowlist": [
+    "dune",
+    "interstellar",
+    "foundation",
+    "star-wars-original-trilogy",
+    "star-trek-tng",
+    "lord-of-the-rings",
+    "harry-potter",
+    "the-matrix"
+  ],
+  "teamSize": {
+    "min": 4,
+    "max": 7
+  },
+  "notes": "Use one universe per assignment. Do not mix universes."
+}

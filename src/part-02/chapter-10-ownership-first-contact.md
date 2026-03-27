@@ -138,21 +138,34 @@
   <figcaption class="visual-figure__caption">The physical stack fields can be copied. The semantic event is still a move, because Rust treats those fields as the unique responsibility token for the heap allocation.</figcaption>
 </figure>
 <div class="annotated-code" style="--chapter-accent: var(--ownership);">
-  <div class="annotated-code__panel">
-    <pre><code>1 | let s1 = String::from("hello");
-2 | let s2 = s1;
-3 | // println!("{s1}");
-4 | println!("{s2}");</code></pre>
+
+```rust
+let s1 = String::from("hello");
+let s2 = s1;
+// println!("{s1}");   // ERROR
+println!("{s2}");
+```
+
+<div class="ann-col">
+  <div class="ann-item ann-own">
+    <strong>Own created</strong>
+    <code>s1</code> owns heap data. Stack stores ptr + len + cap.
   </div>
-  <div class="annotated-code__notes">
-    <ol>
-      <li><span class="annotated-code__label">🔴</span><strong>`s1` becomes the owner.</strong> The stack value contains pointer, length, and capacity for the heap buffer.</li>
-      <li><span class="annotated-code__label">🟠</span><strong>The assignment is a move.</strong> Ownership transfers to `s2`; Rust invalidates `s1` as an owner name.</li>
-      <li><span class="annotated-code__label">❌</span><strong>Uncommenting line 3 produces `E0382`.</strong> The old name still exists textually, but it no longer has authority.</li>
-      <li><span class="annotated-code__label">🟢</span><strong>`s2` is valid.</strong> Exactly one owner reaches scope end and triggers `Drop` once.</li>
-    </ol>
+  <div class="ann-item ann-move">
+    <strong>Move occurs</strong>
+    s1 → s2. Stack repr copied. <code>s1</code> invalidated.
+  </div>
+  <div class="ann-item ann-error">
+    <strong>E0382</strong>
+    Use of moved value. <code>s1</code> no longer has authority.
+  </div>
+  <div class="ann-item ann-valid">
+    <strong>Valid</strong>
+    <code>s2</code> is the sole owner. Drops on scope exit.
   </div>
 </div>
+</div>
+
 <figure class="visual-figure" style="--chapter-accent: var(--ownership);">
   <div class="visual-figure__header">
     <div>

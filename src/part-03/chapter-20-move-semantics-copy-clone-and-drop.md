@@ -49,7 +49,40 @@
   </figure>
 </div>
 
+
+<div class="annotated-code" style="--chapter-accent: var(--ownership);">
+
+```rust
+let a: i32 = 42;
+let b = a;           // Copy — a is still valid
+println!("{a}");
+
+let s1 = String::from("hello");
+let s2 = s1;         // Move — s1 invalidated
+// println!("{s1}");  // E0382
+
+let s3 = s2.clone(); // Clone — explicit deep copy
+println!("{s2} {s3}");
+```
+
+<div class="ann-col">
+  <div class="ann-item ann-valid">
+    <strong>Copy (implicit)</strong>
+    <code>i32</code> implements <code>Copy</code>. Stack-only, bitwise copy. Both valid.
+  </div>
+  <div class="ann-item ann-move">
+    <strong>Move (implicit)</strong>
+    <code>String</code> is not <code>Copy</code>. Assignment transfers ownership. <code>s1</code> dead.
+  </div>
+  <div class="ann-item ann-own">
+    <strong>Clone (explicit)</strong>
+    <code>.clone()</code> duplicates heap data. Now two independent owners with separate allocations.
+  </div>
+</div>
+</div>
+
 ## Step 1 - The Problem
+
 
 Once you know that ownership can move, the next questions are:
 

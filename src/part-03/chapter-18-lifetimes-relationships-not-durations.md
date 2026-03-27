@@ -145,7 +145,41 @@
 * **Rustonomicon:** [Lifetimes](https://doc.rust-lang.org/nomicon/lifetimes.html)
 * **Rust by Example:** [Lifetimes](https://doc.rust-lang.org/rust-by-example/scope/lifetime.html)
 
+
+<div class="annotated-code" style="--chapter-accent: var(--lifetime);">
+
+```rust
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() { x } else { y }
+}
+
+let result;
+let s1 = String::from("long");
+{
+    let s2 = String::from("hi");
+    result = longest(&s1, &s2);  // 'a = shorter of s1, s2
+}                                // s2 dropped — result would dangle
+// println!("{result}");         // E0597: s2 doesn't live long enough
+```
+
+<div class="ann-col">
+  <div class="ann-item ann-life">
+    <strong>'a annotation</strong>
+    "The return value lives at most as long as both inputs." Not a duration — a relationship constraint.
+  </div>
+  <div class="ann-item ann-borrow">
+    <strong>Both inputs tied</strong>
+    Compiler unifies <code>'a</code> to the shorter of the two lifetimes.
+  </div>
+  <div class="ann-item ann-error">
+    <strong>E0597</strong>
+    <code>s2</code> is dropped at <code>}</code>. <code>result</code> might hold a reference to <code>s2</code>, so compiler rejects.
+  </div>
+</div>
+</div>
+
 ## Step 1 - The Problem
+
 
 > **Learning Objective**
 > By the end of this chapter, you should be able to explain how lifetimes define relationships between borrowed data, rather than magically extending how long data exists.

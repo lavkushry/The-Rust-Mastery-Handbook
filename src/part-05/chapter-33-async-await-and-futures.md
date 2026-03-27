@@ -117,7 +117,42 @@
   </figure>
 </div>
 
+
+<div class="annotated-code" style="--chapter-accent: var(--async);">
+
+```rust
+async fn fetch_data(url: &str) -> String {
+    let resp = reqwest::get(url).await?;
+    resp.text().await?
+}
+
+#[tokio::main]
+async fn main() {
+    let (a, b) = tokio::join!(
+        fetch_data("https://api.a.com"),
+        fetch_data("https://api.b.com"),
+    );
+}
+```
+
+<div class="ann-col">
+  <div class="ann-item ann-async">
+    <strong>async fn</strong>
+    Returns a <code>Future</code>, not the value. Body doesn't run until polled.
+  </div>
+  <div class="ann-item ann-async">
+    <strong>.await</strong>
+    Yield point: suspends this future, lets the executor poll others. Resumes when I/O completes.
+  </div>
+  <div class="ann-item ann-valid">
+    <strong>join! concurrency</strong>
+    Both futures polled concurrently on one thread. Not parallel — cooperative multitasking.
+  </div>
+</div>
+</div>
+
 ## Step 1 - The Problem
+
 
 > **Learning Objective**
 > By the end of this chapter, you should be able to explain how `async/await` transforms functions into pollable state machines, and why calling an `async fn` does not start execution immediately.

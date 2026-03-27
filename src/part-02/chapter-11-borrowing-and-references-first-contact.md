@@ -163,4 +163,35 @@
   <figcaption class="visual-figure__caption">These two rules are the entire borrowing system. Every borrow checker error traces back to one of them. Learn to identify which rule is being violated and the error message becomes a diagnosis, not a mystery.</figcaption>
 </figure>
 
+
+<div class="annotated-code" style="--chapter-accent: var(--borrow-shared);">
+
+```rust
+let mut data = vec![1, 2, 3];
+let r1 = &data;          // shared borrow
+let r2 = &data;          // another shared borrow
+println!("{r1:?} {r2:?}");  // last use of r1, r2
+data.push(4);            // mutable access OK — borrows ended
+```
+
+<div class="ann-col">
+  <div class="ann-item ann-own">
+    <strong>Owner</strong>
+    <code>data</code> owns the Vec on the heap.
+  </div>
+  <div class="ann-item ann-borrow">
+    <strong>&T shared borrows</strong>
+    <code>r1</code> and <code>r2</code> borrow <code>data</code> immutably. Multiple readers allowed.
+  </div>
+  <div class="ann-item ann-valid">
+    <strong>NLL ends borrows here</strong>
+    Non-Lexical Lifetimes: borrows end at last use, not block end.
+  </div>
+  <div class="ann-item ann-mut">
+    <strong>&mut T access</strong>
+    <code>push</code> requires <code>&mut self</code>. Valid because shared borrows already ended.
+  </div>
+</div>
+</div>
+
 ## Step 1 - The Problem

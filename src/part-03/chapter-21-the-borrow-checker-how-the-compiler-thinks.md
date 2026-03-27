@@ -171,4 +171,30 @@
   </div>
 </div>
 
+
+<div class="annotated-code" style="--chapter-accent: var(--lifetime);">
+
+```rust
+let mut data = String::from("hello");
+let r = &data;               // borrow starts
+data.push_str(" world");     // E0502: &mut while &data lives
+println!("{r}");             // borrow extends to here
+```
+
+<div class="ann-col">
+  <div class="ann-item ann-borrow">
+    <strong>Borrow starts</strong>
+    MIR records <code>r</code> as a live shared borrow of <code>data</code>.
+  </div>
+  <div class="ann-item ann-error">
+    <strong>E0502: conflict</strong>
+    <code>push_str</code> requires <code>&mut data</code> but <code>r</code> holds <code>&data</code>. The borrow checker rejects.
+  </div>
+  <div class="ann-item ann-life">
+    <strong>NLL liveness</strong>
+    Borrow of <code>r</code> ends at its last use (line 4), not at scope end. Moving <code>println!</code> above <code>push_str</code> would fix it.
+  </div>
+</div>
+</div>
+
 ## Step 1 - The Problem

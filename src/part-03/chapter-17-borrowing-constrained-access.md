@@ -96,4 +96,34 @@
   </figure>
 </div>
 
+
+<div class="annotated-code" style="--chapter-accent: var(--borrow-exclusive);">
+
+```rust
+let mut v = vec![1, 2, 3];
+let first = &v[0];       // shared borrow of v
+v.push(4);                // ERROR: &mut borrow while &v lives
+println!("{first}");      // shared borrow used after conflict
+```
+
+<div class="ann-col">
+  <div class="ann-item ann-own">
+    <strong>Owner created</strong>
+    <code>v</code> owns the Vec. Heap buffer at address A.
+  </div>
+  <div class="ann-item ann-borrow">
+    <strong>&T borrow</strong>
+    <code>first</code> borrows into v's buffer. It assumes buffer stability.
+  </div>
+  <div class="ann-item ann-error">
+    <strong>E0502</strong>
+    <code>push</code> needs <code>&mut v</code> but <code>first</code>'s <code>&v</code> is still live. push may reallocate, moving the buffer.
+  </div>
+  <div class="ann-item ann-error">
+    <strong>Dangling prevented</strong>
+    If <code>push</code> reallocated, <code>first</code> would point to freed memory. Borrow checker prevents it.
+  </div>
+</div>
+</div>
+
 ## Step 1 - The Problem

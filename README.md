@@ -26,6 +26,8 @@ This repository publishes a multi-part Rust learning handbook built with mdBook,
 ## Table of Contents
 
 - [The Rust Mastery Handbook](#the-rust-mastery-handbook)
+  - [Start Here](#start-here)
+  - [Choose Your Path](#choose-your-path)
   - [Table of Contents](#table-of-contents)
   - [Why This Exists](#why-this-exists)
   - [Rust Handbook for Systems Engineers](#rust-handbook-for-systems-engineers)
@@ -248,6 +250,12 @@ npx playwright install --with-deps chromium
 npx playwright test
 ```
 
+Accessibility scan subset:
+
+```bash
+npx playwright test tests/e2e/handbook.spec.mjs --grep "axe scan"
+```
+
 For repeatable release checks, use [docs/jules-regression-playbook.md](docs/jules-regression-playbook.md).
 
 ## Publishing and Deployment
@@ -267,6 +275,7 @@ For repeatable release checks, use [docs/jules-regression-playbook.md](docs/jule
 - Versioning policy: [docs/versioning-policy.md](docs/versioning-policy.md)
 - Editorial style guide: [docs/editorial-style-guide.md](docs/editorial-style-guide.md)
 - Chapter assessment template: [docs/chapter-assessment-template.md](docs/chapter-assessment-template.md)
+- Compiler error playbook: [docs/compiler-error-playbook.md](docs/compiler-error-playbook.md)
 - Rust resource atlas: [docs/rust-resource-atlas.md](docs/rust-resource-atlas.md)
 - Review checklist: [docs/review-checklist.md](docs/review-checklist.md)
 - Release checklist: [docs/release-checklist.md](docs/release-checklist.md)

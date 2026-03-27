@@ -325,6 +325,18 @@ Who is responsible for the string data after line 2 executes?
 ### Error Interpretation
 If you try to use `my_string` after the snippet above, `rustc` will give you error `E0382: use of moved value`. This is the compiler telling you that the authority to read or modify the string has transferred to `s2`.
 
+## Compiler Error Decoder - Ownership Basics
+
+Use this table while reading compiler output. The goal is to map each error to the ownership rule that was violated.
+
+| Error code | What it usually means                              | Typical fix direction                                                          |
+| ---------- | -------------------------------------------------- | ------------------------------------------------------------------------------ |
+| E0382      | You used a value after it was moved                | Borrow with `&T`, return ownership, or clone intentionally                     |
+| E0507      | You tried to move out of borrowed content          | Borrow inner data, restructure ownership, or use `mem::take` where appropriate |
+| E0716      | A temporary value was dropped while still borrowed | Bind temporary values to named variables before borrowing                      |
+
+If you still feel stuck, jump to `rustc --explain <CODE>` and connect the explanation back to the ownership timeline in this chapter.
+
 ## Chapter Resources
 * **Official Source:** [The Rust Programming Language, Chapter 4: Understanding Ownership](https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html)
 * **Official Source:** [Rustonomicon: Ownership](https://doc.rust-lang.org/nomicon/ownership.html)

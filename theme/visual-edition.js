@@ -519,6 +519,25 @@
   }
 
   function styleTables(main) {
+    const ensureTableWrapperA11y = (wrapper, table) => {
+      if (!wrapper) {
+        return;
+      }
+
+      wrapper.tabIndex = 0;
+      if (!wrapper.hasAttribute("role")) {
+        wrapper.setAttribute("role", "region");
+      }
+
+      const caption = table.querySelector("caption")?.textContent?.trim();
+      if (!wrapper.hasAttribute("aria-label")) {
+        wrapper.setAttribute(
+          "aria-label",
+          caption ? `Scrollable table: ${caption}` : "Scrollable table region",
+        );
+      }
+    };
+
     main.querySelectorAll("table").forEach((table) => {
       table.classList.add("visual-table");
 
@@ -529,8 +548,29 @@
         wrapper.className = "visual-table-wrapper";
         table.replaceWith(wrapper);
         wrapper.appendChild(table);
+        ensureTableWrapperA11y(wrapper, table);
+      } else {
+        ensureTableWrapperA11y(table.parentElement, table);
       }
     });
+  }
+
+  function enhanceScrollableRegionA11y(main) {
+    main.querySelectorAll(".visual-figure__body").forEach((region) => {
+      region.tabIndex = 0;
+      if (!region.hasAttribute("aria-label")) {
+        region.setAttribute("aria-label", "Scrollable diagram region");
+      }
+    });
+
+    main
+      .querySelectorAll(".annotated-code > .playground > .language-rust.hide-boring, #mdbook-content main pre")
+      .forEach((region) => {
+        region.tabIndex = 0;
+        if (!region.hasAttribute("aria-label")) {
+          region.setAttribute("aria-label", "Scrollable Rust code sample");
+        }
+      });
   }
 
   function initFlashcardFlip(main) {
@@ -823,6 +863,7 @@
     enhanceFlashcardDecks(main);
     enhanceCheatSheets(main);
     styleTables(main);
+    enhanceScrollableRegionA11y(main);
     createHero(main, title, concept.color, concept.key);
     initFlashcardFlip(main);
     initProgressTracker(main);

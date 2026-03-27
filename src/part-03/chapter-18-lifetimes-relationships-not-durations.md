@@ -220,6 +220,16 @@ Use this checkpoint to confirm you can reason about reference relationships, not
 
 If any row is below Level 2, revisit Chapter 11 and run Drill Deck 2 again.
 
+## Compiler Error Decoder - Lifetime Relationships
+
+| Error code | What it usually means                                          | Typical fix direction                                        |
+| ---------- | -------------------------------------------------------------- | ------------------------------------------------------------ |
+| E0597      | Referenced value does not live long enough                     | Move owner to a wider scope or return owned data instead     |
+| E0515      | Returning a reference to local data                            | Return an owned value, or borrow from caller-provided inputs |
+| E0621      | Function signature lifetime contract mismatches implementation | Align annotations with real input-output borrow relationship |
+
+Treat lifetime errors as relationship mismatches, not annotation shortages.
+
 ## Step 1 - The Problem
 
 > **Learning Objective**

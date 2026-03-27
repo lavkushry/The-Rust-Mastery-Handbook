@@ -1,4 +1,5 @@
 # Chapter 11: Borrowing and References, First Contact
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -163,7 +164,6 @@
   <figcaption class="visual-figure__caption">These two rules are the entire borrowing system. Every borrow checker error traces back to one of them. Learn to identify which rule is being violated and the error message becomes a diagnosis, not a mystery.</figcaption>
 </figure>
 
-
 <div class="annotated-code" style="--chapter-accent: var(--borrow-shared);">
 
 ```rust
@@ -194,7 +194,6 @@ data.push(4);            // mutable access OK — borrows ended
 </div>
 </div>
 
-
 ### In Your Language: References vs Pointers
 
 <div class="lang-compare">
@@ -224,5 +223,17 @@ int n = len(owned); // works — GC manages lifetime
 
 </div>
 </div>
+
+## Compiler Error Decoder - Borrowing Basics
+
+These are the top errors learners hit in early borrowing code.
+
+| Error code | What it usually means                          | Typical fix direction                                                    |
+| ---------- | ---------------------------------------------- | ------------------------------------------------------------------------ |
+| E0502      | Mutable and immutable borrows overlap          | End shared borrows earlier, split scopes, or reorder operations          |
+| E0499      | More than one mutable borrow exists at once    | Keep one `&mut` alive at a time; refactor into sequential mutation steps |
+| E0596      | Tried to mutate through an immutable reference | Change to `&mut`, or move mutation to the owner                          |
+
+When debugging, first mark where each borrow starts and where its last use occurs. Most fixes come from shrinking one overlapping region.
 
 ## Step 1 - The Problem

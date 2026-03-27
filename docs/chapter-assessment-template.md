@@ -42,3 +42,13 @@ Use 3-4 measurable skills tied to chapter outcomes.
 - Progression from Level 0 to Level 3 is realistic
 - Wording is actionable for self-assessment
 - Review path is provided when readiness is low
+
+## Optional Add-on: Compiler Error Decoder
+
+For Rust-heavy chapters, include a short decoder table with 2-3 frequent error codes.
+
+| Error code | What it usually means  | Typical fix direction       |
+| ---------- | ---------------------- | --------------------------- |
+| E0XXX      | One-sentence diagnosis | One-sentence structural fix |
+
+Keep it chapter-specific and map each error to a concept taught in that chapter.

@@ -1,5 +1,6 @@
 // @ts-check
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+import axeCore from "axe-core";
 
 /**
  * Pages to test across the handbook — representative sample.
@@ -30,8 +31,32 @@ const KNOWN_OFFLINE_ERROR_PATTERNS = [
   /net::ERR_/,
 ];
 
+/** @param {string} message */
 function isKnownOfflineError(message) {
   return KNOWN_OFFLINE_ERROR_PATTERNS.some((re) => re.test(message));
+}
+
+/** @param {import("@playwright/test").Page} page */
+async function runAxeOnMain(page) {
+  await page.addScriptTag({ content: axeCore.source });
+  return page.evaluate(async () => {
+    const context = document.querySelector("#mdbook-content main") ?? document.body;
+    const axeApi = /** @type {any} */ (window).axe;
+    if (!axeApi) {
+      throw new Error("axe was not injected into the page context");
+    }
+
+    return axeApi.run(context, {
+      runOnly: {
+        type: "tag",
+        values: ["wcag2a", "wcag2aa"],
+      },
+      rules: {
+        // We validate structural a11y in CI; contrast depends on theme and user settings.
+        "color-contrast": { enabled: false },
+      },
+    });
+  });
 }
 
 // ─── No unexpected JS console errors ─────────────────────────────────────────
@@ -150,6 +175,58 @@ test("visible focus states — links are keyboard accessible", async ({ page }) 
   const focused = page.locator(":focus");
   const count = await focused.count();
   expect(count, "No element received focus after Tab").toBeGreaterThan(0);
+});
+
+for (const pageInfo of [
+  { name: "title-page", path: "/00_title_and_toc.html" },
+  { name: "ownership-chapter", path: "/part-03/chapter-16-ownership-as-resource-management.html" },
+  { name: "borrowing-chapter", path: "/part-03/chapter-17-borrowing-constrained-access.html" },
+  { name: "lifetimes-chapter", path: "/part-03/chapter-18-lifetimes-relationships-not-durations.html" },
+]) {
+  test(`axe scan — no serious/critical violations on ${pageInfo.name}`, async ({ page }) => {
+    await page.goto(pageInfo.path);
+    await page.waitForLoadState("domcontentloaded");
+
+    const axeResult = await runAxeOnMain(page);
+    const seriousViolations = /** @type {any[]} */ (axeResult.violations).filter((violation) => {
+      return violation.impact === "serious" || violation.impact === "critical";
+    });
+
+    const details = seriousViolations
+      .map((violation) => `${violation.id} (${violation.impact}): ${violation.help}`)
+      .join("; ");
+
+    expect(
+      seriousViolations,
+      `Serious/critical axe violations on ${pageInfo.name}: ${details}`,
+    ).toHaveLength(0);
+  });
+}
+
+test("generated inline svg icons are either decorative or labeled", async ({ page }) => {
+  await page.goto(PAGES.find((p) => p.name === "ownership-chapter").path);
+  await page.waitForLoadState("domcontentloaded");
+
+  const iconProblems = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll(".inline-svg-icon")).filter((icon) => {
+      const hidden = icon.getAttribute("aria-hidden") === "true";
+      const label = (icon.getAttribute("aria-label") || "").trim();
+      const role = icon.getAttribute("role");
+
+      if (!hidden && !label) {
+        return true;
+      }
+      if (hidden && label) {
+        return true;
+      }
+      if (label && role !== "img") {
+        return true;
+      }
+      return false;
+    }).length;
+  });
+
+  expect(iconProblems, "Found generated SVG icons with invalid accessibility semantics").toBe(0);
 });
 
 // ─── Navigation links present ─────────────────────────────────────────────────

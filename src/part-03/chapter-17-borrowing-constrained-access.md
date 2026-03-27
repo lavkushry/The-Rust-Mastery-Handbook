@@ -189,4 +189,14 @@ Before proceeding, self-check your ability to reason about aliasing and mutation
 
 Target Level 2+ before moving to Chapter 21.
 
+## Compiler Error Decoder - Constrained Access
+
+| Error code | What it usually means                           | Typical fix direction                                            |
+| ---------- | ----------------------------------------------- | ---------------------------------------------------------------- |
+| E0502      | Immutable and mutable borrows overlap           | Narrow borrow lifetimes with smaller scopes and earlier last-use |
+| E0499      | Two mutable borrows coexist                     | Refactor into one mutation path at a time                        |
+| E0506      | Assigned to a value while it was still borrowed | Delay assignment until borrow ends or clone required data first  |
+
+Always ask: "Which borrow must stay live here?" Then eliminate or shorten the other one.
+
 ## Step 1 - The Problem

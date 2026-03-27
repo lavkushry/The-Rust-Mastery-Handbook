@@ -124,4 +124,14 @@ Use this quick rubric before moving on. Aim for at least Level 2 in each row.
 
 If you are below Level 2 in any row, revisit the code reading drills in this chapter and Drill Deck 1.
 
+## Compiler Error Decoder - RAII and Drop
+
+| Error code | What it usually means                              | Typical fix direction                                         |
+| ---------- | -------------------------------------------------- | ------------------------------------------------------------- |
+| E0382      | Value used after move during resource flow         | Pass by reference when ownership transfer is not intended     |
+| E0509      | Tried to move out of a type that implements `Drop` | Borrow fields or redesign ownership boundaries for extraction |
+| E0040      | Attempted to call `Drop::drop` directly            | Use `drop(value)` and let Rust enforce one-time teardown      |
+
+If your cleanup logic feels complicated, model it as ownership transitions first, then encode it in API boundaries.
+
 ## Step 1 - The Problem

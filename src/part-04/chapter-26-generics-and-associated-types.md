@@ -65,11 +65,14 @@ If `Iterator` instead used a trait parameter like `Iterator<Item>`, then one typ
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Generics let code work with many types. Associated types are for traits where an implementation naturally comes with one specific related type.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Generics are ideal for:
 
@@ -87,9 +90,14 @@ Associated types are ideal for:
 
 They keep signatures smaller and more meaningful.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Monomorphization is why generics are usually zero-cost at runtime. Each concrete use site gets specialized code. The tradeoff is compile time and binary size. Associated types improve trait ergonomics and help avoid impl ambiguity by encoding the natural type family relationship inside the trait itself.
+
+</div>
+</div>
+
 
 ## Generics vs Trait Objects
 

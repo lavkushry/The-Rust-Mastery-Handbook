@@ -218,11 +218,14 @@ Rust is already solving the systems problem here. The compiler error is the safe
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Rust is trying to stop you from using memory after the program has stopped owning it.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 The more complex your system becomes, the more often ownership becomes unclear:
 
@@ -233,7 +236,8 @@ The more complex your system becomes, the more often ownership becomes unclear:
 
 Rust forces those answers into the code shape itself.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Most catastrophic low-level failures are invariant failures:
 
@@ -243,6 +247,10 @@ Most catastrophic low-level failures are invariant failures:
 - unsynchronized access violates the memory model
 
 Rust's ownership and borrowing system is not primarily about ergonomics. It is an invariant-enforcement system designed to remove these states from safe code.
+
+</div>
+</div>
+
 
 ## Step 7 - Common Misconceptions
 

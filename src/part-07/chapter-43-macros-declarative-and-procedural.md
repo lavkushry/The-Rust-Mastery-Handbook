@@ -131,11 +131,14 @@ Hygiene matters here too. Identifiers introduced by the macro are tracked so the
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Macros write code for you at compile time. They are useful when normal functions cannot express the shape of what you want.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Prefer ordinary code first. Reach for `macro_rules!` when you need:
 
@@ -146,7 +149,8 @@ Prefer ordinary code first. Reach for `macro_rules!` when you need:
 
 Reach for procedural macros when you need to inspect or generate Rust syntax trees, especially for derive-style APIs.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Macros sit before or alongside later compiler phases. Declarative macros operate on token trees, not typed AST nodes. Procedural macros also operate before type checking, though they can parse tokens into richer syntax structures using crates like `syn`.
 
@@ -154,6 +158,10 @@ That placement explains both their power and their weakness:
 
 - power: they can generate impls and syntax the language cannot abstract directly
 - weakness: they know nothing about types unless they encode conventions themselves
+
+</div>
+</div>
+
 
 ## `macro_rules!`, Hygiene, and Repetition
 

@@ -81,11 +81,14 @@ The compiler checks every possible pattern path is handled.
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Rust has the usual branching and loops, but `if` and `match` are often value-producing and `match` must cover every case.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Use:
 
@@ -94,9 +97,14 @@ Use:
 - `match` when exhaustiveness matters or several shapes need handling
 - labeled loops when nested-control exits need to be obvious
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Exhaustiveness is a correctness feature, not a convenience. It means enums and variant-rich APIs can evolve more safely because missing cases are caught during compilation instead of surfacing as forgotten runtime branches.
+
+</div>
+</div>
+
 
 ## Loops and Ranges
 

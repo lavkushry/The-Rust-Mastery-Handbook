@@ -113,17 +113,25 @@ Each stage has different goals and different failure modes.
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 First you need to stop translating every Rust idea into another language in your head.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Then you need to become useful in real codebases: async services, CLIs, libraries, tests, and diagnostics.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Finally, you need to think in terms of tradeoffs, public API stability, profiling, compiler behavior, and contribution quality. That is where "knows Rust" becomes "can shape Rust systems."
+
+</div>
+</div>
+
 
 ## Months 1-3: Foundations
 

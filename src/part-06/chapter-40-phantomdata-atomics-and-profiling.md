@@ -122,11 +122,14 @@ This is why `PhantomData` is not "just to silence the compiler." It carries sema
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 `PhantomData` is how a type says, "I logically care about this type or lifetime even if I do not store a value of it."
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Use `PhantomData` for:
 
@@ -137,7 +140,8 @@ Use `PhantomData` for:
 
 Use atomics only when the shared state transition is small enough that you can explain the required ordering in a sentence. Otherwise, prefer a mutex.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 There are different phantom patterns with different implications:
 
@@ -146,6 +150,10 @@ There are different phantom patterns with different implications:
 - `PhantomData<fn(T)>` and related tricks can influence variance in advanced designs
 
 Atomics expose the memory model explicitly. `Relaxed` gives atomicity without synchronization. Acquire/Release establish happens-before edges. `SeqCst` gives the strongest globally ordered model and is often the right starting point when correctness matters more than micro-optimizing ordering.
+
+</div>
+</div>
+
 
 ## Atomics and Ordering Decision Rules
 

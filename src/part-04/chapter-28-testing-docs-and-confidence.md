@@ -85,11 +85,14 @@ This arrangement matters because unit tests inside the module can access private
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Unit tests sit close to the code they check. Integration tests act more like real users of the crate.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Strong test strategy often looks like:
 
@@ -99,7 +102,8 @@ Strong test strategy often looks like:
 - snapshot tests for structured output
 - property tests for invariants that should hold across many generated inputs
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Tests are how you preserve invariants the type system cannot encode. They are especially important around:
 
@@ -110,6 +114,10 @@ Tests are how you preserve invariants the type system cannot encode. They are es
 - error surface stability
 
 The best Rust codebases often read tests first because tests reveal intended usage and failure boundaries more directly than implementation files.
+
+</div>
+</div>
+
 
 ## `cargo test`, `#[cfg(test)]`, and Organization
 

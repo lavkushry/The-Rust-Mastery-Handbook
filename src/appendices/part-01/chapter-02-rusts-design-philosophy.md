@@ -123,11 +123,14 @@ the contract is in the type signature, not in a paragraph of documentation.
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Rust likes to make important facts visible. If something may be missing, it uses `Option`. If something may fail, it uses `Result`. If something can change, mutability is marked.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 In production code, this philosophy pays off in review and maintenance:
 
@@ -138,7 +141,8 @@ In production code, this philosophy pays off in review and maintenance:
 
 You read less code wondering "what am I allowed to do with this value?"
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Rust's philosophy is compiler-aware engineering. The language is designed so the compiler can prove more about program behavior:
 
@@ -148,6 +152,10 @@ Rust's philosophy is compiler-aware engineering. The language is designed so the
 - explicit error types preserve control-flow visibility
 
 The language is not merely syntax around machine code. It is a proof surface for systems constraints.
+
+</div>
+</div>
+
 
 ## Rust vs Older Tradeoffs
 

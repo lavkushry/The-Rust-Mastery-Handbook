@@ -115,11 +115,14 @@ the callee must not smuggle in a borrow tied to one specific captured lifetime w
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Some functions must work with whatever borrow the caller gives them. `for<'a>` is how Rust says that explicitly.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Advanced lifetime tools matter in:
 
@@ -130,7 +133,8 @@ Advanced lifetime tools matter in:
 
 Variance matters because mutability changes what substitutions are safe. Shared references are usually covariant. Mutable references are invariant in the referenced type because mutation can break substitution assumptions.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Variance summary:
 
@@ -143,6 +147,10 @@ Variance summary:
 | interior mutability wrappers | often invariant |
 
 Why does this matter? Because if `&mut T<'long>` could be treated as `&mut T<'short>` too freely, code could write a shorter-lived borrow into a place expecting a longer-lived one. That would be unsound.
+
+</div>
+</div>
+
 
 ## Lifetime Subtyping and Trait Objects
 

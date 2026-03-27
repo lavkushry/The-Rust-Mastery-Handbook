@@ -96,11 +96,14 @@ This example already shows several idiomatic collection ideas:
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Use `Vec<T>` when you want a growable list. Use `String` when you own text. Use `&str` when you only need to read text. Use `HashMap` when you want to find values by key.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Idiomatic collection work often starts with these questions:
 
@@ -117,7 +120,8 @@ Examples:
 - accept `&str` in APIs so callers can pass both literals and `String`
 - use the `Entry` API to combine lookup and mutation into one operation
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 `Vec<T>` is Rust's workhorse because contiguous storage is cache-friendly and simple to optimize. `String` inherits that contiguity but adds UTF-8 semantics, which is why byte indexing is not exposed as character indexing. `HashMap` is powerful, but hash-based lookup has tradeoffs:
 
@@ -126,6 +130,10 @@ Examples:
 - memory overhead versus denser structures
 
 Sometimes `BTreeMap` wins because predictable ordering and better small-collection locality matter more than average-case hash lookup speed.
+
+</div>
+</div>
+
 
 ## `Vec<T>` in Practice
 

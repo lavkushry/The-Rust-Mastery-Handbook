@@ -84,11 +84,14 @@ the aliasing rule still exists, but enforcement moved from compile time to runti
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Smart pointers are not just pointers. Each one adds a rule about ownership or mutation.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Pick them deliberately:
 
@@ -98,7 +101,8 @@ Pick them deliberately:
 - `RefCell<T>` when a single-threaded design truly needs interior mutability
 - `Mutex<T>` or `RwLock<T>` when cross-thread mutation must be synchronized
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Each smart pointer trades one cost for another:
 
@@ -109,6 +113,10 @@ Each smart pointer trades one cost for another:
 - `Mutex<T>`: locking cost and deadlock risk
 
 These are design decisions, not borrow-checker escape hatches.
+
+</div>
+</div>
+
 
 ## `Box<T>`, Trait Objects, and Recursive Types
 

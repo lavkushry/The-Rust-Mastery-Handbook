@@ -128,11 +128,14 @@ That same idea explains why:
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Rust can often store extra meaning inside values without making them bigger. It uses impossible values, like a null pointer where a valid reference can never be null, to encode variants like `None`.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Layout knowledge matters when you design:
 
@@ -143,7 +146,8 @@ Layout knowledge matters when you design:
 
 But "zero-cost" does not mean "free in every dimension." Generics can increase compile time and binary size. Iterator chains can optimize beautifully, but only if you keep enough static structure for the optimizer to work with.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Rust's zero-cost claim lives on top of concrete compiler machinery. Generics become specialized code through monomorphization. Trait-object dispatch remains dynamic because you asked for runtime erasure. Slice references and trait objects are fat pointers because unsized values require metadata. Layout is a combination of:
 
@@ -154,6 +158,10 @@ Rust's zero-cost claim lives on top of concrete compiler machinery. Generics bec
 - representation attributes
 
 Understanding those pieces lets you predict when a design is cheap, when it is branch-heavy, and when it leaks abstraction cost into runtime.
+
+</div>
+</div>
+
 
 ## Field Ordering, Padding, and `repr`
 

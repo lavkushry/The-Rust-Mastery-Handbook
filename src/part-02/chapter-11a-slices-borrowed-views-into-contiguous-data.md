@@ -53,11 +53,14 @@ The function does not own any numbers. It borrows an existing slice and returns 
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Slices let you talk about part of an array, vector, or string without copying it.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Slice-based APIs are powerful because they are:
 
@@ -67,9 +70,14 @@ Slice-based APIs are powerful because they are:
 
 They are common in parsers, formatters, scanners, and text-processing code.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Slices are fat pointers: pointer plus length. Their safety comes from tying that view to a valid owner region and preserving bounds. `&str` adds the UTF-8 invariant on top.
+
+</div>
+</div>
+
 
 ## `&str` and UTF-8 Boundaries
 

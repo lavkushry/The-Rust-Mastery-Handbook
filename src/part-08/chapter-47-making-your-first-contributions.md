@@ -122,11 +122,14 @@ This is the contribution equivalent of good Rust typing: make the contract visib
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Start with small changes that have clear before-and-after behavior.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 The contribution ladder is real:
 
@@ -138,7 +141,8 @@ The contribution ladder is real:
 
 Skipping directly to "major redesign" is usually a mistake unless maintainers explicitly asked for it.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Maintainers are not only checking correctness. They are checking:
 
@@ -149,6 +153,10 @@ Maintainers are not only checking correctness. They are checking:
 - reviewer time cost
 
 A great first PR is one whose correctness and maintenance cost are both legible.
+
+</div>
+</div>
+
 
 ## Choosing a Good First Issue
 

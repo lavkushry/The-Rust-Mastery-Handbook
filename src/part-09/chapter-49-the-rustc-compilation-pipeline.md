@@ -139,11 +139,14 @@ ownership, typing, and dispatch semantics must become explicit enough before the
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 The compiler does not check your program only as written. It gradually turns your code into simpler internal forms that are easier to analyze.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 HIR matters because it is where a lot of semantic reasoning becomes clearer after desugaring.
 
@@ -156,7 +159,8 @@ MIR matters because:
 
 Monomorphization matters because it explains why generic code is fast but can grow compile time and binary size.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 The pipeline is also a design boundary system:
 
@@ -166,6 +170,10 @@ The pipeline is also a design boundary system:
 - backend IR for machine-level optimization
 
 This separation lets Rust pursue strong source-level guarantees without forcing the backend to reconstruct ownership and borrow semantics from machine-ish code.
+
+</div>
+</div>
+
 
 ## HIR, MIR, and Borrow Checking
 

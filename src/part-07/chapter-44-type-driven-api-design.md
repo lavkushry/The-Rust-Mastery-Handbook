@@ -147,11 +147,14 @@ This is the essential typestate move. State transitions become type transitions.
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 The type of the value tells you what stage it is in. If an operation is only valid in one stage, put that method only on that stage's type.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Type-driven APIs are most valuable when:
 
@@ -162,7 +165,8 @@ Type-driven APIs are most valuable when:
 
 But do not encode every business rule in the type system. Use types for durable, structural invariants. Use runtime validation for dynamic facts.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Type-driven API design is about preserving invariants at module boundaries. Every public constructor, method, and trait impl either preserves or weakens those invariants.
 
@@ -173,6 +177,10 @@ Good libraries create narrow, explicit conversion points:
 - make illegal transitions impossible through ownership and types
 
 This reduces downstream branching, error handling, and misuse.
+
+</div>
+</div>
+
 
 ## Newtypes
 

@@ -151,7 +151,39 @@ async fn main() {
 </div>
 </div>
 
+
+### In Your Language: Async Models
+
+<div class="lang-compare">
+<div class="lang-panel">
+<span class="lang-label lang-label--rust">Rust — zero-cost async</span>
+
+```rust
+async fn fetch(url: &str) -> String {
+    reqwest::get(url).await?.text().await?
+}
+// Future is a state machine — no heap alloc per task
+// Must choose runtime: tokio, async-std, smol
+```
+
+</div>
+<div class="lang-panel">
+<span class="lang-label lang-label--python">Python — asyncio</span>
+
+```python
+async def fetch(url: str) -> str:
+    async with aiohttp.get(url) as r:
+        return await r.text()
+# Coroutine objects heap-allocated
+# Single built-in event loop (asyncio)
+# GIL limits true parallelism
+```
+
+</div>
+</div>
+
 ## Step 1 - The Problem
+
 
 
 > **Learning Objective**
@@ -251,11 +283,14 @@ the executor may pause and resume the computation at each `.await`, but the futu
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 An async function gives you a task-shaped value. `.await` is how you ask Rust to keep checking that task until it finishes.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Use async when the workload is dominated by waiting on I/O: sockets, files, timers, database round-trips, RPC calls. Do not use async because it feels modern. CPU-bound work inside async code still consumes executor time and may need `spawn_blocking` or dedicated threads.
 
@@ -267,7 +302,8 @@ Tokio dominates server-side Rust because it provides:
 - channels and synchronization primitives
 - timers
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 The `Future` trait is a polling interface:
 
@@ -285,6 +321,10 @@ trait DemoFuture {
 `Poll::Pending` means "not ready yet, but I have registered how to wake me." That wakeup path is how the runtime avoids busy-waiting.
 
 Rust async is zero-cost in the sense that the state machine is concrete and optimizable. But that does not mean "free." Futures still have size, allocation strategies still matter, and scheduler behavior still matters. Zero-cost means the abstraction does not force extra indirection beyond what the semantics require.
+
+</div>
+</div>
+
 
 ## Executors, `tokio::spawn`, and `join!`
 

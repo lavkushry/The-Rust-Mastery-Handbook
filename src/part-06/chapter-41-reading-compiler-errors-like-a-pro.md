@@ -199,11 +199,14 @@ The important insight is that the complaint is not at the move site alone or the
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 The compiler is usually telling you what happened first and why the later line is no longer allowed.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Common strategy:
 
@@ -212,7 +215,8 @@ Common strategy:
 - simplify the function until the ownership or type shape becomes obvious
 - inspect the type the compiler inferred, not the type you intended mentally
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Rust diagnostics often reflect deep compiler passes:
 
@@ -222,6 +226,10 @@ Rust diagnostics often reflect deep compiler passes:
 - lifetime relationships that could not be satisfied
 
 You do not need to understand the whole compiler to use this well. But you do need to treat the diagnostics as structured evidence, not as hostile text.
+
+</div>
+</div>
+
 
 ## High-Value Error Families
 

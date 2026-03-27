@@ -76,11 +76,14 @@ That is enough for Cargo to build a dependency graph and fetch compatible crate 
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 `Cargo.toml` describes what the project is and what it depends on.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 The most important parts to read or write well are:
 
@@ -92,9 +95,14 @@ The most important parts to read or write well are:
 
 Dependency entries are not just install instructions. They are compatibility and capability declarations.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Cargo manifests are architecture signals. Feature flags shape compilation surface. Workspaces shape crate boundaries. Lockfiles shape reproducibility. `build.rs` can extend the build graph into generated code or foreign compilation. All of that changes how a repo should be read and maintained.
+
+</div>
+</div>
+
 
 ## Dependency Versioning
 

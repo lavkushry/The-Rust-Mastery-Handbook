@@ -112,11 +112,14 @@ polling a future may cause it to store references between its internal states. T
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Some async values need to stay put in memory once execution has started. `Pin` is the type-system tool for saying "do not move this after this point."
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 In ordinary application code, you mostly see pinning through:
 
@@ -127,7 +130,8 @@ In ordinary application code, you mostly see pinning through:
 
 If a compiler error mentions pinning, it usually means a future or stream is being polled through an API that requires stable storage.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Pinning is subtle because Rust normally allows moves freely. A move is usually just a bitwise relocation of a value to a new storage slot. For self-referential state, that is unsound.
 
@@ -137,6 +141,10 @@ Pinning is subtle because Rust normally allows moves freely. A move is usually j
 - unsafe code implementing projection or custom futures must preserve that guarantee
 
 That is why libraries like Tokio use `pin-project-lite` internally. Field projection of pinned structs is delicate. You cannot just grab a `&mut` to a structurally pinned field and move on.
+
+</div>
+</div>
+
 
 ## Why Async Rust Feels Harder Than JavaScript or Go
 

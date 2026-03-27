@@ -72,11 +72,14 @@ The semicolon discards `5` and produces `()`, so the function body has the wrong
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 If the last line of a block has no semicolon, Rust often treats it as the value of that block.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 This makes local computation concise:
 
@@ -86,9 +89,14 @@ This makes local computation concise:
 
 Function signatures are also contracts: parameter types and return types tell the caller what the function needs and what it promises to hand back.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Expression orientation is not only syntactic taste. It helps the language compose control flow and value construction cleanly. It also makes unit `()` important: once discarded, a value does not vanish into "nothingness"; it becomes a real unit result the type system can still reason about.
+
+</div>
+</div>
+
 
 ## Diverging Functions: `!`
 

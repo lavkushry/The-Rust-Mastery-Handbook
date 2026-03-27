@@ -131,11 +131,14 @@ That turns RFCs from historical documents into engineering training.
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Rust features are usually the result of careful public debate, not random design taste.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 The RFC process matters because it teaches you how strong Rust contributors reason:
 
@@ -144,7 +147,8 @@ The RFC process matters because it teaches you how strong Rust contributors reas
 - admit costs
 - preserve coherence with the rest of the language
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Language design in Rust is unusually constrained because the language promises:
 
@@ -154,6 +158,10 @@ Language design in Rust is unusually constrained because the language promises:
 - a teachable model that can still scale to compiler and library internals
 
 Every accepted feature must fit that lattice.
+
+</div>
+</div>
+
 
 ## The RFC Process, Step by Step
 

@@ -95,15 +95,19 @@ If you fill in those six lines for a repo before editing code, you usually avoid
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Different kinds of Rust projects put important logic in different places.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Learn the project family first. The usual file paths, tests, and first PR opportunities differ by family.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Project type determines invariant distribution:
 
@@ -111,6 +115,10 @@ Project type determines invariant distribution:
 - network services care about cancellation, state ownership, request routing, and observability
 - observability systems care about backpressure, event shape, and subscriber/export boundaries
 - compiler repos care about phase isolation, test harnesses, and diagnostics stability
+
+</div>
+</div>
+
 
 ## CLI Tools: `ripgrep`, `bat`, `fd`, `starship`
 

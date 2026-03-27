@@ -119,17 +119,21 @@ Now imagine a future that incrementally fills an internal buffer before returnin
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 `select!` is a race. The first ready thing wins. The others stop.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Use `select!` for event loops, shutdown handling, heartbeats, and timeouts. But audit each branch for cancellation safety.
 
 Futures tied directly to queue receives, socket accepts, or timer ticks are often cancellation-safe. Futures doing multipart writes, custom buffering, or lock-heavy workflows often need more care.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Cancellation in Rust async is not a separate runtime feature bolted on later. It is a consequence of ownership. A future owns its in-progress state. Dropping the future destroys that state. Therefore, cancellation safety is really a statement about whether destroying in-progress state at a suspension point preserves system invariants.
 
@@ -138,6 +142,10 @@ This is why careful async code often separates:
 - state machine progress
 - externally committed side effects
 - retry boundaries
+
+</div>
+</div>
+
 
 ## Timeouts and Graceful Shutdown
 

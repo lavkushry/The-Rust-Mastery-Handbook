@@ -142,17 +142,21 @@ If you tried the same shape with `Rc<RefCell<i32>>`, `thread::spawn` would rejec
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 `Arc` lets many threads own the same value. `Mutex` makes sure only one thread changes it at a time. The lock guard is like a temporary permission slip.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 The common pattern is `Arc<Mutex<T>>` or `Arc<RwLock<T>>`, but mature Rust code treats that as a tool, not a default.
 
 Use it when state is truly shared and long-lived. Do not use it as a reflex to silence the borrow checker. Many designs become simpler if you isolate ownership and send messages to a single state-owning task instead.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 `Send` and `Sync` are `unsafe` auto traits. The compiler derives them structurally for safe code, but incorrect manual implementations can create undefined behavior. `Rc<T>` is `!Send` because non-atomic refcount updates would race. `Cell<T>` and `RefCell<T>` are `!Sync` because shared references to them do not provide thread-safe mutation discipline.
 
@@ -161,6 +165,10 @@ Use it when state is truly shared and long-lived. Do not use it as a reflex to s
 - `Arc` provides thread-safe shared ownership
 - `Mutex` provides exclusive interior access
 - `T` is then accessed under a synchronization contract rather than raw aliasing
+
+</div>
+</div>
+
 
 ## `Send` and `Sync` Precisely
 

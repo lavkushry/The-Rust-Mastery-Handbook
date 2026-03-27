@@ -132,11 +132,14 @@ you must understand the repo's declared contract before you trust your interpret
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Do not start with the biggest file. Start with the files that explain what the project is and how it is organized.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Your first job in an unfamiliar Rust repo is to build three maps:
 
@@ -152,7 +155,8 @@ The invariant map matters most. Great Rust repos are usually organized around on
 - no cross-thread mutation without explicit synchronization
 - no silent feature interactions
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Rust repositories are especially legible when you respect the distinction between:
 
@@ -163,6 +167,10 @@ Rust repositories are especially legible when you respect the distinction betwee
 - async boundary
 
 If you skip those, generic code and trait-based dispatch make the repo feel more abstract than it is.
+
+</div>
+</div>
+
 
 ## The 12-Step Entry Protocol
 

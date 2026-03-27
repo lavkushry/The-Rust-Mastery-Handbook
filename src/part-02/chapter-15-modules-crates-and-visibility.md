@@ -83,11 +83,14 @@ This default-private rule is one of the main ways Rust nudges code toward intent
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Modules group related code. `pub` makes an item visible outside its private scope.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Useful visibility levels:
 
@@ -98,9 +101,14 @@ Useful visibility levels:
 
 `use` brings names into scope. Re-exports let a crate shape a cleaner public surface than its raw file layout.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Module design is architecture. Public API is not the same thing as file structure. Strong libraries often keep many modules private and re-export only the intended stable surface from `lib.rs`. That preserves internal refactor freedom and makes semver easier to manage.
+
+</div>
+</div>
+
 
 ## `mod`, `use`, `pub`
 

@@ -77,11 +77,14 @@ That means this derive is not just convenience. It is a statement about how data
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Serde saves you from manually turning structs into JSON, TOML, YAML, and other formats.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Serde is at its best when your Rust types already reflect the domain shape well. Attributes like `default`, `rename`, and `skip_serializing_if` let you keep the external wire format stable while evolving internal types carefully.
 
@@ -89,11 +92,16 @@ Structured logging with `tracing` is similarly powerful because fields become qu
 
 Builders are valuable when object construction needs defaults, optional fields, or validation at the final step.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Serialization is an ABI of sorts for data. Once a type is persisted, sent over the network, or documented as config, its serde behavior becomes part of the operational contract.
 
 Structured logs are also data contracts. If you log `user_id`, `request_id`, and latency as fields, downstream tooling can filter and aggregate them. If you hide all of that in one formatted string, you gave up machine usefulness for convenience.
+
+</div>
+</div>
+
 
 ## Serde Attributes and Customization
 

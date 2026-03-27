@@ -126,4 +126,55 @@ println!("{first}");      // shared borrow used after conflict
 </div>
 </div>
 
+
+### In Your Language: Iterator Invalidation
+
+<div class="lang-compare">
+<div class="lang-panel">
+<span class="lang-label lang-label--rust">Rust — compile-time prevention</span>
+
+```rust
+let mut v = vec![1, 2, 3];
+let first = &v[0];
+v.push(4);          // COMPILE ERROR
+println!("{first}"); // borrow still live
+```
+
+</div>
+<div class="lang-panel">
+<span class="lang-label lang-label--python">Python — runtime crash possible</span>
+
+```python
+v = [1, 2, 3]
+it = iter(v)
+next(it)          # 1
+v.append(4)       # works! but...
+# iterator may give unexpected results
+# no compile-time guard
+```
+
+</div>
+</div>
+
+### Walk Through: Why push Invalidates a Reference
+
+<div class="stepper">
+<div class="stepper-step">
+<strong>Step 1: Vec allocates</strong>
+<code>let mut v = vec![1, 2, 3];</code> — Vec allocates a heap buffer large enough for 3 elements (capacity may be 3 or 4). <code>v</code> owns this buffer.
+</div>
+<div class="stepper-step">
+<strong>Step 2: Borrow into the buffer</strong>
+<code>let first = &v[0];</code> — <code>first</code> is a <code>&i32</code> pointing <em>directly into the heap buffer</em>. It assumes the buffer is at a stable address.
+</div>
+<div class="stepper-step">
+<strong>Step 3: Push may reallocate</strong>
+<code>v.push(4);</code> — If capacity is exhausted, Vec allocates a new, larger buffer, copies all elements, and frees the old one. <code>first</code> now points to freed memory → <strong>dangling pointer</strong>.
+</div>
+<div class="stepper-step">
+<strong>Step 4: Rust prevents it</strong>
+The borrow checker sees that <code>first</code> holds <code>&v</code> (shared borrow) while <code>push</code> requires <code>&mut v</code> (exclusive). Since `first` is used after `push`, their borrow regions overlap → <strong>E0502 at compile time</strong>. No runtime crash possible.
+</div>
+</div>
+
 ## Step 1 - The Problem

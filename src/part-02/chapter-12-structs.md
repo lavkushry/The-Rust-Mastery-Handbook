@@ -47,11 +47,14 @@ struct User {
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Use structs for named grouped data.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Important conveniences:
 
@@ -60,9 +63,14 @@ Important conveniences:
 - tuple structs for lightweight named wrappers
 - unit structs for marker-like types
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Structs separate representation from behavior cleanly. Method receivers (`self`, `&self`, `&mut self`) are ownership decisions, not just syntax variants.
+
+</div>
+</div>
+
 
 ## `impl` Blocks and `self`
 

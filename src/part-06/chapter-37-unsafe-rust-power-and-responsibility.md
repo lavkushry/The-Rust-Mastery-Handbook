@@ -115,11 +115,14 @@ This is the essence of sound unsafe Rust:
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 `unsafe` means Rust cannot check everything for you in this block, so you must be extra precise.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Use unsafe sparingly and isolate it. Most application code should not need it. When unsafe is necessary:
 
@@ -128,7 +131,8 @@ Use unsafe sparingly and isolate it. Most application code should not need it. W
 - test and fuzz the safe wrapper
 - make invariants obvious to reviewers
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Unsafe Rust still enforces most of the language:
 
@@ -146,6 +150,10 @@ The five unsafe superpowers are specific:
 5. accessing union fields
 
 Everything else must still be correct under Rust's semantic model. Undefined behavior is the risk when your manual reasoning is wrong.
+
+</div>
+</div>
+
 
 ## Common UB Shapes
 

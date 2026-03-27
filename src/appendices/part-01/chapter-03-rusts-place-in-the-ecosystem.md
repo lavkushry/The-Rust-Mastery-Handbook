@@ -160,11 +160,14 @@ it became something production teams could commit to.
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Rust is used where programmers want software that is fast, careful with resources, and hard to break through memory bugs.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Rust adoption usually starts at pressure points:
 
@@ -175,7 +178,8 @@ Rust adoption usually starts at pressure points:
 
 It rarely starts because a team wants a prettier syntax.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Rust's ecosystem position is the result of a design wedge:
 
@@ -187,6 +191,10 @@ That wedge becomes stronger as:
 - multi-core concurrency becomes ordinary
 - low-latency systems still resist GC
 - organizations demand better supply-chain and security posture from low-level code
+
+</div>
+</div>
+
 
 ## Step 7 - Common Misconceptions
 

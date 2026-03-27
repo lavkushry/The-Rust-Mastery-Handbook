@@ -161,17 +161,21 @@ You will often see error E0038 when you try to turn a non-object-safe trait into
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Traits describe capabilities. `dyn Trait` means "I do not know the exact type right here, but I know what behavior it supports."
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Use generics for hot paths and strongly typed composition. Use trait objects when heterogeneity, plugin-like behavior, or reduced monomorphization matters more than static specialization.
 
 `impl Trait` in argument position is mostly sugar for a generic parameter. `impl Trait` in return position hides a single concrete return type while preserving static dispatch.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 The real distinction is dispatch and representation.
 
@@ -180,6 +184,10 @@ The real distinction is dispatch and representation.
 - trait object: erased concrete type, fat pointer, vtable dispatch, usually one level of indirection
 
 GATs matter because associated types alone cannot express borrow-dependent outputs. A trait like a lending iterator must tie its yielded item type to the borrow of `self`. That relationship is impossible to encode cleanly without a parameterized associated type.
+
+</div>
+</div>
+
 
 ## `dyn Trait` vs `impl Trait`
 

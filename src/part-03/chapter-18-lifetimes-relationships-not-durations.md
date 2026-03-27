@@ -178,7 +178,38 @@ let s1 = String::from("long");
 </div>
 </div>
 
+
+### In Your Language: Lifetimes vs Garbage Collection
+
+<div class="lang-compare">
+<div class="lang-panel">
+<span class="lang-label lang-label--rust">Rust — explicit lifetime annotations</span>
+
+```rust
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() { x } else { y }
+}
+// Compiler verifies both inputs outlive the return value
+```
+
+</div>
+<div class="lang-panel">
+<span class="lang-label lang-label--go">Go — GC handles it</span>
+
+```go
+func longest(x, y string) string {
+    if len(x) > len(y) { return x }
+    return y
+}
+// No annotation needed — GC keeps both alive
+// But: unpredictable pause times, higher memory usage
+```
+
+</div>
+</div>
+
 ## Step 1 - The Problem
+
 
 
 > **Learning Objective**

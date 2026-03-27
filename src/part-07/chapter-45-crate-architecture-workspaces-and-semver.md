@@ -133,11 +133,14 @@ That is why "just make it `pub` for now" is such a dangerous habit in library co
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 A crate is a package of Rust code. A workspace is a set of crates developed together. Public APIs need more care than internal code because other people may depend on them.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Split crates when there is a real boundary:
 
@@ -150,11 +153,16 @@ Do not split purely for aesthetics. Too many crates create coordination overhead
 
 Feature flags should be additive. If enabling a feature removes a type, changes meaning, or breaks existing callers, you have created feature-driven semver chaos.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Semver in Rust is subtle because the public contract includes more than function signatures. Changing trait bounds, removing an impl, altering auto trait behavior, narrowing visibility, or changing feature-controlled item availability can all be breaking changes.
 
 This is why tools like `cargo-semver-checks` exist. The goal is not ceremony. The goal is to catch type-level breaking changes that humans easily miss.
+
+</div>
+</div>
+
 
 ## Anatomy of a Strong Crate
 

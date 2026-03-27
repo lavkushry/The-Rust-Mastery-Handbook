@@ -185,21 +185,29 @@ You will typically see an error in the E0373 family for "closure may outlive the
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 `move` on a thread closure means "the new thread gets its own stuff." Without that, the new thread would be trying to borrow from the current function, which might finish too soon.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Use `thread::spawn` when the thread's lifetime is logically independent. Use `thread::scope` when the thread is just temporary parallel work inside a parent scope and should be allowed to borrow local data safely.
 
 Channels are the idiomatic tool when ownership handoff is the design. Shared state behind locks is the tool when many threads must observe or update the same long-lived state.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 `thread::spawn` forces a strong boundary because the thread is scheduled independently by the OS. Rust cannot assume when it will run or when the parent stack frame will end. The `'static` requirement is not about "must live forever." It means "contains no borrow that could become invalid before the thread is done."
 
 Message passing composes well with ownership because a send is a move. The type system can reason about exactly one owner before the send and exactly one owner after the send. That makes channel-based concurrency a natural extension of Rust's single-owner model.
+
+</div>
+</div>
+
 
 ## Scoped Threads
 

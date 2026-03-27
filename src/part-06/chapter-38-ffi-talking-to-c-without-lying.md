@@ -114,11 +114,14 @@ If it does not, the program may still compile and link while remaining unsound a
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 FFI means Rust is talking to code written in another language. Rust needs explicit instructions about how that conversation works.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 At FFI boundaries:
 
@@ -127,7 +130,8 @@ At FFI boundaries:
 - keep Rust-side wrappers small and explicit
 - convert strings and ownership once at the edge
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 An FFI boundary is a bundle of invariants:
 
@@ -138,6 +142,10 @@ An FFI boundary is a bundle of invariants:
 - lifetime expectations must match
 
 `repr(C)` solves only layout. It does not solve ownership, initialization, or pointer validity.
+
+</div>
+</div>
+
 
 ## `CStr`, `CString`, `#[no_mangle]`, and `repr(C)`
 

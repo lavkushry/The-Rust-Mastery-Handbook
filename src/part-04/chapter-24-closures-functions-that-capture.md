@@ -86,11 +86,14 @@ This closure moves `name` out when called, so it is only `FnOnce`.
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Closures can use values from the place where they were created. That is what makes them useful for filters, callbacks, and tasks.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Most iterator closures are `Fn` or `FnMut`. Thread and async task closures often need `move` because the closure must own the captured values across the new execution boundary.
 
@@ -100,9 +103,14 @@ This is why `move` shows up so often in:
 - `tokio::spawn`
 - callback registration
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 A closure is a compiler-generated struct plus one or more trait impls from the `Fn*` family. Captured variables become fields. The call operator lowers to methods on those traits. This is why closure capture mode is part of the type story, not just syntax sugar.
+
+</div>
+</div>
+
 
 ## `move` Closures
 

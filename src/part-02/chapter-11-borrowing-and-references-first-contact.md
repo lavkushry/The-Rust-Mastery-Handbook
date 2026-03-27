@@ -194,4 +194,35 @@ data.push(4);            // mutable access OK — borrows ended
 </div>
 </div>
 
+
+### In Your Language: References vs Pointers
+
+<div class="lang-compare">
+<div class="lang-panel">
+<span class="lang-label lang-label--rust">Rust — borrowing</span>
+
+```rust
+fn len(s: &String) -> usize {
+    s.len()  // borrow — no ownership transfer
+}
+let owned = String::from("hi");
+let n = len(&owned);  // owned is still valid
+```
+
+</div>
+<div class="lang-panel">
+<span class="lang-label lang-label--java">Java — everything is a reference</span>
+
+```java
+int len(String s) {
+    return s.length(); // s is a reference (always)
+}
+String owned = "hi";
+int n = len(owned); // works — GC manages lifetime
+// But: anyone could mutate s in Java
+```
+
+</div>
+</div>
+
 ## Step 1 - The Problem

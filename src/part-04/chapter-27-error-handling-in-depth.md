@@ -84,11 +84,14 @@ That is the core desugaring idea. `?` is not magical exception syntax. It is str
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Rust makes failure visible in the type system, so callers cannot pretend something never fails if it actually can.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Use:
 
@@ -99,9 +102,14 @@ Use:
 
 Avoid `unwrap` in production paths unless you are asserting an invariant so strong that a panic is truly the right failure mode.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Typed errors are part of API design. They say what can go wrong, what can be matched on, and where recovery is possible. `From<E>` integration lets `?` convert lower-level errors into higher-level structured ones. Context chains matter in production because the original low-level error alone often does not explain which operation failed semantically.
+
+</div>
+</div>
+
 
 ## `thiserror` vs `anyhow`
 

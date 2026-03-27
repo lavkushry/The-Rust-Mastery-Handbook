@@ -70,11 +70,14 @@ That explicitness matters because Rust wants both humans and compiler to know wh
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 Rust has basic types like integers, floats, booleans, chars, tuples, and arrays. Their sizes and meanings are usually precise.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 Important practical distinctions:
 
@@ -84,7 +87,8 @@ Important practical distinctions:
 - tuples group heterogeneous values without naming a new struct
 - unit `()` is not null; it is a real zero-information value
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Rust's type precision supports:
 
@@ -94,6 +98,10 @@ Rust's type precision supports:
 - fewer implicit lossy conversions
 
 That is why explicit casting exists and why integer overflow behavior differs between debug and release defaults in straightforward arithmetic.
+
+</div>
+</div>
+
 
 ## Integer and Float Notes
 

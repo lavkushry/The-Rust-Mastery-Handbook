@@ -79,11 +79,14 @@ The invariant being protected is workflow consistency. If every contributor uses
 
 ## Step 6 - Three-Level Explanation
 
-### Level 1 - Beginner
+
+<div class="level-tabs">
+<div class="level-panel" data-level="Beginner">
 
 You will mostly use `cargo`, not `rustc`, day to day.
 
-### Level 2 - Engineer
+</div>
+<div class="level-panel" data-level="Engineer">
 
 The most important habit is to treat:
 
@@ -96,9 +99,14 @@ as part of ordinary coding, not as cleanup at the end.
 
 `cargo check` in particular is your fast feedback loop with the compiler. In Rust, that loop is central.
 
-### Level 3 - Systems
+</div>
+<div class="level-panel" data-level="Deep Dive">
 
 Toolchain control matters in real teams because language features, lints, and diagnostics vary by version. Reproducible builds and reproducible review depend on consistent toolchains. That is why pinning matters.
+
+</div>
+</div>
+
 
 ## `rust-toolchain.toml`
 

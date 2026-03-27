@@ -4,4 +4,3 @@
 node_modules
 /playwright-report/
 /test-results/
-mdbook_output.log

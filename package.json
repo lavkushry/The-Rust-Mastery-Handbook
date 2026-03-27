@@ -1,6 +1,12 @@
 {
+  "name": "rust-mastery-handbook",
+  "scripts": {
+    "test": "node --test scripts/*.test.mjs",
+    "test:e2e": "playwright test"
+  },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
+    "http-server": "^14.1.1",
     "jsdom": "^29.0.1"
   }
 }

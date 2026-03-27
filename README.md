@@ -231,15 +231,22 @@ This project is documentation-first. Validation is currently based on build corr
 ```bash
 npm ci
 mdbook build
-node --test scripts/*.test.mjs
+npm test
 ```
 
 Recommended pre-PR checks:
 
 - Ensure the book builds without errors
-- Ensure Node-based script tests pass
+- Ensure Node-based script and structure tests pass
 - Verify updated pages render correctly in local preview
 - Verify links and headings in edited sections
+
+Browser-backed regression tests:
+
+```bash
+npx playwright install --with-deps chromium
+npx playwright test
+```
 
 For repeatable release checks, use [docs/jules-regression-playbook.md](docs/jules-regression-playbook.md).
 

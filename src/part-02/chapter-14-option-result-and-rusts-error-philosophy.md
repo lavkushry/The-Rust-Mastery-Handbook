@@ -1,4 +1,34 @@
 # Chapter 14: `Option`, `Result`, and Rust's Error Philosophy
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-02/chapter-13-enums-and-pattern-matching.html">Ch 13: Enums</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>Why Rust has no <code>null</code></li>
+      <li>The <code>?</code> operator as early-return sugar</li>
+      <li>When to <code>unwrap</code> vs propagate errors</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">30<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min exercises</div>
+  </div>
+</div>
+<div class="concept-link builds-on">
+  <div class="concept-link-icon">←</div>
+  <div class="concept-link-body">
+    <strong>Builds on Chapter 13</strong>
+    <code>Option&lt;T&gt;</code> and <code>Result&lt;T, E&gt;</code> are enums. Pattern matching is how you extract the success or failure value — there is no null to check.
+    <a href="../part-02/chapter-13-enums-and-pattern-matching.html">Revisit Ch 13 →</a>
+  </div>
+</div>
+
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--valid);">
     <div class="visual-figure__header">

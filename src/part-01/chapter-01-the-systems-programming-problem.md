@@ -1,4 +1,32 @@
 # Chapter 1: The Systems Programming Problem
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq" style="opacity:0.5;font-size:0.78rem">None — start here</div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>The five bug classes Rust prevents</li>
+      <li>Why C/C++ failed at memory safety</li>
+      <li>What problem Rust was designed to solve</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">40<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 15 min exercises</div>
+  </div>
+</div>
+<div class="concept-link needed-for">
+  <div class="concept-link-icon">→</div>
+  <div class="concept-link-body">
+    <strong>You'll need this for Chapter 10</strong>
+    The five bug classes you learn here are exactly what ownership prevents. Ch 10 shows the mechanism; this chapter explains the motivation.
+    <a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership →</a>
+  </div>
+</div>
+
 <figure class="visual-figure visual-figure--dark" style="--chapter-accent: var(--error);">
   <div class="visual-figure__header">
     <div>

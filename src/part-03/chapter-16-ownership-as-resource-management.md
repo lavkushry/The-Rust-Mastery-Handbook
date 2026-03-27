@@ -1,4 +1,41 @@
 # Chapter 16: Ownership as Resource Management
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>RAII — resource cleanup tied to scope exit</li>
+      <li>Drop order (reverse declaration) and why it matters</li>
+      <li>Why Rust rarely leaks resources without GC</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">35<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min exercises</div>
+  </div>
+</div>
+<div class="concept-link builds-on">
+  <div class="concept-link-icon">←</div>
+  <div class="concept-link-body">
+    <strong>Builds on Chapter 10</strong>
+    Ch 10 taught the three ownership rules. This chapter shows the engineering consequence: ownership IS resource management. Scope end IS cleanup.
+    <a href="../part-02/chapter-10-ownership-first-contact.html">Revisit Ch 10 →</a>
+  </div>
+</div>
+<div class="concept-link needed-for">
+  <div class="concept-link-icon">→</div>
+  <div class="concept-link-body">
+    <strong>You'll need this for Chapter 20</strong>
+    Move semantics, Copy, Clone, and Drop are the four transfer events that express what ownership means at each step.
+    <a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.html">Ch 20: Move/Copy/Clone/Drop →</a>
+  </div>
+</div>
 
 <figure class="visual-figure" style="--chapter-accent: var(--ownership);">
   <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">RAII Lifecycle</div><h2 class="visual-figure__title">Resource Acquisition, Use, and Automatic Cleanup</h2></div></div>

@@ -1,4 +1,34 @@
 # Chapter 13: Enums and Pattern Matching
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-02/chapter-07-types-scalars-compounds-and-the-unit-type.html">Ch 7: Types</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>Sum types vs product types in memory</li>
+      <li>Pattern matching with exhaustiveness</li>
+      <li>Why <code>match</code> must cover every variant</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">25<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 15 min exercises</div>
+  </div>
+</div>
+<div class="concept-link needed-for">
+  <div class="concept-link-icon">→</div>
+  <div class="concept-link-body">
+    <strong>You'll need this for Chapter 14</strong>
+    <code>Option</code> and <code>Result</code> are enums. Ch 14's entire error-handling model is built on the pattern matching you learn here.
+    <a href="../part-02/chapter-14-option-result-and-rusts-error-philosophy.html">Ch 14: Option &amp; Result →</a>
+  </div>
+</div>
+
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--trait);">
     <div class="visual-figure__header">

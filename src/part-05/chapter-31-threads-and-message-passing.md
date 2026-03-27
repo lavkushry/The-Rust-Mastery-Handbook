@@ -1,4 +1,35 @@
 # Chapter 31: Threads and Message Passing
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a>
+      <a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.html">Ch 20: Move/Copy/Clone</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>Why <code>thread::spawn</code> requires <code>move</code></li>
+      <li>Channels as ownership handoff, not shared mailboxes</li>
+      <li><code>thread::scope</code> for safe temporary parallelism</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">45<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div>
+  </div>
+</div>
+<div class="concept-link needed-for">
+  <div class="concept-link-icon">→</div>
+  <div class="concept-link-body">
+    <strong>You'll need this for Chapters 32 and 33</strong>
+    Ch 32 introduces <code>Arc</code>/<code>Mutex</code> for shared state (the other concurrency model). Ch 33 applies the same ownership rules to async, where <code>Send + 'static</code> plays the same role as <code>move</code> does here.
+    <a href="../part-05/chapter-32-shared-state-arc-mutex-and-send-sync.html">Ch 32: Shared State →</a>
+  </div>
+</div>
+
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--async);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Thread Lifetime</div><h2 class="visual-figure__title">Why `thread::spawn` Needs Owned Data</h2></div></div>

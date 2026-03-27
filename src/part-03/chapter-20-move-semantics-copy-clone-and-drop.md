@@ -1,4 +1,43 @@
 # Chapter 20: Move Semantics, `Copy`, `Clone`, and `Drop`
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a>
+      <a href="../part-03/chapter-16-ownership-as-resource-management.html">Ch 16: RAII</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>Move vs Copy vs Clone — three distinct events</li>
+      <li>Why <code>Copy</code> and <code>Drop</code> cannot coexist</li>
+      <li>When <code>.clone()</code> is deliberate vs a code smell</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">40<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div>
+  </div>
+</div>
+<div class="concept-link builds-on">
+  <div class="concept-link-icon">←</div>
+  <div class="concept-link-body">
+    <strong>Builds on Chapter 16</strong>
+    RAII showed that scope exit triggers cleanup. This chapter explains the four transfer events (move, copy, clone, drop) that express ownership at each step.
+    <a href="../part-03/chapter-16-ownership-as-resource-management.html">Revisit Ch 16 →</a>
+  </div>
+</div>
+<div class="concept-link needed-for">
+  <div class="concept-link-icon">→</div>
+  <div class="concept-link-body">
+    <strong>You'll need this for Chapter 30</strong>
+    Smart pointers (<code>Box</code>, <code>Rc</code>, <code>RefCell</code>) change the ownership shape — they are the engineered alternatives to default move/drop semantics.
+    <a href="../part-04/chapter-30-smart-pointers-and-interior-mutability.html">Ch 30: Smart Pointers →</a>
+  </div>
+</div>
+
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--move);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Transfer Semantics</div><h2 class="visual-figure__title">Move, Copy, Clone, and Drop Are Different Events</h2></div></div>

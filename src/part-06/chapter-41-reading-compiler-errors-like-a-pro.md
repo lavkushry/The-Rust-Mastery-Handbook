@@ -1,4 +1,35 @@
 # Chapter 41: Reading Compiler Errors Like a Pro
+<div class="chapter-snapshot">
+  <div class="snapshot-cell">
+    <h4>Prerequisites</h4>
+    <div class="snapshot-prereq">
+      <a href="../part-03/chapter-17-borrowing-constrained-access.html">Ch 17: Borrow Rules</a>
+      <a href="../part-03/chapter-21-the-borrow-checker-how-the-compiler-thinks.html">Ch 21: Borrow Checker</a>
+    </div>
+  </div>
+  <div class="snapshot-cell">
+    <h4>You will understand</h4>
+    <ul>
+      <li>Reading errors as timelines, not slogans</li>
+      <li>The 10 most common error families</li>
+      <li><code>rustc --explain</code> as an expert tool</li>
+    </ul>
+  </div>
+  <div class="snapshot-cell">
+    <h4>Reading time</h4>
+    <div class="snapshot-time">35<span class="snapshot-time-unit"> min</span></div>
+    <div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min drills</div>
+  </div>
+</div>
+<div class="concept-link builds-on">
+  <div class="concept-link-icon">←</div>
+  <div class="concept-link-body">
+    <strong>Builds on Chapter 21</strong>
+    Ch 21 explains the borrow checker's pipeline and the three most common borrow errors (E0382, E0502, E0505). This chapter teaches you to read ALL compiler diagnostics as structured evidence.
+    <a href="../part-03/chapter-21-the-borrow-checker-how-the-compiler-thinks.html">Revisit Ch 21 →</a>
+  </div>
+</div>
+
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--compiler);">
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Error Anatomy</div><h2 class="visual-figure__title">A Rust Diagnostic Is a Narrative, Not a Slogan</h2></div></div>
@@ -60,6 +91,55 @@
     </svg>
   </div>
 </figure>
+
+<div class="error-card">
+  <div class="error-code">E0277</div>
+  <div class="error-name">the trait bound is not satisfied</div>
+  <div class="error-invariant">
+    You called a function or used a generic that requires a specific trait, but the concrete type
+    does not implement it. The compiler inferred a type that lacks a capability you assumed it had.
+  </div>
+  <div class="error-fix">
+    Check the inferred type with the error's "found type" annotation. Either implement the trait,
+    add a <code>#[derive(...)]</code>, or restructure to use a type that already has the capability.
+  </div>
+</div>
+<div class="error-card">
+  <div class="error-code">E0308</div>
+  <div class="error-name">mismatched types</div>
+  <div class="error-invariant">
+    The compiler expected one type but found another. This usually means an expression produces
+    a different type than what the surrounding context (function signature, match arm, or assignment) requires.
+  </div>
+  <div class="error-fix">
+    Read both the "expected" and "found" types in the diagnostic. Often the fix is a conversion
+    (<code>.into()</code>, <code>.as_str()</code>, <code>&amp;</code>) or a corrected return type in the signature.
+  </div>
+</div>
+<div class="error-card">
+  <div class="error-code">E0515</div>
+  <div class="error-name">cannot return reference to temporary value</div>
+  <div class="error-invariant">
+    You tried to return a reference (<code>&amp;T</code>) to data created inside the function. When the function
+    returns, that data is dropped — the reference would dangle. This is the quintessential lifetime error.
+  </div>
+  <div class="error-fix">
+    Return the owned value instead of a reference. If you need <code>&amp;str</code>, return <code>String</code>.
+    If you need a borrowed view, the data must come from the caller's scope or a <code>'static</code> source.
+  </div>
+</div>
+<div class="error-card">
+  <div class="error-code">E0373</div>
+  <div class="error-name">closure may outlive the current function</div>
+  <div class="error-invariant">
+    A closure or async block captures a borrow from the current stack frame, but it may live longer
+    than that frame (typically because it's passed to <code>thread::spawn</code> or <code>tokio::spawn</code>).
+  </div>
+  <div class="error-fix">
+    Add the <code>move</code> keyword to the closure to transfer ownership instead of borrowing.
+    If you need shared access, wrap the value in <code>Arc</code> and clone the <code>Arc</code> before the closure.
+  </div>
+</div>
 
 ## Step 1 - The Problem
 

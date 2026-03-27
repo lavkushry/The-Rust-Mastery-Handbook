@@ -19,6 +19,7 @@
     { key: "compiler says", className: "callout--compiler-says", icon: "🦀" },
     { key: "memory model", className: "callout--memory-model", icon: "🧠" },
     { key: "zero cost proof", className: "callout--zero-cost", icon: "⚡" },
+    { key: "learning objective", className: "callout--learning-objective", icon: "🎯" },
   ];
 
   function pickConcept(text) {
@@ -28,6 +29,12 @@
 
   function createHero(main, title, accent, conceptKey) {
     if (!title || main.querySelector(".chapter-hero, .part-spread")) {
+      return;
+    }
+
+    const firstHeading = main.querySelector("h1");
+    // Ensure we don't accidentally enhance non-standard pages
+    if (!firstHeading) {
       return;
     }
 
@@ -206,12 +213,7 @@
     grid.appendChild(illustration);
     hero.appendChild(grid);
 
-    const firstHeading = main.querySelector("h1");
-    if (firstHeading) {
-      firstHeading.insertAdjacentElement("afterend", hero);
-    } else {
-      main.prepend(hero);
-    }
+    firstHeading.insertAdjacentElement("afterend", hero);
   }
 
   function upgradeCallouts(main) {
@@ -224,7 +226,7 @@
       const raw = firstParagraph.textContent.trim();
       const lower = raw.toLowerCase();
       const match = calloutMap.find((entry) => lower === entry.key || lower.startsWith(`${entry.key}\n`) || lower.startsWith(`${entry.key}:`));
-      if (!match) {
+      if (!match || blockquote.classList.contains("callout")) {
         return;
       }
 
@@ -244,11 +246,14 @@
     return next;
   }
 
-  function cardifyRememberOnlyThree(main) {
-    const headings = main.querySelectorAll("h2, h3");
+  function cardifyRememberOnlyThree(main, headings) {
     headings.forEach((heading) => {
       if (!/if you remember only 3 things/i.test(heading.textContent || "")) {
         return;
+      }
+
+      if (heading.nextElementSibling?.classList.contains("concept-card-row")) {
+         return;
       }
 
       const next = getNextSignificantSibling(heading);
@@ -280,10 +285,13 @@
     });
   }
 
-  function enhanceMemoryHooks(main) {
-    const headings = main.querySelectorAll("h2, h3");
+  function enhanceMemoryHooks(main, headings) {
     headings.forEach((heading) => {
       if (!/memory hook/i.test(heading.textContent || "")) {
+        return;
+      }
+
+      if (heading.nextElementSibling?.classList.contains("memory-hook-panel")) {
         return;
       }
 
@@ -318,11 +326,14 @@
     });
   }
 
-  function enhanceFlashcardDecks(main) {
-    const headings = main.querySelectorAll("h2, h3");
+  function enhanceFlashcardDecks(main, headings) {
     headings.forEach((heading) => {
       if (!/flashcard deck/i.test(heading.textContent || "")) {
         return;
+      }
+
+      if (heading.nextElementSibling?.classList.contains("flashcard-grid")) {
+         return;
       }
 
       const next = getNextSignificantSibling(heading);
@@ -385,11 +396,14 @@
     });
   }
 
-  function enhanceCheatSheets(main) {
-    const headings = main.querySelectorAll("h2, h3");
+  function enhanceCheatSheets(main, headings) {
     headings.forEach((heading) => {
       if (!/chapter cheat sheet/i.test(heading.textContent || "")) {
         return;
+      }
+
+      if (heading.nextElementSibling?.classList.contains("cheat-sheet-panel")) {
+         return;
       }
 
       const next = getNextSignificantSibling(heading);

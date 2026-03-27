@@ -204,3 +204,37 @@ Think of ownership like a library checkout card for a rare, one-of-a-kind book.
 3. **Drop:** When the person holding the card leaves town (goes out of scope), they *must* return the book to the library.
 
 ## Step 1 - The Problem
+
+> **Learning Objective**
+> By the end of this step, you should be able to explain the core problem ownership solves: tracking responsibility for dynamically allocated memory without a garbage collector.
+
+## Step 2 - The Heap and the Stack
+
+To understand ownership, you must understand where data lives.
+
+* **The Stack:** Fast, fixed-size, strictly ordered (Last In, First Out). Local variables go here. When a function ends, its stack frame is instantly popped.
+* **The Heap:** Slower, dynamic size, unordered. You request space from the OS, and it gives you a pointer.
+
+If you have a `String` (which can grow), the characters live on the heap. But the pointer to those characters, along with the length and capacity, lives on the stack.
+
+When the stack variable goes out of scope, who cleans up the heap data? That is the problem ownership solves.
+
+### Real-World Pattern
+When you contribute to large Rust codebases (like Tokio or Serde), you will see very few calls to raw allocation or deallocation. Instead, you see types like `Box`, `Vec`, and `String` managing memory internally. Because ownership is strict, contributors do not need to guess if a function will free memory they pass to it. If the function takes a value (not a reference), it takes responsibility.
+
+## Step 3 - Practice
+
+### Code Reading Drill
+Consider this snippet:
+```rust
+let my_string = String::from("Rust");
+let s2 = my_string;
+```
+Who is responsible for the string data after line 2 executes?
+
+### Error Interpretation
+If you try to use `my_string` after the snippet above, `rustc` will give you error `E0382: use of moved value`. This is the compiler telling you that the authority to read or modify the string has transferred to `s2`.
+
+## Chapter Resources
+* **Official Source:** [The Rust Programming Language, Chapter 4: Understanding Ownership](https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html)
+* **Official Source:** [Rustonomicon: Ownership](https://doc.rust-lang.org/nomicon/ownership.html)

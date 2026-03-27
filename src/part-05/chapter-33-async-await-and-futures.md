@@ -80,6 +80,10 @@
 
 ## Step 1 - The Problem
 
+> **Learning Objective**
+> By the end of this chapter, you should be able to explain how `async/await` transforms functions into pollable state machines, and why calling an `async fn` does not start execution immediately.
+
+
 Threads are powerful, but they are an expensive unit for waiting on I/O.
 
 A web server that handles ten thousand mostly-idle connections does not want ten thousand blocked OS threads if it can avoid it. Each thread carries stack memory, scheduler cost, and coordination overhead. The problem is not that threads are bad. The problem is that "waiting" is too expensive when the unit of waiting is an OS thread.
@@ -384,5 +388,10 @@ An async task is a folded travel itinerary in your pocket. It is the whole trip,
 | Start a background task | `tokio::spawn` | Runtime-managed task |
 | Run blocking CPU or sync I/O | `spawn_blocking` or threads | Protect the executor from starvation |
 | Add timers | `tokio::time` | Runtime-aware sleeping and intervals |
+
+## Chapter Resources
+* **Official Source:** [Asynchronous Programming in Rust (The Async Book)](https://rust-lang.github.io/async-book/)
+* **Tokio Docs:** [Tokio Tutorial: Spawning](https://tokio.rs/tokio/tutorial/spawning)
+* **Under the Hood:** [Without Boats: The Waker API](https://without.boats/blog/wakers/)
 
 ---

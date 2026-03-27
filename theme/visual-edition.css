@@ -22,9 +22,9 @@
   --card-border: rgba(2, 62, 138, 0.16);
   --page-width: 72rem;
   --gutter: 1.5rem;
-  --font-display: "JetBrains Mono", "Space Mono", "IBM Plex Mono", monospace;
-  --font-body: "IBM Plex Sans", "Source Sans Pro", "Segoe UI", sans-serif;
-  --font-code: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+  --font-display: "JetBrains Mono", "Space Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-body: "IBM Plex Sans", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --font-code: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 html {
@@ -42,16 +42,21 @@ body {
 
 #mdbook-content main p,
 #mdbook-content main li {
-  font-size: 1.02rem;
-  line-height: 1.75;
+  font-size: 1.1rem;
+  line-height: 1.8;
   text-wrap: pretty;
+  margin-bottom: 1.25rem;
 }
 
 #mdbook-content main > p,
 #mdbook-content main > ul,
 #mdbook-content main > ol,
 #mdbook-content main > blockquote {
-  max-width: 74ch;
+  max-width: 68ch; /* Optimal tracking width for reading */
+}
+
+#mdbook-content main li {
+  margin-bottom: 0.5rem;
 }
 
 #mdbook-content main h1,
@@ -64,21 +69,27 @@ body {
 }
 
 #mdbook-content main h1 {
-  font-size: clamp(2.4rem, 3.8vw, 4.4rem);
-  line-height: 1.04;
+  font-size: clamp(2.5rem, 4vw, 3.8rem);
+  line-height: 1.1;
+  margin-bottom: 2rem;
+  max-width: 25ch;
+  text-wrap: balance;
 }
 
 #mdbook-content main h2 {
-  font-size: clamp(1.4rem, 2vw, 2rem);
-  line-height: 1.15;
-  border-left: 0.35rem solid var(--chapter-accent, var(--compiler));
-  padding-left: 0.75rem;
-  margin-top: 2.8rem;
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  line-height: 1.2;
+  border-left: 0.4rem solid var(--chapter-accent, var(--compiler));
+  padding-left: 1rem;
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
 }
 
 #mdbook-content main h3 {
-  font-size: clamp(1.08rem, 1.4vw, 1.35rem);
-  line-height: 1.25;
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  line-height: 1.3;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
 }
 
 #mdbook-content main a {
@@ -101,11 +112,12 @@ body {
 #mdbook-content main li code,
 #mdbook-content main td code,
 #mdbook-content main th code {
-  padding: 0.12rem 0.38rem;
-  border: 1px solid color-mix(in srgb, var(--chapter-accent, var(--compiler)) 24%, white 76%);
-  border-radius: 0.42rem;
-  background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 9%, white 91%);
-  color: #111827;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--chapter-accent, var(--compiler)) 30%, white 70%);
+  border-radius: 0.3rem;
+  background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 8%, white 92%);
+  color: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 80%, black 20%);
+  font-weight: 500;
   font-size: 0.9em;
   word-break: break-word;
 }
@@ -132,20 +144,24 @@ html.ayu #mdbook-content main th code {
 }
 
 #mdbook-content main a:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--chapter-accent, var(--compiler)) 55%, white 45%);
-  outline-offset: 2px;
-  border-radius: 0.25rem;
+  outline: 3px solid var(--chapter-accent, var(--compiler));
+  outline-offset: 3px;
+  border-radius: 0.2rem;
+  text-decoration: none;
 }
 
 /* ─── Code blocks: readable, scrollable, not overflowing ─────────────────── */
 
 #mdbook-content main pre {
-  background: #1e1e2e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1rem;
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+  background: #1a1b26;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   overflow-x: auto;
   max-width: 100%;
+  padding: 1.25rem;
+  font-size: 0.95em;
+  line-height: 1.6;
 }
 
 .visual-edition-page {
@@ -280,17 +296,18 @@ html.ayu #mdbook-content main th code {
 }
 
 .visual-figure {
-  margin: 1.85rem 0 2.35rem;
+  margin: 2.5rem 0;
   border: 1px solid var(--card-border);
-  border-radius: 1.4rem;
-  background: linear-gradient(180deg, #fff, var(--paper));
-  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.09);
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.04);
   overflow: hidden;
 }
 
 .visual-figure--dark {
-  background: linear-gradient(180deg, #0f172a, #111827);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
 
 .visual-figure__header {
@@ -361,8 +378,9 @@ html.ayu #mdbook-content main th code {
 .concept-card {
   border: 1px solid color-mix(in srgb, var(--chapter-accent, var(--compiler)) 34%, white 66%);
   border-radius: 1rem;
-  padding: 1rem;
-  background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 8%, white 92%);
+  padding: 1.25rem;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 }
 
 html.navy .concept-card,
@@ -403,12 +421,12 @@ html.ayu .concept-card__text {
 .memory-hook-panel {
   display: grid;
   grid-template-columns: minmax(180px, 0.6fr) minmax(0, 1fr);
-  gap: 1rem;
-  margin: 1.4rem 0 2rem;
-  padding: 1rem;
-  border: 2px dashed color-mix(in srgb, var(--chapter-accent, var(--compiler)) 48%, white 52%);
-  border-radius: 1.2rem;
-  background: linear-gradient(180deg, #fffdf8, color-mix(in srgb, var(--chapter-accent, var(--compiler)) 6%, white 94%));
+  gap: 1.5rem;
+  margin: 2.5rem 0;
+  padding: 1.5rem;
+  border: 2px dashed color-mix(in srgb, var(--chapter-accent, var(--compiler)) 40%, white 60%);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--chapter-accent, var(--compiler)) 4%, white 96%);
 }
 
 html.navy .memory-hook-panel,
@@ -509,12 +527,12 @@ html.ayu .flashcard__answer {
 }
 
 .cheat-sheet-panel {
-  margin: 1.6rem 0 2rem;
-  padding: 0.9rem;
-  border: 3px double color-mix(in srgb, var(--chapter-accent, var(--compiler)) 56%, white 44%);
-  border-radius: 1.25rem;
-  background: linear-gradient(180deg, #ffffff, color-mix(in srgb, var(--chapter-accent, var(--compiler)) 4%, white 96%));
-  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+  margin: 2.5rem 0;
+  padding: 1rem;
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
 html.navy .cheat-sheet-panel,
@@ -572,11 +590,12 @@ html.ayu .cheat-sheet-table th {
 
 blockquote.callout {
   position: relative;
-  margin: 1.6rem 0;
+  margin: 2rem 0;
   border: 1px solid transparent;
-  border-left-width: 0.45rem;
-  border-radius: 1rem;
-  padding: 1rem 1rem 1rem 1.1rem;
+  border-left-width: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 }
 
 blockquote.callout p:last-child {
@@ -979,4 +998,26 @@ body.navy .chapter-break,
 body.coal .chapter-break,
 body.ayu .chapter-break {
   border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+blockquote.callout--learning-objective {
+  border-color: var(--valid);
+  background: color-mix(in srgb, var(--valid) 10%, #ffffff 90%);
+}
+
+html.navy blockquote.callout--learning-objective,
+html.mocha blockquote.callout--learning-objective,
+html.ayu blockquote.callout--learning-objective {
+  background: color-mix(in srgb, var(--valid) 15%, #0f172a 85%);
+  color: #e2e8f0;
+}
+
+blockquote.callout--learning-objective .callout__label {
+  color: var(--valid);
+}
+
+html.navy blockquote.callout--learning-objective .callout__label,
+html.mocha blockquote.callout--learning-objective .callout__label,
+html.ayu blockquote.callout--learning-objective .callout__label {
+  color: #86efac;
 }

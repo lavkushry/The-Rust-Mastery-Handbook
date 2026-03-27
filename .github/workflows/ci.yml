@@ -37,10 +37,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run JS unit tests
-        run: node --test scripts/visual-edition.test.mjs scripts/utils.test.mjs scripts/export-pdf.test.mjs
+      - name: Run JS and structure tests
+        run: npm test
 
-  playwright:
+  playwright-regression:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -52,20 +52,17 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Install Rust Toolchain
-        uses: dtolnay/rust-toolchain@stable
-
       - name: Install mdBook
         run: cargo install mdbook --locked
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright Browsers
+      - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
-      - name: Build Book
+      - name: Build book
         run: mdbook build
 
-      - name: Run Playwright tests
+      - name: Run visual and e2e regression tests
         run: npx playwright test

@@ -1,4 +1,5 @@
 # Chapter 16: Ownership as Resource Management
+
 <figure class="visual-figure" style="--chapter-accent: var(--ownership);">
   <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">RAII Lifecycle</div><h2 class="visual-figure__title">Resource Acquisition, Use, and Automatic Cleanup</h2></div></div>
   <div class="visual-figure__body">
@@ -61,5 +62,17 @@
     </svg>
   </div>
 </figure>
+
+### If You Remember Only 3 Things
+
+- Variables in Rust are not just names for data; they are deterministic resource managers.
+- When an owning variable goes out of scope, Rust automatically calls the `Drop` trait, instantly freeing the memory or closing the file.
+- This pattern is called RAII (Resource Acquisition Is Initialization), and it is why Rust rarely leaks resources even without a garbage collector.
+
+### Recommended Reading
+
+- [Rustonomicon: Ownership and Lifetimes](https://doc.rust-lang.org/nomicon/ownership.html)
+- [Rust Book: The Drop Trait](https://doc.rust-lang.org/book/ch15-03-drop.html)
+- Codebase study: Look at how `std::fs::File` implements `Drop` to automatically close file handles.
 
 ## Step 1 - The Problem

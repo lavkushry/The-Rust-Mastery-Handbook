@@ -1,4 +1,5 @@
 # Chapter 19: Stack vs Heap, Where Data Lives
+
 <figure class="visual-figure visual-figure--dark" style="--chapter-accent: var(--stack);">
   <div class="visual-figure__header">
     <div>

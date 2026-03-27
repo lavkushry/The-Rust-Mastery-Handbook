@@ -1,4 +1,5 @@
 # Chapter 21: The Borrow Checker, How the Compiler Thinks
+
 <figure class="visual-figure" style="--chapter-accent: var(--compiler);">
   <div class="visual-figure__header">
     <div>

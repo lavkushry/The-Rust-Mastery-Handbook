@@ -1,4 +1,5 @@
 # Chapter 10: Ownership, First Contact
+
 <figure class="visual-figure" style="--chapter-accent: var(--ownership);">
   <div class="visual-figure__header">
     <div>
@@ -187,5 +188,19 @@
     <p class="concept-card__text">When the owner leaves scope, `Drop` runs exactly once. That is the invariant the compiler is protecting.</p>
   </article>
 </div>
+
+### Why This Matters
+
+Ownership is Rust's defining feature. Before learning *how* to satisfy the borrow checker, you must understand *why* it exists. Systems languages typically make you choose between manual memory management (fast but error-prone, like C) or garbage collection (safe but unpredictable, like Java or Go).
+
+Rust chooses a third path: **Ownership**. By enforcing strict rules at compile time about who is responsible for a piece of data, Rust guarantees memory safety without needing a runtime garbage collector. This is the foundation of Rust's "fearless concurrency" and zero-cost abstractions.
+
+### Mental Model: The Checkout Card
+
+Think of ownership like a library checkout card for a rare, one-of-a-kind book.
+
+1. **One Owner:** Only the person whose name is on the card is responsible for the book.
+2. **Move:** If you give the book to a friend, you *must* also hand over the checkout card. You are no longer responsible for it, and the library will not accept it from you.
+3. **Drop:** When the person holding the card leaves town (goes out of scope), they *must* return the book to the library.
 
 ## Step 1 - The Problem

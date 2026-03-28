@@ -954,8 +954,12 @@
 
       const btn = document.createElement('button');
       btn.className = 'anki-export-btn';
-      btn.textContent = 'Export for Anki';
+      const originalText = 'Export for Anki';
+      btn.textContent = originalText;
       btn.title = 'Download flashcards as tab-separated text for Anki import';
+      btn.setAttribute('aria-live', 'polite');
+
+      let timeoutId;
       btn.addEventListener('click', () => {
         let tsv = '';
         cards.forEach(card => {
@@ -970,6 +974,12 @@
         link.download = 'rust-flashcards.txt';
         link.click();
         URL.revokeObjectURL(url);
+
+        if (timeoutId) clearTimeout(timeoutId);
+        btn.textContent = 'Exported! ✓';
+        timeoutId = setTimeout(() => {
+          btn.textContent = originalText;
+        }, 2000);
       });
       deck.appendChild(btn);
     });

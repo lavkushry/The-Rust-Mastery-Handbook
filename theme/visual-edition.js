@@ -679,11 +679,12 @@
 
         card.tabIndex = 0;
         card.setAttribute('role', 'button');
-        card.setAttribute('aria-label', 'Flashcard — press Enter to flip');
+        card.setAttribute('aria-expanded', 'false');
 
         const flip = () => {
           const wasFlipped = card.classList.contains('flipped');
           card.classList.toggle('flipped');
+          card.setAttribute('aria-expanded', String(!wasFlipped));
           if (!wasFlipped && !card.classList.contains('seen')) {
             reviewedCount++;
             counter.textContent = `${reviewedCount} / ${cards.length} reviewed`;

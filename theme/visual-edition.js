@@ -307,7 +307,7 @@
       blockquote.classList.add("callout", match.className);
       const label = document.createElement("div");
       label.className = "callout__label";
-      label.appendChild(createInlineSvgIcon(match.icon, raw.replace(/:$/, "")));
+      label.appendChild(createInlineSvgIcon(match.icon, ""));
       const labelText = document.createElement("span");
       labelText.textContent = raw.replace(/:$/, "");
       label.appendChild(labelText);
@@ -749,6 +749,7 @@
       const unBtn = document.createElement('button');
       unBtn.className = 'progress-unmark';
       unBtn.textContent = 'unmark';
+      unBtn.setAttribute('aria-label', 'Unmark chapter as complete');
       unBtn.addEventListener('click', () => {
         const p = getProgress();
         delete p[chapterPath];
@@ -806,6 +807,7 @@
       btn.className = 'playground-btn';
       btn.textContent = 'Run';
       btn.title = 'Open in Rust Playground';
+      btn.setAttribute('aria-label', 'Run code in Rust Playground (opens in new tab)');
       btn.target = '_blank';
       btn.rel = 'noopener';
       btn.href = 'https://play.rust-lang.org/?edition=2021&code=' + encodeURIComponent(code);
@@ -907,7 +909,7 @@
         panel.setAttribute('aria-labelledby', tab.id);
 
         const iconLabel = labels[i] ? `${labels[i]} level` : `Level ${i + 1}`;
-        const icon = createInlineSvgIcon(icons[i] || 'gear', iconLabel);
+        const icon = createInlineSvgIcon(icons[i] || 'gear', "");
         icon.classList.add('level-tab__icon');
         tab.appendChild(icon);
         const text = document.createElement('span');

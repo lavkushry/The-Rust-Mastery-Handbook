@@ -143,7 +143,8 @@ html.ayu #mdbook-content main th code {
   scroll-margin-top: 5.5rem;
 }
 
-#mdbook-content main a:focus-visible {
+#mdbook-content main a:focus-visible,
+#mdbook-content main button:focus-visible {
   outline: 3px solid var(--chapter-accent, var(--compiler));
   outline-offset: 3px;
   border-radius: 0.2rem;

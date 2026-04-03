@@ -830,15 +830,19 @@
       const counter = document.createElement('span');
       counter.className = 'stepper-counter';
       counter.textContent = `Step 1 of ${steps.length}`;
+      counter.setAttribute('aria-live', 'polite');
+      counter.setAttribute('aria-atomic', 'true');
 
       const prevBtn = document.createElement('button');
       prevBtn.className = 'stepper-btn';
       prevBtn.textContent = '← Prev';
+      prevBtn.setAttribute('aria-label', 'Previous step');
       prevBtn.disabled = true;
 
       const nextBtn = document.createElement('button');
       nextBtn.className = 'stepper-btn';
       nextBtn.textContent = 'Next →';
+      nextBtn.setAttribute('aria-label', 'Next step');
 
       function update() {
         steps.forEach((s, i) => { s.style.display = i === current ? 'block' : 'none'; });

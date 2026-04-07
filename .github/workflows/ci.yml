@@ -62,14 +62,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install mdBook
+        run: cargo install mdbook --locked
+
+      - name: Build book
+        run: mdbook build
+
       - name: Check external links
         uses: lycheeverse/lychee-action@v2
         with:
           args: >-
             --verbose
             --no-progress
+            --offline
             --accept 200,206,301,302,307,308,403,429
-            --exclude-mail
+            --include-mail
             README.md CONTRIBUTING.md docs/**/*.md src/**/*.md
 
   playwright-regression:

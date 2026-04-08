@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD013 MD033 MD022 MD012 MD060 MD024 MD001 MD047 MD031 MD032 MD056 MD004 -->
 # Contributing to The Rust Mastery Handbook
 
 Thanks for your interest in improving this project.

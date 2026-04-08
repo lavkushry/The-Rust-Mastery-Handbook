@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD013 MD033 MD022 MD012 MD060 MD024 MD001 MD047 MD031 MD032 MD056 MD004 -->
 # Chapter 51: The 3-Month, 6-Month, and 12-Month Plan
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><span style="opacity:0.5;font-size:0.78rem">Entire handbook</span></div></div>

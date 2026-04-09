@@ -3,8 +3,8 @@
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
     <div class="snapshot-prereq">
-      <a href="../part-05/chapter-31-threads-and-message-passing.html">Ch 31: Threads</a>
-      <a href="../part-04/chapter-25-traits-rusts-core-abstraction.html">Ch 25: Traits</a>
+      <a href="../part-05/chapter-31-threads-and-message-passing.md">Ch 31: Threads</a>
+      <a href="../part-04/chapter-25-traits-rusts-core-abstraction.md">Ch 25: Traits</a>
     </div>
   </div>
   <div class="snapshot-cell">
@@ -26,7 +26,7 @@
   <div class="concept-link-body">
     <strong>Builds on Chapter 31</strong>
     Async solves the same concurrency problem as threads but with cooperative scheduling instead of OS preemption. The ownership model (Send + 'static) applies identically.
-    <a href="../part-05/chapter-31-threads-and-message-passing.html">Revisit Ch 31 →</a>
+    <a href="../part-05/chapter-31-threads-and-message-passing.md">Revisit Ch 31 →</a>
   </div>
 </div>
 <div class="concept-link needed-for">
@@ -34,7 +34,7 @@
   <div class="concept-link-body">
     <strong>You'll need this for Chapter 35</strong>
     Pin exists because async state machines must not be moved in memory while references span await points. Ch 35 explains why.
-    <a href="../part-05/chapter-35-pin-and-why-async-is-hard.html">Ch 35: Pin →</a>
+    <a href="../part-05/chapter-35-pin-and-why-async-is-hard.md">Ch 35: Pin →</a>
   </div>
 </div>
 

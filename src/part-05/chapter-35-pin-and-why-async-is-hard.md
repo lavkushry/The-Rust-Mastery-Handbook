@@ -1,10 +1,10 @@
 # Chapter 35: Pin and Why Async Is Hard
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-05/chapter-33-async-await-and-futures.html">Ch 33: Async/Await</a><a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.html">Ch 20: Move Semantics</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-05/chapter-33-async-await-and-futures.md">Ch 33: Async/Await</a><a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.md">Ch 20: Move Semantics</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Why some futures break if moved after internal references form</li><li><code>Pin</code> = "this value must not move from its current address"</li><li><code>Box::pin</code> and <code>tokio::pin!</code> in practice</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">40<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min exercises</div></div>
 </div>
-<div class="concept-link builds-on"><div class="concept-link-icon">←</div><div class="concept-link-body"><strong>Builds on Chapter 33</strong>Async/Await showed that futures are state machines polled to completion. Pin exists because those state machines may become self-referential across <code>.await</code> points — moving them would dangle internal pointers.<a href="../part-05/chapter-33-async-await-and-futures.html">Revisit Ch 33 →</a></div></div>
+<div class="concept-link builds-on"><div class="concept-link-icon">←</div><div class="concept-link-body"><strong>Builds on Chapter 33</strong>Async/Await showed that futures are state machines polled to completion. Pin exists because those state machines may become self-referential across <code>.await</code> points — moving them would dangle internal pointers.<a href="../part-05/chapter-33-async-await-and-futures.md">Revisit Ch 33 →</a></div></div>
 
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--lifetime);">

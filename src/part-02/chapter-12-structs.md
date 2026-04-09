@@ -1,6 +1,6 @@
 # Chapter 12: Structs
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-07-types-scalars-compounds-and-the-unit-type.html">Ch 7: Types</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-07-types-scalars-compounds-and-the-unit-type.md">Ch 7: Types</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Named fields, tuple structs, unit structs</li><li><code>impl</code> blocks: methods and associated functions</li><li>Struct update syntax and field-level ownership</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">25<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 15 min exercises</div></div>
 </div>

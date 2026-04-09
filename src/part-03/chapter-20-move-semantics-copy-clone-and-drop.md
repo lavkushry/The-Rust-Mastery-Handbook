@@ -4,8 +4,8 @@
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
     <div class="snapshot-prereq">
-      <a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a>
-      <a href="../part-03/chapter-16-ownership-as-resource-management.html">Ch 16: RAII</a>
+      <a href="../part-02/chapter-10-ownership-first-contact.md">Ch 10: Ownership</a>
+      <a href="../part-03/chapter-16-ownership-as-resource-management.md">Ch 16: RAII</a>
     </div>
   </div>
   <div class="snapshot-cell">
@@ -27,7 +27,7 @@
   <div class="concept-link-body">
     <strong>Builds on Chapter 16</strong>
     RAII showed that scope exit triggers cleanup. This chapter explains the four transfer events (move, copy, clone, drop) that express ownership at each step.
-    <a href="../part-03/chapter-16-ownership-as-resource-management.html">Revisit Ch 16 →</a>
+    <a href="../part-03/chapter-16-ownership-as-resource-management.md">Revisit Ch 16 →</a>
   </div>
 </div>
 <div class="concept-link needed-for">
@@ -35,7 +35,7 @@
   <div class="concept-link-body">
     <strong>You'll need this for Chapter 30</strong>
     Smart pointers (<code>Box</code>, <code>Rc</code>, <code>RefCell</code>) change the ownership shape — they are the engineered alternatives to default move/drop semantics.
-    <a href="../part-04/chapter-30-smart-pointers-and-interior-mutability.html">Ch 30: Smart Pointers →</a>
+    <a href="../part-04/chapter-30-smart-pointers-and-interior-mutability.md">Ch 30: Smart Pointers →</a>
   </div>
 </div>
 

@@ -23,7 +23,7 @@
   <div class="concept-link-body">
     <strong>You'll need this for Chapter 10</strong>
     The five bug classes you learn here are exactly what ownership prevents. Ch 10 shows the mechanism; this chapter explains the motivation.
-    <a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership →</a>
+    <a href="../part-02/chapter-10-ownership-first-contact.md">Ch 10: Ownership →</a>
   </div>
 </div>
 

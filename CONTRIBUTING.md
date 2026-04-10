@@ -2,7 +2,8 @@
 
 Thanks for your interest in improving this project.
 
-This repository is a documentation-first mdBook project. High-quality contributions are usually:
+This repository is a documentation-first mdBook project. High-quality
+contributions are usually:
 
 - focused on one specific improvement
 - easy to review and easy to validate
@@ -70,10 +71,10 @@ node scripts/export-pdf.mjs --all-formats
 
 Use descriptive prefixes:
 
-- docs/<short-topic>
-- fix/<short-topic>
-- chore/<short-topic>
-- ci/<short-topic>
+- docs/\<short-topic\>
+- fix/\<short-topic\>
+- chore/\<short-topic\>
+- ci/\<short-topic\>
 
 Examples:
 
@@ -156,7 +157,8 @@ Recommended extras for content changes:
 
 ## How to Propose Large Changes
 
-For significant edits (major restructuring, pedagogical approach changes, navigation changes):
+For significant edits (major restructuring, pedagogical approach changes, navigation
+changes):
 
 1. Open an issue first.
 2. Explain the problem, proposed approach, and tradeoffs.
@@ -184,7 +186,8 @@ Good first contributions for this repository include:
 
 See docs/good-first-issues.md for curated ideas.
 
-If unsure where to begin, start with link integrity, glossary clarity, or diagram accessibility.
+If unsure where to begin, start with link integrity, glossary clarity, or diagram
+accessibility.
 
 ## Documentation Contribution Path
 
@@ -224,4 +227,5 @@ If no response arrives in that window, politely comment for follow-up.
 
 - Significant repository changes should be recorded in CHANGELOG.md.
 - Release note categories are defined in .github/release.yml.
-- Versioning and support expectations are documented in docs/versioning-policy.md and docs/support-policy.md.
+- Versioning and support expectations are documented in docs/versioning-policy.md
+  and docs/support-policy.md.

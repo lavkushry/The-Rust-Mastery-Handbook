@@ -23,7 +23,8 @@ Each changelog bullet should answer:
 
 Good:
 
-- Added contributor review checklist and release checklist docs to standardize PR quality and release QA.
+- Added contributor review checklist and release checklist docs to standardize PR
+  quality and release QA.
 
 Weak:
 

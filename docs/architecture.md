@@ -7,19 +7,22 @@ This repository is a documentation product built with mdBook.
 The project consists of three core layers:
 
 1. Source layer:
-- Chapter Markdown under src/
-- Navigation definition in src/SUMMARY.md
-- Front-matter style handbook entry point in src/00_title_and_toc.md
+
+   - Chapter Markdown under src/
+   - Navigation definition in src/SUMMARY.md
+   - Front-matter style handbook entry point in src/00_title_and_toc.md
 
 2. Build and presentation layer:
-- mdBook configuration in book.toml
-- Theme customizations in theme/visual-edition.css and theme/visual-edition.js
-- Optional PDF print styling in styles/pdf-export.css
+
+   - mdBook configuration in book.toml
+   - Theme customizations in theme/visual-edition.css and theme/visual-edition.js
+   - Optional PDF print styling in styles/pdf-export.css
 
 3. Delivery layer:
-- Local build and preview via mdbook build and mdbook serve
-- GitHub Actions workflows for CI validation and Pages deployment
-- Optional PDF artifact export via scripts/export-pdf.mjs
+
+   - Local build and preview via mdbook build and mdbook serve
+   - GitHub Actions workflows for CI validation and Pages deployment
+   - Optional PDF artifact export via scripts/export-pdf.mjs
 
 ## Content Topology
 

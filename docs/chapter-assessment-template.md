@@ -4,17 +4,18 @@ Use this template to add consistent mastery checkpoints at the chapter level.
 
 ## Purpose
 
-Each chapter should end with a short self-assessment so learners can decide whether to continue or review.
+Each chapter should end with a short self-assessment so learners can decide whether
+to continue or review.
 
 ## Rubric Structure
 
 Use 3-4 measurable skills tied to chapter outcomes.
 
-| Skill   | Level 0 | Level 1           | Level 2                  | Level 3                            |
-| ------- | ------- | ----------------- | ------------------------ | ---------------------------------- |
-| Skill 1 | Not yet | Basic recognition | Can apply in simple code | Can apply and explain in real code |
-| Skill 2 | Not yet | Basic recognition | Can apply in simple code | Can apply and explain in real code |
-| Skill 3 | Not yet | Basic recognition | Can apply in simple code | Can apply and explain in real code |
+| Skill   | L0 | L1         | L2           | L3           |
+| ------- | -- | ---------- | ------------ | ------------ |
+| Skill 1 | No | Recognizes | Can use      | Can explain  |
+| Skill 2 | No | Recognizes | Can use      | Can explain  |
+| Skill 3 | No | Recognizes | Can use      | Can explain  |
 
 ## Level Guidance
 

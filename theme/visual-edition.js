@@ -659,6 +659,8 @@
       // Add counter
       const counter = document.createElement('div');
       counter.className = 'fc-counter';
+      counter.setAttribute('aria-live', 'polite');
+      counter.setAttribute('aria-atomic', 'true');
       counter.textContent = `0 / ${cards.length} reviewed`;
       deck.insertBefore(counter, deck.firstChild);
 
@@ -829,6 +831,8 @@
 
       const counter = document.createElement('span');
       counter.className = 'stepper-counter';
+      counter.setAttribute('aria-live', 'polite');
+      counter.setAttribute('aria-atomic', 'true');
       counter.textContent = `Step 1 of ${steps.length}`;
 
       const prevBtn = document.createElement('button');

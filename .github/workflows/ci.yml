@@ -68,8 +68,8 @@ jobs:
           args: >-
             --verbose
             --no-progress
-            --offline
             --accept 200,206,301,302,307,308,403,429
+            --exclude "file://.*\.html"
             README.md CONTRIBUTING.md docs/**/*.md src/**/*.md
 
   playwright-regression:

@@ -70,6 +70,8 @@ jobs:
             --no-progress
             --accept 200,206,301,302,307,308,403,429
             --include-mail
+            --scheme http
+            --scheme https
             README.md CONTRIBUTING.md docs/**/*.md src/**/*.md
 
   playwright-regression:

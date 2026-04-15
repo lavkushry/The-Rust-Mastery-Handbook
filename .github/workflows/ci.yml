@@ -68,8 +68,10 @@ jobs:
           args: >-
             --verbose
             --no-progress
+            --scheme http
+            --scheme https
             --accept 200,206,301,302,307,308,403,429
-            --exclude-mail
+            --include-mail
             README.md CONTRIBUTING.md docs/**/*.md src/**/*.md
 
   playwright-regression:

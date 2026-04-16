@@ -829,6 +829,8 @@
 
       const counter = document.createElement('span');
       counter.className = 'stepper-counter';
+      counter.setAttribute('aria-live', 'polite');
+      counter.setAttribute('aria-atomic', 'true');
       counter.textContent = `Step 1 of ${steps.length}`;
 
       const prevBtn = document.createElement('button');

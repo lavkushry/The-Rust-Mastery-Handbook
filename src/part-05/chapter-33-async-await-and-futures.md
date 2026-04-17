@@ -506,6 +506,6 @@ An async task is a folded travel itinerary in your pocket. It is the whole trip,
 ## Chapter Resources
 * **Official Source:** [Asynchronous Programming in Rust (The Async Book)](https://rust-lang.github.io/async-book/)
 * **Tokio Docs:** [Tokio Tutorial: Spawning](https://tokio.rs/tokio/tutorial/spawning)
-* **Under the Hood:** [Without Boats: The Waker API](https://without.boats/blog/wakers/)
+* **Under the Hood:** [Without Boats: The Waker API](https://without.boats/blog/wakers-i/)
 
 ---

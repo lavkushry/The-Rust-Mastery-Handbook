@@ -1,10 +1,10 @@
 # Chapter 32: Shared State, Arc, Mutex, and Send/Sync
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-05/chapter-31-threads-and-message-passing.html">Ch 31: Threads</a><a href="../part-04/chapter-30-smart-pointers-and-interior-mutability.html">Ch 30: Smart Pointers</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href=\"../part-05/chapter-31-threads-and-message-passing.md\">Ch 31: Threads</a><a href=\"../part-04/chapter-30-smart-pointers-and-interior-mutability.md\">Ch 30: Smart Pointers</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>Send</code> vs <code>Sync</code> — the thread-safety gates</li><li><code>Arc&lt;Mutex&lt;T&gt;&gt;</code> pattern and its tradeoffs</li><li>Why <code>Rc</code>/<code>RefCell</code> cannot cross thread boundaries</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">45<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div></div>
 </div>
-<div class="concept-link builds-on"><div class="concept-link-icon">←</div><div class="concept-link-body"><strong>Builds on Chapters 30 and 31</strong>Ch 30 introduced smart pointers for single-threaded shared ownership. Ch 31 showed ownership transfer across threads. This chapter combines both: shared ownership AND mutation across threads.<a href="../part-05/chapter-31-threads-and-message-passing.html">Revisit Ch 31 →</a></div></div>
+<div class="concept-link builds-on"><div class="concept-link-icon">←</div><div class="concept-link-body"><strong>Builds on Chapters 30 and 31</strong>Ch 30 introduced smart pointers for single-threaded shared ownership. Ch 31 showed ownership transfer across threads. This chapter combines both: shared ownership AND mutation across threads.<a href=\"../part-05/chapter-31-threads-and-message-passing.md\">Revisit Ch 31 →</a></div></div>
 
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--trait);">

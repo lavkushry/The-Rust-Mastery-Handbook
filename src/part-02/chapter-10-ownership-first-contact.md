@@ -3,8 +3,8 @@
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
     <div class="snapshot-prereq">
-      <a href="../part-02/chapter-06-variables-mutability-and-shadowing.html">Ch 6: Variables &amp; Mutability</a>
-      <a href="../part-02/chapter-07-types-scalars-compounds-and-the-unit-type.html">Ch 7: Types</a>
+      <a href=\"../part-02/chapter-06-variables-mutability-and-shadowing.md\">Ch 6: Variables &amp; Mutability</a>
+      <a href=\"../part-02/chapter-07-types-scalars-compounds-and-the-unit-type.md\">Ch 7: Types</a>
     </div>
   </div>
   <div class="snapshot-cell">
@@ -26,7 +26,7 @@
   <div class="concept-link-body">
     <strong>You'll need this for Chapters 11, 16, and 17</strong>
     Ownership is the foundation of borrowing. Ch 11 introduces references as borrowed access, Ch 16 formalizes ownership as RAII, and Ch 17 gives the aliasing-XOR-mutation rule.
-    <a href="../part-02/chapter-11-borrowing-and-references-first-contact.html">Ch 11: Borrowing →</a>
+    <a href=\"../part-02/chapter-11-borrowing-and-references-first-contact.md\">Ch 11: Borrowing →</a>
   </div>
 </div>
 

@@ -1,10 +1,10 @@
 # Chapter 27: Error Handling in Depth
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-14-option-result-and-rusts-error-philosophy.html">Ch 14: Option &amp; Result</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href=\"../part-02/chapter-14-option-result-and-rusts-error-philosophy.md\">Ch 14: Option &amp; Result</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>thiserror</code> for libraries vs <code>anyhow</code> for apps</li><li>Error propagation chains with <code>?</code> + <code>From</code></li><li>When to panic vs when to propagate</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">35<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min exercises</div></div>
 </div>
-<div class="concept-link builds-on"><div class="concept-link-icon">←</div><div class="concept-link-body"><strong>Builds on Chapter 14</strong>Ch 14 introduced <code>Option</code> and <code>Result</code>. This chapter goes deeper: library vs application error design, <code>thiserror</code> vs <code>anyhow</code>, and how <code>?</code> chains <code>From</code> conversions.<a href="../part-02/chapter-14-option-result-and-rusts-error-philosophy.html">Revisit Ch 14 →</a></div></div>
+<div class="concept-link builds-on"><div class="concept-link-icon">←</div><div class="concept-link-body"><strong>Builds on Chapter 14</strong>Ch 14 introduced <code>Option</code> and <code>Result</code>. This chapter goes deeper: library vs application error design, <code>thiserror</code> vs <code>anyhow</code>, and how <code>?</code> chains <code>From</code> conversions.<a href=\"../part-02/chapter-14-option-result-and-rusts-error-philosophy.md\">Revisit Ch 14 →</a></div></div>
 
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--error);">

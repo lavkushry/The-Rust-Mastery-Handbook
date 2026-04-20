@@ -1,6 +1,6 @@
 # Chapter 43: Macros, Declarative and Procedural
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-25-traits-rusts-core-abstraction.html">Ch 25: Traits</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href=\"../part-04/chapter-25-traits-rusts-core-abstraction.md\">Ch 25: Traits</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>macro_rules!</code> for pattern-based code generation</li><li>Procedural macros: derive, attribute, function-like</li><li>When macros help vs when they obscure</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">45<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div></div>
 </div>

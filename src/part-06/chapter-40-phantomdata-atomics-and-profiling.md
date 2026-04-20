@@ -1,6 +1,6 @@
 # Chapter 40: PhantomData, Atomics, and Profiling
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-06/chapter-36-memory-layout-and-zero-cost-abstractions.html">Ch 36: Memory Layout</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href=\"../part-06/chapter-36-memory-layout-and-zero-cost-abstractions.md\">Ch 36: Memory Layout</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>PhantomData</code> for unused type/lifetime parameters</li><li>Atomic types and memory ordering</li><li>Profiling with <code>perf</code>, <code>flamegraph</code>, <code>criterion</code></li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">40<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div></div>
 </div>

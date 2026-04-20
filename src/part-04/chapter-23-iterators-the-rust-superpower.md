@@ -1,10 +1,10 @@
 # Chapter 23: Iterators, the Rust Superpower
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-22-collections-vec-string-and-hashmap.html">Ch 22: Collections</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href=\"../part-04/chapter-22-collections-vec-string-and-hashmap.md\">Ch 22: Collections</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Lazy evaluation — nothing runs until a consumer pulls</li><li>Zero-cost: iterator chains compile to the same code as hand-written loops</li><li>Key adapters: <code>filter</code>, <code>map</code>, <code>collect</code>, <code>fold</code></li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">35<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 25 min exercises</div></div>
 </div>
-<div class="concept-link needed-for"><div class="concept-link-icon">→</div><div class="concept-link-body"><strong>You'll need this for Chapter 25</strong>Every iterator chain relies on the <code>Iterator</code> trait and its <code>next()</code> method. Chapter 25 shows how traits like Iterator are defined, implemented, and composed.<a href="../part-04/chapter-25-traits-rusts-core-abstraction.html">Preview Ch 25 →</a></div></div>
+<div class="concept-link needed-for"><div class="concept-link-icon">→</div><div class="concept-link-body"><strong>You'll need this for Chapter 25</strong>Every iterator chain relies on the <code>Iterator</code> trait and its <code>next()</code> method. Chapter 25 shows how traits like Iterator are defined, implemented, and composed.<a href=\"../part-04/chapter-25-traits-rusts-core-abstraction.md\">Preview Ch 25 →</a></div></div>
 
 <figure class="visual-figure" style="--chapter-accent: var(--perf);">
   <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Lazy Evaluation</div><h2 class="visual-figure__title">Iterator Pipelines Do Nothing Until a Consumer Pulls</h2></div></div>

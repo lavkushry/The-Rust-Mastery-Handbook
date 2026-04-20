@@ -1,11 +1,11 @@
 # Chapter 19: Stack vs Heap, Where Data Lives
 
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a><a href="../part-03/chapter-16-ownership-as-resource-management.html">Ch 16: RAII</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href=\"../part-02/chapter-10-ownership-first-contact.md\">Ch 10: Ownership</a><a href=\"../part-03/chapter-16-ownership-as-resource-management.md\">Ch 16: RAII</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Stack frames, heap allocation, and static data</li><li>Thin vs fat pointers in Rust</li><li>Why "String lives on the heap" is incomplete</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">35<span class="snapshot-time-unit"> min</span></div></div>
 </div>
-<div class="concept-link builds-on"><div class="concept-link-icon">←</div><div class="concept-link-body"><strong>Builds on Chapter 16</strong>RAII told you scope exit triggers cleanup. This chapter shows WHERE data physically lives and how ownership metadata stays on the stack while owned data may live on the heap.<a href="../part-03/chapter-16-ownership-as-resource-management.html">Revisit Ch 16 →</a></div></div>
+<div class="concept-link builds-on"><div class="concept-link-icon">←</div><div class="concept-link-body"><strong>Builds on Chapter 16</strong>RAII told you scope exit triggers cleanup. This chapter shows WHERE data physically lives and how ownership metadata stays on the stack while owned data may live on the heap.<a href=\"../part-03/chapter-16-ownership-as-resource-management.md\">Revisit Ch 16 →</a></div></div>
 
 <figure class="visual-figure visual-figure--dark" style="--chapter-accent: var(--stack);">
   <div class="visual-figure__header">

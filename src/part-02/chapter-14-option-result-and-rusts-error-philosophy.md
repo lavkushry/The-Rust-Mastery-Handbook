@@ -3,7 +3,7 @@
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
     <div class="snapshot-prereq">
-      <a href="../part-02/chapter-13-enums-and-pattern-matching.html">Ch 13: Enums</a>
+      <a href=\"../part-02/chapter-13-enums-and-pattern-matching.md\">Ch 13: Enums</a>
     </div>
   </div>
   <div class="snapshot-cell">
@@ -25,7 +25,7 @@
   <div class="concept-link-body">
     <strong>Builds on Chapter 13</strong>
     <code>Option&lt;T&gt;</code> and <code>Result&lt;T, E&gt;</code> are enums. Pattern matching is how you extract the success or failure value — there is no null to check.
-    <a href="../part-02/chapter-13-enums-and-pattern-matching.html">Revisit Ch 13 →</a>
+    <a href=\"../part-02/chapter-13-enums-and-pattern-matching.md\">Revisit Ch 13 →</a>
   </div>
 </div>
 

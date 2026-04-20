@@ -1,6 +1,6 @@
 # Chapter 38: FFI, Talking to C Without Lying
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-06/chapter-37-unsafe-rust-power-and-responsibility.html">Ch 37: Unsafe</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href=\"../part-06/chapter-37-unsafe-rust-power-and-responsibility.md\">Ch 37: Unsafe</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>extern "C"</code> and calling conventions</li><li>Safe wrappers over C libraries</li><li>Ownership boundaries at FFI edges</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">40<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min exercises</div></div>
 </div>

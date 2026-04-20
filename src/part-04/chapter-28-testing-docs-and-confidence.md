@@ -1,6 +1,6 @@
 # Chapter 28: Testing, Docs, and Confidence
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-05-cargo-and-project-structure.html">Ch 5: Cargo</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href=\"../part-02/chapter-05-cargo-and-project-structure.md\">Ch 5: Cargo</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>#[test]</code>, <code>#[should_panic]</code>, and integration tests</li><li>Doc tests as living documentation</li><li>Test organization: unit, integration, doc</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">30<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min exercises</div></div>
 </div>

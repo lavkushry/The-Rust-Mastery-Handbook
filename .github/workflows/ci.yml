@@ -69,8 +69,9 @@ jobs:
             --verbose
             --no-progress
             --accept 200,206,301,302,307,308,403,429
-            --exclude-mail
-            README.md CONTRIBUTING.md docs/**/*.md src/**/*.md
+            --include-mail
+            --exclude-path src/**/*.md
+            README.md CONTRIBUTING.md docs/**/*.md
 
   playwright-regression:
     runs-on: ubuntu-latest

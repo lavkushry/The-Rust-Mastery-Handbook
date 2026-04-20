@@ -1,6 +1,6 @@
 # Chapter 8: Functions and Expressions
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-07-types-scalars-compounds-and-the-unit-type.html">Ch 7: Types</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href=\"../part-02/chapter-07-types-scalars-compounds-and-the-unit-type.md\">Ch 7: Types</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Everything is an expression in Rust</li><li>Return values via final expression (no semicolon)</li><li>Function signatures and type annotations</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">20<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 15 min exercises</div></div>
 </div>

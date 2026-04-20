@@ -3,8 +3,8 @@
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
     <div class="snapshot-prereq">
-      <a href="../part-03/chapter-17-borrowing-constrained-access.html">Ch 17: Borrow Rules</a>
-      <a href="../part-03/chapter-21-the-borrow-checker-how-the-compiler-thinks.html">Ch 21: Borrow Checker</a>
+      <a href=\"../part-03/chapter-17-borrowing-constrained-access.md\">Ch 17: Borrow Rules</a>
+      <a href=\"../part-03/chapter-21-the-borrow-checker-how-the-compiler-thinks.md\">Ch 21: Borrow Checker</a>
     </div>
   </div>
   <div class="snapshot-cell">
@@ -26,7 +26,7 @@
   <div class="concept-link-body">
     <strong>Builds on Chapter 21</strong>
     Ch 21 explains the borrow checker's pipeline and the three most common borrow errors (E0382, E0502, E0505). This chapter teaches you to read ALL compiler diagnostics as structured evidence.
-    <a href="../part-03/chapter-21-the-borrow-checker-how-the-compiler-thinks.html">Revisit Ch 21 →</a>
+    <a href=\"../part-03/chapter-21-the-borrow-checker-how-the-compiler-thinks.md\">Revisit Ch 21 →</a>
   </div>
 </div>
 

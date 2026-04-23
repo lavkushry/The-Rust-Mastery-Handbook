@@ -1,5 +1,9 @@
 # Values, Names, and the "let" Word
 
+<div class="ferris-says">
+<p>In Python, <code>x = 3</code> is a variable. In Rust, <code>let x = 3;</code> is a <em>binding</em>. Different word, and the difference matters. A "variable" implies something that will vary. A "binding" is a name attached to a value — and by default that value will not change. Rust flipped the default on purpose. I will show you why in a minute.</p>
+</div>
+
 <div class="one-sentence">
   If you only remember one thing: <strong>in Rust, a name points at a value, and that value does not change unless you wrote <code>mut</code> on purpose.</strong>
 </div>
@@ -121,6 +125,23 @@ fn main() {
   </div>
 </div>
 
+## wordc, step 2
+
+Back to our through-line. Open `wordc/src/main.rs` and add a binding for the file we will eventually read:
+
+```rust
+fn main() {
+    let path = "sample.txt";
+    println!("wordc will count words in: {path}");
+}
+```
+
+Run it. The point is small — you have used `let` for real code, not a toy example.
+
+<div class="ferris-says" data-variant="insight">
+<p>Did you notice? <code>path</code> is a <code>&str</code> (a "string slice"), not a <code>String</code>. String literals in Rust are always <code>&str</code>. We will meet the difference in chapter 5. For now just see that Rust inferred the type — you did not have to declare it.</p>
+</div>
+
 ## Try this
 
 <div class="try-this">
@@ -130,6 +151,22 @@ fn main() {
     <li>Make an immutable <code>let pi: f64 = 3.14;</code> and try to change it. Read the error carefully.</li>
     <li>Use shadowing to change <code>let age = "30";</code> into a number, using <code>let age: u32 = age.parse().unwrap();</code> Run it.</li>
   </ol>
+</div>
+
+## Check yourself
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quiz — 1 of 1</span><span>Bindings</span></div>
+  <p class="quiz__q">Which of these compiles and runs without error?</p>
+  <ul class="quiz__options">
+    <li><code>let x = 5; x = 6; println!("{x}");</code></li>
+    <li><code>let mut x = 5; x = 5; println!("{x}");</code> (yes, the second <code>=</code> is a no-op but still legal)</li>
+    <li><code>let mut x = 5; x = 6; println!("{x}");</code></li>
+    <li>Both B and C.</li>
+  </ul>
+  <div class="quiz__explain">Correct — both B and C compile. Rust's rule is: you can reassign to a binding <em>only</em> if it was declared with <code>let mut</code>. Reassigning the same value back to itself is pointless but legal. Option A fails because <code>let x = 5</code> without <code>mut</code> is immutable — the second line is a compile error.</div>
+  <div class="quiz__explain quiz__explain--wrong">Re-read the first code block in the chapter. Which version allows reassignment?</div>
+  <button type="button" class="quiz__reset">Try again</button>
 </div>
 
 Next: the four shapes every Rust program uses to organize data — struct, enum, tuple, array.

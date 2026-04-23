@@ -1,5 +1,9 @@
 # Your First CLI
 
+<div class="ferris-says">
+<p>Six chapters. Six pieces of a program. Today we snap them together. <code>wordc</code> becomes a real CLI — one you could ship to a teammate. Every line you write in this chapter uses something you already know: <code>let</code>, <code>fn</code>, <code>struct</code>, ownership, borrowing, <code>Result</code>. This is the "oh, I actually know this" chapter. Enjoy it.</p>
+</div>
+
 <div class="one-sentence">
   If you only remember one thing: <strong>you already know enough Rust to write a real program that reads a file, counts something useful, and prints a result. This chapter is you doing it.</strong>
 </div>
@@ -174,6 +178,22 @@ That file — `target/release/wordc` — is a native, statically-compiled binary
     <li>Support <em>multiple</em> file paths: print one line per file.</li>
     <li>Replace the argument parsing with the <a href="https://crates.io/crates/clap">clap</a> crate. Look at the <code>Cargo.toml</code> to see how dependencies are added.</li>
   </ol>
+</div>
+
+## Check yourself
+
+<div class="quiz" data-answer="1">
+  <div class="quiz__head"><span>Quiz — 1 of 1</span><span>Capstone</span></div>
+  <p class="quiz__q">In the <code>wordc</code> program, what does the <code>?</code> at the end of <code>fs::read_to_string(path)?</code> do?</p>
+  <ul class="quiz__options">
+    <li>It is a typo that Rust accepts silently.</li>
+    <li>If the call returns <code>Err(e)</code>, the current function returns <code>Err(e)</code>; if it returns <code>Ok(v)</code>, the value <code>v</code> is unwrapped and the function continues.</li>
+    <li>It converts the <code>Result</code> into a boolean: <code>true</code> for <code>Ok</code>, <code>false</code> for <code>Err</code>.</li>
+    <li>It silently panics if the result is an error.</li>
+  </ul>
+  <div class="quiz__explain">Correct. <code>?</code> is the "unwrap the <code>Ok</code>, or propagate the <code>Err</code>" operator. It is arguably Rust's single most quoted-from-memory feature. It replaces what would be try/catch in other languages with a one-character inline annotation — no stack-unwinding, no hidden control flow, no exceptions. Just data out or error up.</div>
+  <div class="quiz__explain quiz__explain--wrong">Re-read the <code>read_file</code> function. Notice what happens when the file is missing — the error is <em>returned</em>, not caught.</div>
+  <button type="button" class="quiz__reset">Try again</button>
 </div>
 
 You are done with the Part 0 core. Let's talk about where to go next.

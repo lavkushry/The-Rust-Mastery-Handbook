@@ -1,5 +1,9 @@
 # Hello, Rust
 
+<div class="ferris-says">
+<p>We are going to do two things in this chapter. First, install Rust and run one program. Second, start building the through-line project we will carry all the way through Part 0: a tiny command-line tool called <code>wordc</code> that counts words in a file. By chapter 7 you will have shipped it. This chapter we just scaffold it.</p>
+</div>
+
 <div class="one-sentence">
   If you only remember one thing: <strong>installing Rust is one command, and from that point on <code>cargo</code> is the only tool you will touch.</strong>
 </div>
@@ -99,6 +103,10 @@ fn main() {
 
 Read the picture. That is the whole program. The only piece that will surprise a Python or JavaScript reader is the `!` after `println`. It marks a *macro* — a compile-time code generator. Rust has macros so that tiny features like string formatting do not need to be built into the language itself. For now, treat `println!` as just "the thing that prints".
 
+<div class="ferris-says" data-variant="insight">
+<p>One weird thing you may be noticing: no imports, no <code>main</code> method on a class, no <code>if __name__ == "__main__":</code>. In Rust, the function <em>literally called</em> <code>main</code> is the entry point. That is the whole rule. No ceremony.</p>
+</div>
+
 ## What just happened
 
 <div class="analogy-card">
@@ -112,6 +120,27 @@ Read the picture. That is the whole program. The only piece that will surprise a
   </div>
 </div>
 
+## The through-line starts here
+
+Every chapter of Part 0 adds one thing to a real program called `wordc` — a command-line word counter. By the end of chapter 7 you will run `wordc some-file.txt` and see output. We start it now.
+
+Make it from scratch:
+
+```bash
+cargo new wordc
+cd wordc
+```
+
+Open `src/main.rs` and replace the body with:
+
+```rust
+fn main() {
+    println!("wordc 0.1 — we will count words here soon");
+}
+```
+
+Run `cargo run`. You should see the placeholder message. Keep this project around — we will come back to it every chapter.
+
 ## Try this
 
 <div class="try-this">
@@ -121,6 +150,22 @@ Read the picture. That is the whole program. The only piece that will surprise a
     <li>Add a second <code>println!</code> on the next line. Run it.</li>
     <li>Delete one of the semicolons on purpose and run it. <strong>Read the error Rust gives you.</strong> Notice how it points exactly at the character that is wrong. That is what Rust errors look like. You will read many of them this week.</li>
   </ol>
+</div>
+
+## Check yourself
+
+<div class="quiz" data-answer="1">
+  <div class="quiz__head"><span>Quiz — 1 of 1</span><span>Setup</span></div>
+  <p class="quiz__q">Which single command creates a brand-new Rust project, compiles it, and runs it?</p>
+  <ul class="quiz__options">
+    <li><code>rustc hello.rs && ./hello</code></li>
+    <li><code>cargo new hello</code>, then inside the folder <code>cargo run</code></li>
+    <li><code>rustup init hello && rustup go</code></li>
+    <li><code>npm create rust@latest</code></li>
+  </ul>
+  <div class="quiz__explain">Correct. <code>cargo new</code> scaffolds the project; <code>cargo run</code> compiles and runs it in one step. You almost never call <code>rustc</code> directly in day-to-day work — Cargo does it for you.</div>
+  <div class="quiz__explain quiz__explain--wrong">Not quite. Look at the "four Cargo commands" table above — the answer is right there.</div>
+  <button type="button" class="quiz__reset">Try again</button>
 </div>
 
 <div class="eli5">

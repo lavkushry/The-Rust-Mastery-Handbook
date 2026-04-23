@@ -1,7 +1,11 @@
 # Why You Will Actually Like Rust
 
+<div class="ferris-says" data-variant="insight">
+<p>Hi! I am <strong>Ferris</strong>, the little orange crab you will see in the margins for the rest of this book. I have been writing Rust since the day it was called a "systems language most people would never touch". I promise you: it has grown up. And so have its tutorials. This one is going to be different. Read at your pace. Run every code block. I will point out the traps before you step on them.</p>
+</div>
+
 <div class="one-sentence">
-  If you only remember one thing: <strong>Rust catches at compile time the exact bugs you usually catch in production at 3 a.m.</strong>
+  If you only remember one thing from this chapter: <strong>Rust catches at compile time the exact bugs you usually catch in production at 3 a.m.</strong>
 </div>
 
 ## The one-paragraph pitch
@@ -54,6 +58,10 @@ The same four bugs have eaten more engineering time than every other category co
 Rust has a reputation for being hard. The reputation is half deserved. The half that is deserved is real: **Rust asks you to think about one thing most languages let you ignore — who is allowed to touch a piece of data, and when.** That is the idea behind ownership. It is not complicated, it is just *new*, and like anything new it feels awkward for about a week.
 
 The half that is *not* deserved is the rest: Rust's syntax is not weirder than TypeScript's, its tooling is better than almost any other language's, its error messages are the best in the industry, and its documentation is excellent. Once the ownership idea clicks — and Part 0 is built to make it click fast — the rest feels like any other modern language, just with fewer 3 a.m. pages.
+
+<div class="ferris-says">
+<p>I will tell you a secret. Ownership takes about a week of practice to stop feeling weird. That is it. Once it clicks, the whole language quiets down around you. You stop arguing with the compiler and start treating it like a second pair of eyes. I have never met a Rust programmer who, a month in, wanted to go back.</p>
+</div>
 
 ## Who this book is for
 

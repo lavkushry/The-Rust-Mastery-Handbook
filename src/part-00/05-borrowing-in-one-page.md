@@ -1,5 +1,9 @@
 # Borrowing in One Page
 
+<div class="ferris-says">
+<p>Ownership, you now know, is strict: one value, one owner. If every function took ownership, you would have to clone everything — expensive and tedious. <strong>Borrowing</strong> is the pressure-release valve. A borrow says: "you may look, but do not take; I will want it back." And because the compiler knows exactly how long a borrow lives, you get the speed of C-style pointers with none of the bugs.</p>
+</div>
+
 <div class="one-sentence">
   If you only remember one thing: <strong>a borrow lets a function look at your value without taking it over, and the compiler guarantees the value will still be valid while the borrow lives.</strong>
 </div>
@@ -171,6 +175,30 @@ fn main() {
   <p><strong>Default habit:</strong> your functions take <code>&amp;str</code>, not <code>String</code>. Callers can pass either — Rust will do the coercion for you. You keep the flexibility, they keep ownership of their data.</p>
 </div>
 
+## wordc, step 4
+
+Our through-line needs a function that counts words in a block of text. It should *borrow* the text — the caller keeps the String, we just peek at it.
+
+```rust
+fn count_words(text: &str) -> u32 {
+    text.split_whitespace().count() as u32
+}
+
+fn main() {
+    let sample = String::from("ferris loves rust very much");
+    let n = count_words(&sample);       // pass a borrow, not the String
+    println!("{sample} → {n} words");   // sample is still usable!
+}
+```
+
+<p class="playground-run"><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&code=fn%20count_words%28text%3A%20%26str%29%20-%3E%20u32%20%7B%0A%20%20%20%20text.split_whitespace%28%29.count%28%29%20as%20u32%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20sample%20%3D%20String%3A%3Afrom%28%22ferris%20loves%20rust%20very%20much%22%29%3B%0A%20%20%20%20let%20n%20%3D%20count_words%28%26sample%29%3B%0A%20%20%20%20println%21%28%22%7Bsample%7D%20%E2%86%92%20%7Bn%7D%20words%22%29%3B%0A%7D" target="_blank" rel="noopener">▶ Run this in the Rust Playground</a></p>
+
+Two small but huge details: `count_words` takes `&str` (a borrowed slice), and `main` passes `&sample` (a borrow of the String). No ownership changes hands. That is the whole idea.
+
+<div class="ferris-says" data-variant="insight">
+<p>You have now seen <em>the</em> idiom you will write on every Rust function for the rest of your career. Functions take <code>&amp;str</code> or <code>&amp;[T]</code> or <code>&amp;T</code> by default; they take <code>String</code> or <code>Vec&lt;T&gt;</code> or <code>T</code> only when they genuinely need to <em>own</em> the value (to store it somewhere, to consume it, to hand it to a thread). If you can remember only one rule from Part 0: <strong>borrow by default, own only when needed</strong>.</p>
+</div>
+
 ## Try this
 
 <div class="try-this">
@@ -180,6 +208,22 @@ fn main() {
     <li>Write a function <code>fn shout(s: &amp;mut String)</code> that appends <code>"!"</code> to its argument. Call it on a <code>let mut msg = String::from("hi");</code> and print the result.</li>
     <li>Write a program that holds both an <code>&amp;s</code> and an <code>&amp;mut s</code> at the same time. Read the error. It will tell you exactly which line to move.</li>
   </ol>
+</div>
+
+## Check yourself
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quiz — 1 of 1</span><span>Borrowing</span></div>
+  <p class="quiz__q">Which set of references is <em>legal</em> to hold at the same time on a single <code>String</code>?</p>
+  <ul class="quiz__options">
+    <li>Two <code>&amp;mut</code> references</li>
+    <li>One <code>&amp;mut</code> reference and one <code>&amp;</code> reference</li>
+    <li>Three <code>&amp;</code> references (no <code>&amp;mut</code>)</li>
+    <li>Any combination — references are cheap and don't conflict</li>
+  </ul>
+  <div class="quiz__explain">Correct. The aliasing rule: <strong>many readers <em>or</em> one writer, never both</strong>. Three shared borrows is fine because nobody is writing. Two <code>&amp;mut</code> is not. Mixing them is not. This one rule is the reason Rust eliminates entire classes of data-race bugs at compile time.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at the "aliasing rule" section. Read it out loud. Many readers OR one writer — never both.</div>
+  <button type="button" class="quiz__reset">Try again</button>
 </div>
 
 Now for the other idea Rust is famous for — how errors and missing values are just ordinary data.

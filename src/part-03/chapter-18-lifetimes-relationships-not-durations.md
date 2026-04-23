@@ -143,7 +143,7 @@
 
 ## Chapter Resources
 
-* **Official Source:** [The Rust Reference: Lifetimes](https://doc.rust-lang.org/reference/lifetimes.html)
+* **Official Source:** [The Rust Reference: Lifetimes](https://doc.rust-lang.org/nomicon/lifetimes.html)
 * **Rustonomicon:** [Lifetimes](https://doc.rust-lang.org/nomicon/lifetimes.html)
 * **Rust by Example:** [Lifetimes](https://doc.rust-lang.org/rust-by-example/scope/lifetime.html)
 

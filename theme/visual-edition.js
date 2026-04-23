@@ -750,7 +750,9 @@
 
       const unBtn = document.createElement('button');
       unBtn.className = 'progress-unmark';
-      unBtn.textContent = 'unmark';
+      unBtn.textContent = 'Undo';
+      unBtn.title = 'Unmark chapter as complete';
+      unBtn.setAttribute('aria-label', 'Unmark chapter as complete');
       unBtn.addEventListener('click', () => {
         const p = getProgress();
         delete p[chapterPath];
@@ -806,8 +808,9 @@
       // Skip incomplete snippets (no fn main, just fragments)
       const btn = document.createElement('a');
       btn.className = 'playground-btn';
-      btn.textContent = 'Run';
+      btn.textContent = 'Run ↗';
       btn.title = 'Open in Rust Playground';
+      btn.setAttribute('aria-label', 'Run this code in the Rust Playground (opens in new tab)');
       btn.target = '_blank';
       btn.rel = 'noopener';
       btn.href = 'https://play.rust-lang.org/?edition=2021&code=' + encodeURIComponent(code);
@@ -838,11 +841,13 @@
       const prevBtn = document.createElement('button');
       prevBtn.className = 'stepper-btn';
       prevBtn.textContent = '← Prev';
+      prevBtn.setAttribute('aria-label', 'Previous step');
       prevBtn.disabled = true;
 
       const nextBtn = document.createElement('button');
       nextBtn.className = 'stepper-btn';
       nextBtn.textContent = 'Next →';
+      nextBtn.setAttribute('aria-label', 'Next step');
 
       function update() {
         steps.forEach((s, i) => { s.style.display = i === current ? 'block' : 'none'; });

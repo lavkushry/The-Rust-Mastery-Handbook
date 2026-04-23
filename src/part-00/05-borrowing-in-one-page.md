@@ -134,6 +134,75 @@ fn main() {
 
 Read the error when it shouts at you. It will tell you, to the character, which borrow was already live and what you tried to do.
 
+## Watch the rule in action
+
+<div class="ferris-says" data-variant="insight">
+<p>Step through these frames. Notice how each state is <em>either</em> "readers" <em>or</em> "one writer", never both at once. Keyboard arrows work too.</p>
+</div>
+
+<div class="step-through" data-title="The aliasing rule, one frame at a time">
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 280" role="img" aria-label="Frame 1: A box labelled s owns the string rust. No borrows exist yet.">
+      <rect x="10" y="10" width="700" height="260" rx="16" fill="#fffdf8" stroke="rgba(2,62,138,0.14)"></rect>
+      <text x="360" y="44" text-anchor="middle" style="font-family:var(--font-display);font-size:18px;fill:#1d3557;font-weight:bold">Frame 1 — just an owner, no borrows</text>
+      <rect x="280" y="100" width="160" height="80" rx="12" fill="#ffffff" stroke="#1d3557" stroke-width="3"></rect>
+      <text x="360" y="135" text-anchor="middle" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">s = "rust"</text>
+      <text x="360" y="162" text-anchor="middle" style="font-family:var(--font-display);font-size:12px;fill:#457b9d">(the owner)</text>
+      <text x="360" y="230" text-anchor="middle" style="font-family:var(--font-code);font-size:14px;fill:#1d3557">let mut s = String::from("rust");</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 280" role="img" aria-label="Frame 2: Three shared borrows r1, r2, r3 all pointing at s. All are readers. This is legal.">
+      <rect x="10" y="10" width="700" height="260" rx="16" fill="#eef6ff" stroke="#457b9d"></rect>
+      <text x="360" y="44" text-anchor="middle" style="font-family:var(--font-display);font-size:18px;fill:#1d3557;font-weight:bold">Frame 2 — many readers, all at once. Fine.</text>
+      <rect x="280" y="100" width="160" height="80" rx="12" fill="#ffffff" stroke="#457b9d" stroke-width="3"></rect>
+      <text x="360" y="135" text-anchor="middle" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">s = "rust"</text>
+      <text x="360" y="162" text-anchor="middle" style="font-family:var(--font-display);font-size:12px;fill:#457b9d">(owner)</text>
+      <circle cx="80" cy="80" r="22" fill="#457b9d"></circle>
+      <text x="80" y="86" text-anchor="middle" style="font-family:var(--font-code);font-size:12px;fill:#fff">&amp;s</text>
+      <path d="M102 82 L 280 130" stroke="#457b9d" stroke-width="3"></path>
+      <circle cx="80" cy="150" r="22" fill="#457b9d"></circle>
+      <text x="80" y="156" text-anchor="middle" style="font-family:var(--font-code);font-size:12px;fill:#fff">&amp;s</text>
+      <path d="M102 150 L 280 140" stroke="#457b9d" stroke-width="3"></path>
+      <circle cx="80" cy="220" r="22" fill="#457b9d"></circle>
+      <text x="80" y="226" text-anchor="middle" style="font-family:var(--font-code);font-size:12px;fill:#fff">&amp;s</text>
+      <path d="M102 220 L 280 160" stroke="#457b9d" stroke-width="3"></path>
+      <text x="560" y="230" text-anchor="middle" style="font-family:var(--font-code);font-size:13px;fill:#1d3557">let r1 = &amp;s; let r2 = &amp;s; let r3 = &amp;s;</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 280" role="img" aria-label="Frame 3: All shared borrows have ended. A single mutable borrow w now points at s and holds an exclusive lock.">
+      <rect x="10" y="10" width="700" height="260" rx="16" fill="#fff5eb" stroke="#f4a261"></rect>
+      <text x="360" y="44" text-anchor="middle" style="font-family:var(--font-display);font-size:18px;fill:#b45309;font-weight:bold">Frame 3 — shared borrows ended, one writer takes over. Fine.</text>
+      <rect x="280" y="100" width="160" height="80" rx="12" fill="#ffffff" stroke="#f4a261" stroke-width="3"></rect>
+      <text x="360" y="135" text-anchor="middle" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">s = "rust"</text>
+      <text x="360" y="162" text-anchor="middle" style="font-family:var(--font-display);font-size:12px;fill:#b45309">(locked by w)</text>
+      <circle cx="80" cy="150" r="26" fill="#f4a261"></circle>
+      <text x="80" y="156" text-anchor="middle" style="font-family:var(--font-code);font-size:14px;fill:#fff">&amp;mut s</text>
+      <path d="M106 150 L 280 145" stroke="#f4a261" stroke-width="5"></path>
+      <text x="80" y="200" text-anchor="middle" style="font-family:var(--font-code);font-size:12px;fill:#b45309">= w</text>
+      <text x="560" y="230" text-anchor="middle" style="font-family:var(--font-code);font-size:13px;fill:#b45309">let w = &amp;mut s;</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 280" role="img" aria-label="Frame 4: A second borrow is attempted while the mutable w is still alive. The compiler rejects this with error E0502. A red X marks the attempted new borrow.">
+      <rect x="10" y="10" width="700" height="260" rx="16" fill="#fef2f2" stroke="#d62828"></rect>
+      <text x="360" y="44" text-anchor="middle" style="font-family:var(--font-display);font-size:18px;fill:#d62828;font-weight:bold">Frame 4 — try to add a reader while w lives. Rejected.</text>
+      <rect x="280" y="100" width="160" height="80" rx="12" fill="#ffffff" stroke="#f4a261" stroke-width="3"></rect>
+      <text x="360" y="135" text-anchor="middle" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">s = "rust"</text>
+      <text x="360" y="162" text-anchor="middle" style="font-family:var(--font-display);font-size:12px;fill:#b45309">(still locked by w)</text>
+      <circle cx="80" cy="100" r="24" fill="#f4a261"></circle>
+      <text x="80" y="106" text-anchor="middle" style="font-family:var(--font-code);font-size:13px;fill:#fff">&amp;mut s</text>
+      <path d="M104 100 L 280 130" stroke="#f4a261" stroke-width="5"></path>
+      <text x="80" y="138" text-anchor="middle" style="font-family:var(--font-code);font-size:11px;fill:#b45309">= w (alive)</text>
+      <circle cx="80" cy="220" r="24" fill="#e5e7eb" stroke="#d62828" stroke-width="3"></circle>
+      <text x="80" y="226" text-anchor="middle" style="font-family:var(--font-code);font-size:13px;fill:#d62828">&amp;s</text>
+      <path d="M60 200 L 100 240 M100 200 L 60 240" stroke="#d62828" stroke-width="4"></path>
+      <text x="560" y="230" text-anchor="middle" style="font-family:var(--font-code);font-size:12px;fill:#d62828">let r = &amp;s; // E0502: cannot borrow</text>
+    </svg>
+  </div>
+</div>
+
 <div class="analogy-card">
   <div class="analogy-card__head">Why the rule</div>
   <div class="analogy-card__body">

@@ -234,7 +234,99 @@ If any row is below Level 2, revisit Chapter 11 and run Drill Deck 2 again.
 
 Treat lifetime errors as relationship mismatches, not annotation shortages.
 
-## Step 1 - The Problem
+## Lexical vs NLL — a step-through
 
-> **Learning Objective**
-> By the end of this chapter, you should be able to explain how lifetimes define relationships between borrowed data, rather than magically extending how long data exists.
+<div class="ferris-says" data-variant="insight">
+<p>The following six lines compile today. Before Rust 1.31 (non-lexical lifetimes), they did not. Step through to see why. The borrow checker used to treat a borrow as "alive" until the end of its enclosing block — now it ends the borrow at its <em>last use</em>. Same code, same programmer intent, vastly smarter compiler.</p>
+</div>
+
+<div class="step-through" data-title="How NLL made more code compile without changing a line">
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 300" role="img" aria-label="Frame 1: A code snippet is shown. let mut v = vec [1,2,3]; let r = first(&v); println! r; v.push 4; No annotations yet — just the code.">
+      <rect x="10" y="10" width="700" height="280" rx="16" fill="#fffdf8" stroke="rgba(2,62,138,0.14)"></rect>
+      <text x="360" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#1d3557;font-weight:bold">Frame 1 — the code</text>
+      <text x="60" y="90" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">fn main() {</text>
+      <text x="80" y="116" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">let mut v = vec![1, 2, 3];</text>
+      <text x="80" y="142" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">let r = &amp;v[0];</text>
+      <text x="80" y="168" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">println!("{r}");</text>
+      <text x="80" y="194" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">v.push(4);</text>
+      <text x="60" y="220" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">}</text>
+      <text x="360" y="268" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#457b9d">Goal: read first element, then mutate. Reasonable code.</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 300" role="img" aria-label="Frame 2: Pre-NLL lexical view. A red bracket extends from line 3 to the end of the block, showing the immutable borrow was considered alive for the full remainder of the block.">
+      <rect x="10" y="10" width="700" height="280" rx="16" fill="#fef2f2" stroke="#d62828"></rect>
+      <text x="360" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#d62828;font-weight:bold">Frame 2 — pre-NLL (lexical): borrow lasts until the closing brace</text>
+      <text x="60" y="90" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">fn main() {</text>
+      <text x="80" y="116" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">let mut v = vec![1, 2, 3];</text>
+      <text x="80" y="142" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">let r = &amp;v[0];</text>
+      <text x="80" y="168" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">println!("{r}");</text>
+      <text x="80" y="194" style="font-family:var(--font-code);font-size:16px;fill:#d62828">v.push(4);  // E0502 — error!</text>
+      <text x="60" y="220" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">}</text>
+      <path d="M440 142 L 440 220 L 455 220" stroke="#d62828" stroke-width="3" fill="none"></path>
+      <path d="M440 142 L 455 142" stroke="#d62828" stroke-width="3"></path>
+      <text x="500" y="182" style="font-family:var(--font-display);font-size:13px;fill:#d62828">borrow r considered</text>
+      <text x="500" y="198" style="font-family:var(--font-display);font-size:13px;fill:#d62828">alive to closing brace</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 300" role="img" aria-label="Frame 3: NLL view. A green bracket spans only from line 3 to the println line, ending at r's last use, so v.push succeeds.">
+      <rect x="10" y="10" width="700" height="280" rx="16" fill="#ecfdf5" stroke="#047857"></rect>
+      <text x="360" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#047857;font-weight:bold">Frame 3 — with NLL: borrow ends at the last use</text>
+      <text x="60" y="90" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">fn main() {</text>
+      <text x="80" y="116" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">let mut v = vec![1, 2, 3];</text>
+      <text x="80" y="142" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">let r = &amp;v[0];</text>
+      <text x="80" y="168" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">println!("{r}");</text>
+      <text x="80" y="194" style="font-family:var(--font-code);font-size:16px;fill:#047857">v.push(4);  // OK!</text>
+      <text x="60" y="220" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">}</text>
+      <path d="M440 142 L 440 168 L 455 168" stroke="#047857" stroke-width="3" fill="none"></path>
+      <path d="M440 142 L 455 142" stroke="#047857" stroke-width="3"></path>
+      <text x="500" y="150" style="font-family:var(--font-display);font-size:13px;fill:#047857">borrow r ends</text>
+      <text x="500" y="166" style="font-family:var(--font-display);font-size:13px;fill:#047857">at its last use</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 300" role="img" aria-label="Frame 4: A summary panel explaining that NLL changed borrow-checker tracking from lexical scope to actual usage, making thousands of previously-rejected programs compile.">
+      <rect x="10" y="10" width="700" height="280" rx="16" fill="#fffdf8" stroke="rgba(2,62,138,0.14)"></rect>
+      <text x="360" y="44" text-anchor="middle" style="font-family:var(--font-display);font-size:18px;fill:#1d3557;font-weight:bold">Frame 4 — what changed</text>
+      <text x="80" y="100" style="font-family:var(--font-display);font-size:15px;fill:#1a1a2e">Lexical lifetimes (pre-2018):</text>
+      <text x="100" y="126" style="font-family:var(--font-display);font-size:14px;fill:#457b9d">A borrow was considered "alive" from the moment it was taken</text>
+      <text x="100" y="148" style="font-family:var(--font-display);font-size:14px;fill:#457b9d">until the end of the enclosing <tspan style="font-family:var(--font-code);">{}</tspan> block.</text>
+      <text x="80" y="190" style="font-family:var(--font-display);font-size:15px;fill:#1a1a2e">Non-lexical lifetimes (2018+):</text>
+      <text x="100" y="216" style="font-family:var(--font-display);font-size:14px;fill:#047857">A borrow ends at its <tspan font-weight="bold">last use</tspan>, tracked through the control</text>
+      <text x="100" y="238" style="font-family:var(--font-display);font-size:14px;fill:#047857">flow graph. Thousands of obviously-correct programs now compile.</text>
+      <text x="360" y="270" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#1d3557">You write the same code. The compiler got smarter.</text>
+    </svg>
+  </div>
+</div>
+
+## Check yourself
+
+<div class="quiz" data-answer="1">
+  <div class="quiz__head"><span>Quiz — 1 of 2</span><span>Lifetimes</span></div>
+  <p class="quiz__q">What does the signature <code>fn longest&lt;'a&gt;(x: &amp;'a str, y: &amp;'a str) -&gt; &amp;'a str</code> tell the compiler?</p>
+  <ul class="quiz__options">
+    <li>Both inputs live for exactly the same duration as measured in clock ticks.</li>
+    <li>The returned reference will live no longer than the <em>shorter</em> of the two input references' lifetimes.</li>
+    <li>The returned reference has lifetime <code>'static</code> — it lives until program end.</li>
+    <li>The compiler will extend the lifetime of one input to match the other.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Lifetimes are <em>relationships</em>, not durations. The single <code>'a</code> shared across both inputs and the output means "the output is valid as long as both inputs are still valid" — i.e., for the intersection of their lifetimes. The compiler never extends lifetimes; it only checks that your usage fits inside them.</div>
+  <div class="quiz__explain quiz__explain--wrong">Read the chapter's opening: "lifetimes are relationships, not durations". Which option reflects that?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quiz — 2 of 2</span><span>E0597</span></div>
+  <p class="quiz__q">The error <code>E0597: borrowed value does not live long enough</code> usually means:</p>
+  <ul class="quiz__options">
+    <li>You need to add more lifetime annotations.</li>
+    <li>You need to call <code>.clone()</code>.</li>
+    <li>A reference outlives the value it was pointing at — the owner went out of scope while something still borrowed it.</li>
+    <li>The compiler cannot infer type parameters.</li>
+  </ul>
+  <div class="quiz__explain">Correct. This is the canonical dangling-reference case, except in Rust it is caught at compile time instead of causing a use-after-free at runtime. The fix is almost always to <em>move the owner to a wider scope</em> or return an owned value instead of a borrow — not to add annotations.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at the Compiler Error Decoder for E0597. What is the fix direction?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>

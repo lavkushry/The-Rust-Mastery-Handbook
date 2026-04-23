@@ -507,6 +507,112 @@ An async task is a folded travel itinerary in your pocket. It is the whole trip,
 | Run blocking CPU or sync I/O | `spawn_blocking` or threads | Protect the executor from starvation |
 | Add timers | `tokio::time` | Runtime-aware sleeping and intervals |
 
+## From async fn to state machine — a step-through
+
+<div class="ferris-says" data-variant="insight">
+<p>This is the hardest-to-see part of Rust async. The compiler transforms your <code>async fn</code> into a struct with variants — one per <code>.await</code> point. Each <code>poll</code> resumes from where it left off. Step through frame by frame to watch the transformation happen.</p>
+</div>
+
+<div class="step-through" data-title="What the compiler generates when it sees async fn">
+  <div class="step-through__frame">
+    <svg viewBox="0 0 760 320" role="img" aria-label="Frame 1: The user writes an async fn fetch_user. It has two awaits — one to read a config file and one to call an HTTP API. This is the surface syntax.">
+      <rect x="10" y="10" width="740" height="300" rx="16" fill="#fffdf8" stroke="rgba(2,62,138,0.14)"></rect>
+      <text x="380" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#1d3557;font-weight:bold">Frame 1 — what you write</text>
+      <text x="60" y="86" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">async fn fetch_user(id: u64) -&gt; User {</text>
+      <text x="80" y="112" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">let cfg = load_config().await;</text>
+      <text x="80" y="138" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">let res = http::get(&amp;cfg.base, id).await;</text>
+      <text x="80" y="164" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">parse_user(res)</text>
+      <text x="60" y="190" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">}</text>
+      <text x="380" y="260" text-anchor="middle" style="font-family:var(--font-display);font-size:14px;fill:#457b9d">Two <tspan style="font-family:var(--font-code);font-weight:bold;">.await</tspan> points. Each marks a possible suspension.</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 760 320" role="img" aria-label="Frame 2: The compiler lowers the async fn to an enum with three variants — Start, Awaiting config, Awaiting HTTP response. Each variant holds the local state needed to resume.">
+      <rect x="10" y="10" width="740" height="300" rx="16" fill="#eef6ff" stroke="#457b9d"></rect>
+      <text x="380" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#1d3557;font-weight:bold">Frame 2 — what the compiler generates</text>
+      <text x="60" y="82" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">enum FetchUserState {</text>
+      <text x="80" y="106" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">Start { id: u64 },</text>
+      <text x="80" y="130" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">AwaitingConfig { id: u64, fut: LoadConfigFut },</text>
+      <text x="80" y="154" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">AwaitingHttp { cfg: Config, fut: HttpGetFut },</text>
+      <text x="80" y="178" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">Done,</text>
+      <text x="60" y="202" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">}</text>
+      <text x="380" y="258" text-anchor="middle" style="font-family:var(--font-display);font-size:14px;fill:#1d3557">Each variant stores <em>exactly</em> the locals that survive across an .await.</text>
+      <text x="380" y="280" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#457b9d">This is why async state machines can be surprisingly large.</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 760 320" role="img" aria-label="Frame 3: The poll implementation. A match over the state advances it by one step each time the runtime calls poll. Reaching an await returns Pending if the inner future is not yet ready.">
+      <rect x="10" y="10" width="740" height="300" rx="16" fill="#fff5eb" stroke="#f4a261"></rect>
+      <text x="380" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#b45309;font-weight:bold">Frame 3 — poll() is just a state-machine step</text>
+      <text x="60" y="80" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">fn poll(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context) -&gt; Poll&lt;User&gt; {</text>
+      <text x="80" y="104" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">loop { match self.state {</text>
+      <text x="100" y="128" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">Start { id } =&gt; { self.state = AwaitingConfig { ... } }</text>
+      <text x="100" y="152" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">AwaitingConfig { fut, .. } =&gt; match fut.poll(cx) {</text>
+      <text x="120" y="176" style="font-family:var(--font-code);font-size:14px;fill:#b45309">Pending =&gt; return Pending,</text>
+      <text x="120" y="200" style="font-family:var(--font-code);font-size:14px;fill:#047857">Ready(cfg) =&gt; self.state = AwaitingHttp { cfg, ... },</text>
+      <text x="100" y="224" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">}</text>
+      <text x="100" y="248" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">...</text>
+      <text x="80" y="272" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">}}</text>
+      <text x="60" y="296" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">}</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 760 320" role="img" aria-label="Frame 4: A timeline showing thousands of state machines multiplexed onto a small pool of OS threads. Each poll is cheap — this is how one async runtime handles millions of connections.">
+      <rect x="10" y="10" width="740" height="300" rx="16" fill="#ecfdf5" stroke="#047857"></rect>
+      <text x="380" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#047857;font-weight:bold">Frame 4 — why this matters</text>
+      <line x1="60" y1="140" x2="700" y2="140" stroke="#047857" stroke-width="2"></line>
+      <text x="60" y="130" style="font-family:var(--font-code);font-size:12px;fill:#047857">OS thread</text>
+      <g transform="translate(0,0)">
+        <rect x="80" y="100" width="80" height="30" rx="6" fill="#047857"></rect>
+        <text x="120" y="120" text-anchor="middle" style="font-family:var(--font-code);font-size:11px;fill:#fff">poll A</text>
+        <rect x="170" y="100" width="80" height="30" rx="6" fill="#457b9d"></rect>
+        <text x="210" y="120" text-anchor="middle" style="font-family:var(--font-code);font-size:11px;fill:#fff">poll B</text>
+        <rect x="260" y="100" width="80" height="30" rx="6" fill="#f4a261"></rect>
+        <text x="300" y="120" text-anchor="middle" style="font-family:var(--font-code);font-size:11px;fill:#fff">poll C</text>
+        <rect x="350" y="100" width="80" height="30" rx="6" fill="#047857"></rect>
+        <text x="390" y="120" text-anchor="middle" style="font-family:var(--font-code);font-size:11px;fill:#fff">poll A</text>
+        <rect x="440" y="100" width="80" height="30" rx="6" fill="#457b9d"></rect>
+        <text x="480" y="120" text-anchor="middle" style="font-family:var(--font-code);font-size:11px;fill:#fff">poll B</text>
+        <rect x="530" y="100" width="80" height="30" rx="6" fill="#f4a261"></rect>
+        <text x="570" y="120" text-anchor="middle" style="font-family:var(--font-code);font-size:11px;fill:#fff">poll C</text>
+      </g>
+      <text x="380" y="190" text-anchor="middle" style="font-family:var(--font-display);font-size:14px;fill:#1a1a2e">Each "poll X" is a single state-machine advance — cheap, stackless.</text>
+      <text x="380" y="218" text-anchor="middle" style="font-family:var(--font-display);font-size:14px;fill:#1a1a2e">Thousands of tasks interleave on one thread. No kernel stack per task.</text>
+      <text x="380" y="260" text-anchor="middle" style="font-family:var(--font-display);font-size:14px;fill:#047857;font-weight:bold">This is how tokio handles millions of connections on a handful of threads.</text>
+    </svg>
+  </div>
+</div>
+
+## Check yourself
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quiz — 1 of 2</span><span>Async fn</span></div>
+  <p class="quiz__q">When you write <code>async fn fetch(url: String) -&gt; String</code>, what does the compiler actually produce?</p>
+  <ul class="quiz__options">
+    <li>A regular function that blocks the thread until <code>fetch</code> returns.</li>
+    <li>A function that returns a callback-based API, like JavaScript promises.</li>
+    <li>A function returning <code>impl Future&lt;Output = String&gt;</code> — i.e., a <em>state machine</em> that does nothing until polled.</li>
+    <li>A coroutine that runs on its own OS thread.</li>
+  </ul>
+  <div class="quiz__explain">Correct. This is the single most important mental model in Rust async: <code>async fn</code> is syntax sugar for "construct a state machine that implements <code>Future</code>". Nothing happens at call time — no task scheduled, no work started. The future is inert until a runtime polls it. That is why calling an async function without <code>.await</code>ing (or spawning) it is almost always a bug.</div>
+  <div class="quiz__explain quiz__explain--wrong">Re-read "In Your Language: Async Models" and "An async fn Becomes a Pollable Future". The key word is <em>state machine</em>.</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="quiz__head"><span>Quiz — 2 of 2</span><span>Pin</span></div>
+  <p class="quiz__q">Why does <code>Future</code>'s <code>poll</code> method take <code>self: Pin&lt;&amp;mut Self&gt;</code> rather than plain <code>&amp;mut self</code>?</p>
+  <ul class="quiz__options">
+    <li>Performance — Pin avoids a virtual call.</li>
+    <li>Because an <code>async fn</code> state machine may contain references <em>into itself</em> (self-referential), so it must not move in memory between polls. <code>Pin</code> is the compile-time promise that it will not.</li>
+    <li><code>Pin</code> prevents data races across threads.</li>
+    <li>It is a historical artifact from pre-async Rust that cannot be changed.</li>
+  </ul>
+  <div class="quiz__explain">Correct. When the compiler lowers an <code>async fn</code> into a state machine struct, local borrows that live across an <code>.await</code> become fields <em>pointing into other fields</em> of the same struct. If the struct moved in memory, those pointers would dangle. <code>Pin</code> is the guarantee that it will not move, and it is why you cannot freely move pinned futures around. This is covered in depth in Chapter 35.</div>
+  <div class="quiz__explain quiz__explain--wrong">Read the chapter's section on self-referential state machines. Why would moving be a problem?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## Chapter Resources
 * **Official Source:** [Asynchronous Programming in Rust (The Async Book)](https://rust-lang.github.io/async-book/)
 * **Tokio Docs:** [Tokio Tutorial: Spawning](https://tokio.rs/tokio/tutorial/spawning)

@@ -1,5 +1,10 @@
 # PART 2 - Core Rust Foundations
 
+<div class="ferris-says" data-variant="insight">
+<p>Now we build the Rust programmer's toolkit — the syntax, the types, the cargo workflow, and the first real encounter with ownership. If Part 1 was 'why does this language exist', Part 2 is 'how do I hold the hammer'. Do the exercises. The muscle memory you build here pays dividends for the rest of the book.</p>
+</div>
+
+
 <section class="part-spread" style="--chapter-accent: var(--compiler);">
   <div class="part-spread__grid">
     <div>

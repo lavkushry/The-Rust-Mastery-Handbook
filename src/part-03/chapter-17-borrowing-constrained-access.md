@@ -203,4 +203,32 @@ Target Level 2+ before moving to Chapter 21.
 
 Always ask: "Which borrow must stay live here?" Then eliminate or shorten the other one.
 
-## Step 1 - The Problem
+## Check yourself
+
+<div class="quiz" data-answer="3">
+  <div class="quiz__head"><span>Quiz — 1 of 2</span><span>Interior mutability</span></div>
+  <p class="quiz__q">You have a <code>Vec&lt;T&gt;</code> that one reader needs to observe and one writer needs to append to, all from a single thread. Which primitive is appropriate?</p>
+  <ul class="quiz__options">
+    <li><code>Arc&lt;Mutex&lt;Vec&lt;T&gt;&gt;&gt;</code> — it is always safe, so use it.</li>
+    <li>Raw pointers and <code>unsafe</code>.</li>
+    <li>Two independent <code>Vec</code>s, one per role.</li>
+    <li><code>RefCell&lt;Vec&lt;T&gt;&gt;</code> — it enforces the aliasing rule at <em>runtime</em>, single-threaded, no lock cost.</li>
+  </ul>
+  <div class="quiz__explain">Correct. <code>RefCell</code> is the single-threaded interior-mutability primitive: it checks "one writer or many readers" at runtime and panics on violation. <code>Mutex</code> solves the same problem for cross-thread, with a real OS-level lock. Using <code>Mutex</code> where <code>RefCell</code> would do is leaving performance on the table.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at the chapter's section on <code>Cell</code> / <code>RefCell</code>. Which one solves this single-threaded case without an OS lock?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="quiz__head"><span>Quiz — 2 of 2</span><span>NLL</span></div>
+  <p class="quiz__q">What does "non-lexical lifetimes" change about Rust's borrow checker?</p>
+  <ul class="quiz__options">
+    <li>A borrow ends at its <em>last use</em>, not at the closing brace of the scope — so more correct programs now compile.</li>
+    <li>You can skip the borrow checker entirely with <code>#[no_nll]</code>.</li>
+    <li>Borrows now live forever unless explicitly ended.</li>
+    <li>Lifetimes become dynamic; they are tracked at runtime.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Pre-NLL, a borrow was "alive" from creation until the end of its enclosing <code>{}</code> block — often much longer than needed. NLL made the borrow end at its <em>last real use</em>, which is a much tighter and more intuitive model. Many programs that "should obviously compile" only started compiling after NLL landed in 2018.</div>
+  <div class="quiz__explain quiz__explain--wrong">Re-read the NLL section. The key word is <em>last use</em>.</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>

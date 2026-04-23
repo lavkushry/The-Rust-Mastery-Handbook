@@ -138,4 +138,32 @@ If you are below Level 2 in any row, revisit the code reading drills in this cha
 
 If your cleanup logic feels complicated, model it as ownership transitions first, then encode it in API boundaries.
 
-## Step 1 - The Problem
+## Check yourself
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quiz — 1 of 2</span><span>RAII</span></div>
+  <p class="quiz__q">In Rust, what is the relationship between a <code>File</code> value and the underlying OS file descriptor?</p>
+  <ul class="quiz__options">
+    <li>The file descriptor is leaked unless you call <code>file.close()</code> manually.</li>
+    <li>A background thread polls unused <code>File</code>s and closes them periodically.</li>
+    <li>When the <code>File</code> goes out of scope, its <code>Drop</code> impl automatically closes the descriptor. No <code>close()</code> method exists — scope owns cleanup.</li>
+    <li><code>File</code> is just a number; you close it with <code>libc::close</code> directly.</li>
+  </ul>
+  <div class="quiz__explain">Correct. This is RAII: the <em>lifetime</em> of the <code>File</code> value <em>is</em> the lifetime of the resource. Drop runs at the end of scope. No close(), no try-with-resources, no finally block — just ownership. The same pattern applies to <code>Mutex</code> locks, TCP sockets, database connections, GPU handles, everything.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at the chapter's definition of RAII. What runs when the owner goes out of scope?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="quiz__head"><span>Quiz — 2 of 2</span><span>Resource flow</span></div>
+  <p class="quiz__q">Which of these API designs <em>best</em> encodes "this function takes responsibility for closing the stream"?</p>
+  <ul class="quiz__options">
+    <li><code>fn write_payload(stream: &amp;mut Stream, data: &amp;[u8])</code></li>
+    <li><code>fn send_and_close(stream: Stream, data: &amp;[u8])</code></li>
+    <li><code>fn send_with_callback(stream: Stream, cb: fn(&amp;mut Stream))</code></li>
+    <li><code>fn write_payload(data: &amp;[u8], close_stream: bool)</code></li>
+  </ul>
+  <div class="quiz__explain">Correct. Taking <code>stream: Stream</code> (by value, not by reference) <em>moves ownership into the function</em>. The caller cannot use it again. At the end of the function, the <code>Stream</code> is dropped — closing it. The signature itself documents the contract; no comment needed.</div>
+  <div class="quiz__explain quiz__explain--wrong">Think about ownership transfer. Which signature <em>takes</em> the stream rather than borrowing it?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>

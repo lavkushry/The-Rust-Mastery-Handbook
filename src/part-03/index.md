@@ -1,5 +1,10 @@
 # PART 3 - The Heart of Rust
 
+<div class="ferris-says" data-variant="insight">
+<p>This is the heart of Rust. Everything you meet here — ownership, borrowing, lifetimes, smart pointers — is the <em>same</em> idea expressed at different scales. By the end of this part, the compiler will feel less like a bouncer and more like a pair-programming partner. Take it slowly. This is the part you will re-read.</p>
+</div>
+
+
 <section class="part-spread" style="--chapter-accent: var(--ownership);">
   <div class="part-spread__grid">
     <div>

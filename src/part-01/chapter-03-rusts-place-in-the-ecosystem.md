@@ -1,4 +1,8 @@
 # Chapter 3: Rust's Place in the Ecosystem
+
+<div class="ferris-says" data-variant="insight">
+<p>Knowing where Rust fits — and where it does not — saves you from picking it for a script that should have been Python. Rust is not the universal hammer. This chapter is the honest map: what Rust is great at, what it is fine at, and what it will make your life harder for.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-01/chapter-02-rusts-design-philosophy.md">Ch 2: Philosophy</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Where Rust fits vs C, C++, Go, and Java</li><li>Rust in systems, web, embedded, and CLI</li><li>The ecosystem: crates.io, rustup, cargo</li></ul></div>

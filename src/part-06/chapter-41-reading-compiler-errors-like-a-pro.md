@@ -1,4 +1,8 @@
 # Chapter 41: Reading Compiler Errors Like a Pro
+
+<div class="ferris-says" data-variant="insight">
+<p>Compiler error messages are the most underrated tool in the language. They are written by people; they point at the exact character; they often suggest a fix. This chapter is a field guide — read a dozen real error messages and you will start recognising their structure.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

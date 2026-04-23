@@ -1,4 +1,8 @@
 # Chapter 35: Pin and Why Async Is Hard
+
+<div class="ferris-says" data-variant="insight">
+<p>Pinning, <code>Pin</code>, self-referential types. The one genuinely weird corner of async Rust. Approach it once, understand it, and mostly forget about it for the rest of your career — frameworks hide it well.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-05/chapter-33-async-await-and-futures.md">Ch 33: Async/Await</a><a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.md">Ch 20: Move Semantics</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Why some futures break if moved after internal references form</li><li><code>Pin</code> = "this value must not move from its current address"</li><li><code>Box::pin</code> and <code>tokio::pin!</code> in practice</li></ul></div>

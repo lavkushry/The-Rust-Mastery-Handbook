@@ -1,4 +1,8 @@
 # Chapter 29: Serde, Logging, and Builder Patterns
+
+<div class="ferris-says" data-variant="insight">
+<p>Serde (serialisation), <code>tracing</code>/<code>log</code> (observability), builder patterns (ergonomics). Three crates every production Rust codebase uses. After this chapter you will read any real-world Rust project with familiarity.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-25-traits-rusts-core-abstraction.md">Ch 25: Traits</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Serde: derive-based serialization/deserialization</li><li><code>tracing</code> for structured logging</li><li>Builder pattern for ergonomic construction</li></ul></div>

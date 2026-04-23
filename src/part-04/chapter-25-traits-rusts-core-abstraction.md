@@ -1,4 +1,8 @@
 # Chapter 25: Traits, Rust's Core Abstraction
+
+<div class="ferris-says" data-variant="insight">
+<p>Traits are Rust's interfaces — but richer. They carry default methods, associated types, super-traits, blanket implementations, and the coherence rules that make the whole system work. If you grok traits, you grok Rust's abstraction story.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

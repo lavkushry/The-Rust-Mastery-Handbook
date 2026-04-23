@@ -1,5 +1,9 @@
 # Chapter 11: Borrowing and References, First Contact
 
+<div class="ferris-says" data-variant="insight">
+<p>Borrowing rules, but with all the tricky cases: re-borrows, two-phase borrows, borrows through methods, borrows across control flow. If Part 0 Chapter 5 gave you the <em>aliasing rule</em>, this chapter shows you how the compiler actually enforces it.</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

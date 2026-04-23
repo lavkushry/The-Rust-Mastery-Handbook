@@ -1,4 +1,8 @@
 # Chapter 22: Collections, `Vec`, `String`, and `HashMap`
+
+<div class="ferris-says" data-variant="insight">
+<p>Vec, String, HashMap — the three collections that carry 95% of Rust programs. This chapter goes beyond the API: iterator adapters, capacity vs length, when to pre-allocate, and the memory layout that makes Rust's collections fast.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-10-ownership-first-contact.md">Ch 10: Ownership</a><a href="../part-02/chapter-11-borrowing-and-references-first-contact.md">Ch 11: Borrowing</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>String</code> vs <code>&amp;str</code> — ownership vs borrowing text</li><li>The Entry API for idiomatic HashMap use</li><li>Three ownership modes of iteration</li></ul></div>

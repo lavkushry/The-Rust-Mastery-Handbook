@@ -1,4 +1,8 @@
 # Chapter 10: Ownership, First Contact
+
+<div class="ferris-says" data-variant="insight">
+<p>Part 0's ownership summary was the "friendly version". Here is the real thing — with full compiler-error walkthroughs, edge cases around closures and method calls, and the subtle places where moves happen without you writing a single <code>=</code>. This is the chapter most beginners re-read twice. Do not skip it.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

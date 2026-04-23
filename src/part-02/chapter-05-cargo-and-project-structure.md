@@ -1,4 +1,8 @@
 # Chapter 5: Cargo and Project Structure
+
+<div class="ferris-says" data-variant="insight">
+<p>Cargo is not just a build tool — it is the single interface you will use for compiling, testing, documenting, publishing, and depending on other people's code. Learning Cargo well pays off for the rest of your Rust career. This chapter is the unabridged tour.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-04-environment-and-toolchain.md">Ch 4: Toolchain</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Cargo.toml anatomy and project layout</li><li>Dependencies, features, and workspaces</li><li><code>cargo build</code>, <code>test</code>, <code>run</code>, <code>check</code></li></ul></div>

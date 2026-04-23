@@ -1,5 +1,9 @@
 # Chapter 24: Closures, Functions That Capture
 
+<div class="ferris-says" data-variant="insight">
+<p>Closures capture variables from their environment — by reference, by unique mutable reference, or by move. Which one happens is not random — the compiler picks the <em>minimum</em> required. Today you learn the three traits <code>Fn</code>, <code>FnMut</code>, <code>FnOnce</code> and why they exist.</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-10-ownership-first-contact.md">Ch 10: Ownership</a><a href="../part-04/chapter-25-traits-rusts-core-abstraction.md">Ch 25: Traits</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Closures as code + captured environment</li><li><code>Fn</code>, <code>FnMut</code>, <code>FnOnce</code> — the callable trait family</li><li>Why <code>move</code> is needed at thread/async boundaries</li></ul></div>

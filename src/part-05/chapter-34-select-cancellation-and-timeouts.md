@@ -1,4 +1,8 @@
 # Chapter 34: `select!`, Cancellation, and Timeouts
+
+<div class="ferris-says" data-variant="insight">
+<p><code>select!</code>, <code>tokio::select!</code>, cancellation tokens, timeouts, back-pressure. The vocabulary of real-world async Rust. If you came from JavaScript expecting <code>Promise.race</code>, this is where the Rust version reveals itself as both more and less than what you knew.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-05/chapter-33-async-await-and-futures.md">Ch 33: Async</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>tokio::select!</code> for racing multiple futures</li><li>Cancellation safety and drop semantics</li><li>Timeouts as first-class concurrency primitives</li></ul></div>

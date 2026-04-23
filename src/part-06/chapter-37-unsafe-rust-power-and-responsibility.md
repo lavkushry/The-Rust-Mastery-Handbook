@@ -1,4 +1,8 @@
 # Chapter 37: Unsafe Rust, Power and Responsibility
+
+<div class="ferris-says" data-variant="insight">
+<p>Performance is not "write fast code". It is a discipline: measure, hypothesise, change one thing, measure again. Rust gives you every tool you need to measure well — <code>criterion</code>, <code>perf</code>, flamegraphs, <code>cargo-asm</code>. Today we learn the loop.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-17-borrowing-constrained-access.md">Ch 17: Borrow Rules</a><a href="../part-03/chapter-19-stack-vs-heap-where-data-lives.md">Ch 19: Stack/Heap</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>The 5 unsafe superpowers and nothing more</li><li>Safe abstraction over unsafe implementation</li><li>Sound wrappers: prove preconditions, expose safe API</li></ul></div>

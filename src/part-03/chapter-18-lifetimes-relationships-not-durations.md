@@ -1,5 +1,9 @@
 # Chapter 18: Lifetimes, Relationships Not Durations
 
+<div class="ferris-says" data-variant="insight">
+<p>Lifetimes. The word that scares new Rust programmers and vanishes from your vocabulary after month two. Lifetimes are not durations — they are <em>relationships</em>. This chapter is the one that reframes the whole idea, and by the end you will wonder why it ever seemed hard.</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

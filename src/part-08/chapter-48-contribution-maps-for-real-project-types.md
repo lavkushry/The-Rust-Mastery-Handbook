@@ -1,4 +1,8 @@
 # Chapter 48: Contribution Maps for Real Project Types
+
+<div class="ferris-says" data-variant="insight">
+<p>Contribution maps — how real Rust codebases are laid out. CLI tools, web services, async frameworks, procedural macros. You will know, before you clone, where to look first for each category of project.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-08/chapter-47-making-your-first-contributions.md">Ch 47: First Contributions</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Contribution maps for CLI, web, library, and async projects</li><li>Where to look for approachable work in each project type</li><li>Building contribution confidence through pattern recognition</li></ul></div>

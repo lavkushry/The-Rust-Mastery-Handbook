@@ -1,4 +1,8 @@
 # Chapter 17: Borrowing, Constrained Access
+
+<div class="ferris-says" data-variant="insight">
+<p>Borrowing, pushed until it breaks. We go past "one writer or many readers" into <em>why</em> that rule exists, what it rules out (a shocking number of real-world bugs), and the clever workarounds (<code>Cell</code>, <code>RefCell</code>, interior mutability) that let you bend the rule when you need to.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

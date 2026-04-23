@@ -1,4 +1,8 @@
 # Chapter 42: Advanced Traits, Trait Objects, and GATs
+
+<div class="ferris-says" data-variant="insight">
+<p>Designing a crate for others to use. API versioning, semver in practice, feature flags, re-exports, documentation as a contract. The difference between a crate used 10 times and a crate used 10,000 times is mostly here.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-25-traits-rusts-core-abstraction.md">Ch 25: Traits</a><a href="../part-04/chapter-26-generics-and-associated-types.md">Ch 26: Generics</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Dynamic dispatch via <code>dyn Trait</code> and vtables</li><li>GATs: generic associated types</li><li>Object safety rules and when to use <code>impl Trait</code> vs <code>dyn Trait</code></li></ul></div>

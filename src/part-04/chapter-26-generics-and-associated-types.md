@@ -1,4 +1,8 @@
 # Chapter 26: Generics and Associated Types
+
+<div class="ferris-says" data-variant="insight">
+<p>Generics let you write code that works across many types without sacrificing the speed of hand-written specialisations. Monomorphisation is the trick. Associated types are where generics go from "template" to "algebra".</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-25-traits-rusts-core-abstraction.md">Ch 25: Traits</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Monomorphization: generics compiled to concrete types</li><li>Associated types vs generic type parameters</li><li>Trait bounds as capability contracts</li></ul></div>

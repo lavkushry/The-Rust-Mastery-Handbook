@@ -1,4 +1,8 @@
 # Chapter 44: Type-Driven API Design
+
+<div class="ferris-says" data-variant="insight">
+<p>Type-driven API design: when the types say so much that the docs become a polite formality. Typestate, sealed traits, newtypes, builder phases. This is where Rust starts feeling like a design tool instead of a programming language.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-25-traits-rusts-core-abstraction.md">Ch 25: Traits</a><a href="../part-04/chapter-26-generics-and-associated-types.md">Ch 26: Generics</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Typestate pattern: compile-time state machines</li><li>Newtype pattern for semantic wrapper types</li><li>Making illegal states unrepresentable</li></ul></div>

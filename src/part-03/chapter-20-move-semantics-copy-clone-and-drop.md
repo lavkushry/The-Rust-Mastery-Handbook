@@ -1,5 +1,9 @@
 # Chapter 20: Move Semantics, `Copy`, `Clone`, and `Drop`
 
+<div class="ferris-says" data-variant="insight">
+<p>Move, copy, clone, drop. Four traits. The entire cost model of Rust lives in how these interact. This chapter pays for itself in every performance-sensitive function you will ever write.</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

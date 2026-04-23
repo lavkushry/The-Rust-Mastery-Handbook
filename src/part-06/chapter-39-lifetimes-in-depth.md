@@ -1,4 +1,8 @@
 # Chapter 39: Lifetimes in Depth
+
+<div class="ferris-says" data-variant="insight">
+<p><code>unsafe</code> is the escape hatch. Most Rust programmers write zero unsafe in their career. Some write a tiny amount, very carefully, at the core of a safe library. This chapter is the operating manual for the escape hatch.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-18-lifetimes-relationships-not-durations.md">Ch 18: Lifetimes</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Variance: covariance, contravariance, invariance</li><li>Higher-ranked trait bounds (<code>for&lt;'a&gt;</code>)</li><li>Lifetime elision rules and when they fail</li></ul></div>

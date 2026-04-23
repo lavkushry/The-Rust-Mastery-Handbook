@@ -1,4 +1,8 @@
 # Chapter 12: Structs
+
+<div class="ferris-says" data-variant="insight">
+<p>Structs, in their full detail — tuple structs, unit structs, deriving traits, builder patterns, and the newtype idiom (wrapping a type to give it a distinct identity). This is where you start designing your own types rather than borrowing the standard library's.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-07-types-scalars-compounds-and-the-unit-type.md">Ch 7: Types</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Named fields, tuple structs, unit structs</li><li><code>impl</code> blocks: methods and associated functions</li><li>Struct update syntax and field-level ownership</li></ul></div>

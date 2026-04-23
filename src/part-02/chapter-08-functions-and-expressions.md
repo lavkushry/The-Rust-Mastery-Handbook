@@ -1,4 +1,8 @@
 # Chapter 8: Functions and Expressions
+
+<div class="ferris-says" data-variant="insight">
+<p>A Rust function is almost the same as a Python function — but with one twist that people from expression-unfriendly languages (I am looking at you, Java) find strange: <em>everything is an expression</em>. <code>if</code> is an expression. A block is an expression. The last line without a semicolon is the return value. Today you learn to write Rust that feels like Rust.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-07-types-scalars-compounds-and-the-unit-type.md">Ch 7: Types</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Everything is an expression in Rust</li><li>Return values via final expression (no semicolon)</li><li>Function signatures and type annotations</li></ul></div>

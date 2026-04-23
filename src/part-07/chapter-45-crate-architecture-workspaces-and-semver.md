@@ -1,4 +1,8 @@
 # Chapter 45: Crate Architecture, Workspaces, and Semver
+
+<div class="ferris-says" data-variant="insight">
+<p>Crate architecture in practice — workspaces, feature flags, conditional compilation, semver discipline. The engineering hygiene that lets teams ship Rust libraries and services for years without the codebase rotting.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-15-modules-crates-and-visibility.md">Ch 15: Modules</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Workspace layout for multi-crate projects</li><li>Semantic versioning and public API stability</li><li>Feature flags and conditional compilation</li></ul></div>

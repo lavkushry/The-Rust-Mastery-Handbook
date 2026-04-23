@@ -1,4 +1,8 @@
 # Chapter 23: Iterators, the Rust Superpower
+
+<div class="ferris-says" data-variant="insight">
+<p>Iterators in Rust are lazy, composable, zero-cost, and the source of a shocking amount of Rust's elegance. By the end of this chapter you will read <code>.iter().filter(...).map(...).collect()</code> as easily as a <code>for</code> loop — often more easily.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-22-collections-vec-string-and-hashmap.md">Ch 22: Collections</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Lazy evaluation — nothing runs until a consumer pulls</li><li>Zero-cost: iterator chains compile to the same code as hand-written loops</li><li>Key adapters: <code>filter</code>, <code>map</code>, <code>collect</code>, <code>fold</code></li></ul></div>

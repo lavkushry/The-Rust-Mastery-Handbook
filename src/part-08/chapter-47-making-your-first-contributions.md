@@ -1,4 +1,8 @@
 # Chapter 47: Making Your First Contributions
+
+<div class="ferris-says" data-variant="insight">
+<p>Your first open-source contribution — picking an issue, reading the contributor guide, scoping the change, passing CI, responding to review. The <em>meta</em>-skill. Rust projects tend to be friendly to beginners; this chapter tells you how to walk in confident.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-08/chapter-46-entering-an-unfamiliar-rust-repo.md">Ch 46: Entering a Repo</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Good first issue selection strategy</li><li>Writing tests, docs, and small fixes</li><li>Code review norms in Rust projects</li></ul></div>

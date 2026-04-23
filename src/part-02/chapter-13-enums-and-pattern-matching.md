@@ -1,4 +1,8 @@
 # Chapter 13: Enums and Pattern Matching
+
+<div class="ferris-says" data-variant="insight">
+<p>Enums with data, exhaustive <code>match</code>, pattern binding, guards, destructuring. If "make illegal states unrepresentable" is one of the mantras you learn in Rust, this is the chapter where you start living by it.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

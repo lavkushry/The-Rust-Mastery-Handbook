@@ -1,4 +1,8 @@
 # Chapter 38: FFI, Talking to C Without Lying
+
+<div class="ferris-says" data-variant="insight">
+<p>Systems Rust: <code>no_std</code>, allocators, FFI, ABI stability, inline assembly. The parts of Rust that let it replace C and C++ entirely. Niche for most readers — essential for those who need it.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-06/chapter-37-unsafe-rust-power-and-responsibility.md">Ch 37: Unsafe</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>extern "C"</code> and calling conventions</li><li>Safe wrappers over C libraries</li><li>Ownership boundaries at FFI edges</li></ul></div>

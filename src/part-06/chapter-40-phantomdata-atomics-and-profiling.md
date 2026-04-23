@@ -1,4 +1,8 @@
 # Chapter 40: PhantomData, Atomics, and Profiling
+
+<div class="ferris-says" data-variant="insight">
+<p>Embedded Rust, <code>embassy</code>, <code>RTIC</code>, the HAL ecosystem. Rust on microcontrollers is a first-class story now. If "systems programming" brought you to Rust, this chapter is where it pays off.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-06/chapter-36-memory-layout-and-zero-cost-abstractions.md">Ch 36: Memory Layout</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>PhantomData</code> for unused type/lifetime parameters</li><li>Atomic types and memory ordering</li><li>Profiling with <code>perf</code>, <code>flamegraph</code>, <code>criterion</code></li></ul></div>

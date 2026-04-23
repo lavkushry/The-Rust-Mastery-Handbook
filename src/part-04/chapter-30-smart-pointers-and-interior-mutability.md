@@ -1,4 +1,8 @@
 # Chapter 30: Smart Pointers and Interior Mutability
+
+<div class="ferris-says" data-variant="insight">
+<p><code>Box</code>, <code>Rc</code>, <code>Arc</code>, <code>RefCell</code>, <code>Cell</code>, <code>Mutex</code>, <code>RwLock</code> — the smart pointers. Each one solves a specific ownership puzzle. Learning <em>which one to reach for</em> is a big chunk of Rust intermediate skill.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.md">Ch 20: Move/Copy/Clone</a><a href="../part-03/chapter-17-borrowing-constrained-access.md">Ch 17: Borrow Rules</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>Box</code>, <code>Rc</code>, <code>Arc</code> — different ownership counts</li><li>Interior mutability: rule relocation, not removal</li><li>Why <code>Rc&lt;RefCell&lt;T&gt;&gt;</code> is sometimes a code smell</li></ul></div>

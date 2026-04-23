@@ -1,4 +1,8 @@
 # Chapter 27: Error Handling in Depth
+
+<div class="ferris-says" data-variant="insight">
+<p>Error handling, pushed to production quality: custom error enums, the <code>?</code> conversion, error source chains, and the <code>thiserror</code>/<code>anyhow</code>/<code>miette</code> ecosystem. This chapter is how you ship errors your future self will thank you for.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-14-option-result-and-rusts-error-philosophy.md">Ch 14: Option &amp; Result</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>thiserror</code> for libraries vs <code>anyhow</code> for apps</li><li>Error propagation chains with <code>?</code> + <code>From</code></li><li>When to panic vs when to propagate</li></ul></div>

@@ -1,4 +1,8 @@
 # Chapter 9: Control Flow
+
+<div class="ferris-says" data-variant="insight">
+<p><code>if</code>, <code>loop</code>, <code>while</code>, <code>for</code>, <code>match</code>, and the new favourites: <code>break</code> with a value and <code>loop { ... break value; }</code>. All of them are expressions. All of them can be assigned. If you are coming from Python or JS, this chapter is where you stop writing <code>mut state = None; ...</code> patterns and start writing <code>let state = match ... { ... };</code>.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-08-functions-and-expressions.md">Ch 8: Functions</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>if</code>/<code>else</code> as expressions that return values</li><li><code>loop</code>, <code>while</code>, <code>for</code> — loop flavors</li><li>Pattern matching preview with <code>match</code></li></ul></div>

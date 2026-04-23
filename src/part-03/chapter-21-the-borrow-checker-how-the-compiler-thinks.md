@@ -1,5 +1,9 @@
 # Chapter 21: The Borrow Checker, How the Compiler Thinks
 
+<div class="ferris-says" data-variant="insight">
+<p>The borrow checker, as an algorithm. By the end of this chapter you will be able to look at a function and predict what the borrow checker is going to say about it — before you hit compile. That mental simulation is the mark of a fluent Rust programmer.</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

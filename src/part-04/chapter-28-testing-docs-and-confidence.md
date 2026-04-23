@@ -1,4 +1,8 @@
 # Chapter 28: Testing, Docs, and Confidence
+
+<div class="ferris-says" data-variant="insight">
+<p>Tests, doc tests, integration tests, bench tests, property tests. Rust's testing story is best-in-class because the compiler has already caught most of the bugs other language's tests exist to catch. Here is how to cover the rest.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-05-cargo-and-project-structure.md">Ch 5: Cargo</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>#[test]</code>, <code>#[should_panic]</code>, and integration tests</li><li>Doc tests as living documentation</li><li>Test organization: unit, integration, doc</li></ul></div>

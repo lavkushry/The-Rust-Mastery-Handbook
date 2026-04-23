@@ -1,5 +1,9 @@
 # Chapter 19: Stack vs Heap, Where Data Lives
 
+<div class="ferris-says" data-variant="insight">
+<p>Stack vs heap: what goes where, why it matters, and why Rust lets you decide. If you come from Python or JS you may have spent a career ignoring this distinction. In Rust, understanding it makes the type system obvious.</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-10-ownership-first-contact.md">Ch 10: Ownership</a><a href="../part-03/chapter-16-ownership-as-resource-management.md">Ch 16: RAII</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Stack frames, heap allocation, and static data</li><li>Thin vs fat pointers in Rust</li><li>Why "String lives on the heap" is incomplete</li></ul></div>

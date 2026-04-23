@@ -1,4 +1,8 @@
 # Chapter 36: Memory Layout and Zero-Cost Abstractions
+
+<div class="ferris-says" data-variant="insight">
+<p>Memory layout — what your data actually looks like in RAM — is the unglamorous prerequisite for "zero-cost abstractions" to mean anything. This chapter peeks at alignment, padding, niche optimisation, and why Rust's <code>enum Option&lt;&amp;T&gt;</code> is only 8 bytes.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-19-stack-vs-heap-where-data-lives.md">Ch 19: Stack/Heap</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Struct layout, alignment, and padding rules</li><li>Zero-cost abstractions: what the compiler actually generates</li><li><code>#[repr(C)]</code> vs default Rust layout</li></ul></div>

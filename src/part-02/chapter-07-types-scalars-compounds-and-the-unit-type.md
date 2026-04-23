@@ -1,4 +1,8 @@
 # Chapter 7: Types, Scalars, Compounds, and the Unit Type
+
+<div class="ferris-says" data-variant="insight">
+<p>Numbers, booleans, characters, tuples, and the curious "unit type" <code>()</code>. The foundation of every other type you will define. If you only half-understood integer sizing in Part 0, this is where it clicks.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-06-variables-mutability-and-shadowing.md">Ch 6: Variables</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Scalar types: integers, floats, bool, char</li><li>Compound types: tuples, arrays, and <code>()</code></li><li>Type inference and explicit annotations</li></ul></div>

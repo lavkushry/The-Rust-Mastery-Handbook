@@ -1,4 +1,8 @@
 # Chapter 14: `Option`, `Result`, and Rust's Error Philosophy
+
+<div class="ferris-says" data-variant="insight">
+<p><code>Option</code> and <code>Result</code> you have met. This chapter covers the full ecosystem: <code>?</code>, the <code>From</code> conversion dance, <code>anyhow</code> vs <code>thiserror</code>, and the debate over whether errors should be "fat" (rich) or "thin" (fast). The chapter that settles your error-handling style for the rest of your Rust career.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

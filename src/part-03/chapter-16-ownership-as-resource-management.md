@@ -1,4 +1,8 @@
 # Chapter 16: Ownership as Resource Management
+
+<div class="ferris-says" data-variant="insight">
+<p>Ownership is not just about memory. <em>Ownership is about every resource</em> — files, locks, network connections, GPU handles, database transactions. When you understand that, the pattern RAII (resource-acquisition-is-initialisation) stops being an acronym and starts feeling obvious. This is the chapter where Rust's design philosophy finally reveals itself.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

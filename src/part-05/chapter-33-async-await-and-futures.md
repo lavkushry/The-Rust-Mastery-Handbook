@@ -1,4 +1,8 @@
 # Chapter 33: Async/Await and Futures
+
+<div class="ferris-says" data-variant="insight">
+<p>Async in Rust is different from async in almost any other language — futures are <em>state machines</em>, not callbacks. This chapter is the mental model that makes <code>.await</code>, executors, and runtimes make sense.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

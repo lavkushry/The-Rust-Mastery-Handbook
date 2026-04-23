@@ -1,4 +1,8 @@
 # Chapter 46: Entering an Unfamiliar Rust Repo
+
+<div class="ferris-says" data-variant="insight">
+<p>Maintaining a crate yourself. Releases, changelogs, semver, security advisories, deprecations. The discipline of being on the other side of "why doesn't this crate get updates".</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-05-cargo-and-project-structure.md">Ch 5: Cargo</a><a href="../part-02/chapter-15-modules-crates-and-visibility.md">Ch 15: Modules</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Reading <code>Cargo.toml</code> and dependency graphs first</li><li>Finding entry points and public APIs</li><li>Understanding ownership architecture of unfamiliar code</li></ul></div>

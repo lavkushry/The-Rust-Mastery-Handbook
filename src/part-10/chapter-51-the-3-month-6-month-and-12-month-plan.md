@@ -1,4 +1,8 @@
 # Chapter 51: The 3-Month, 6-Month, and 12-Month Plan
+
+<div class="ferris-says" data-variant="insight">
+<p>A capstone project from the ground up — project layout, error handling, modules, tests, docs, release. Everything from Parts 0 through 9, synthesised. The version of "Rust in One Hour" an experienced engineer writes after a year.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><span style="opacity:0.5;font-size:0.78rem">Entire handbook</span></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Month 1-3: core fundamentals and first contributions</li><li>Month 4-6: async, unsafe, and real project work</li><li>Month 7-12: advanced patterns and deep specialization</li></ul></div>

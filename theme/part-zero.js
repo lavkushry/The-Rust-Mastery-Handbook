@@ -149,13 +149,29 @@
     const steppers = root.querySelectorAll(".step-through:not([data-hydrated])");
     steppers.forEach((stepper) => {
       stepper.setAttribute("data-hydrated", "true");
+      if (!stepper.hasAttribute("tabindex")) stepper.setAttribute("tabindex", "0");
 
       const frames = Array.from(stepper.querySelectorAll(".step-through__frame"));
       if (frames.length === 0) return;
 
-      const prev = stepper.querySelector("[data-step-prev]");
-      const next = stepper.querySelector("[data-step-next]");
-      const progress = stepper.querySelector(".step-through__progress");
+      // Auto-generate controls if the markup does not already include them.
+      let prev = stepper.querySelector("[data-step-prev]");
+      let next = stepper.querySelector("[data-step-next]");
+      let progress = stepper.querySelector(".step-through__progress");
+      if (!prev || !next) {
+        const controls = document.createElement("div");
+        controls.className = "step-through__controls";
+        controls.innerHTML =
+          '<button type="button" data-step-prev aria-label="Previous step">\u25C0 prev</button>' +
+          '<span class="step-through__progress" aria-live="polite">1 / ' +
+          frames.length +
+          "</span>" +
+          '<button type="button" data-step-next aria-label="Next step">next \u25B6</button>';
+        stepper.appendChild(controls);
+        prev = controls.querySelector("[data-step-prev]");
+        next = controls.querySelector("[data-step-next]");
+        progress = controls.querySelector(".step-through__progress");
+      }
 
       let idx = 0;
       const render = () => {

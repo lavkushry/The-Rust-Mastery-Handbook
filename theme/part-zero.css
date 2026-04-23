@@ -244,6 +244,7 @@
   border-radius: 14px;
   border: 1px solid rgba(2, 62, 138, 0.18);
   background: #fffdf8;
+  position: relative;
 }
 
 .step-through__stage {
@@ -251,14 +252,27 @@
   min-height: 260px;
 }
 
+/* Frames in a step-through hide by default and only the .is-active one shows.
+   This works both with and without a .step-through__stage wrapper. */
 .step-through__frame {
+  display: none;
+}
+
+.step-through__frame.is-active {
+  display: block;
+}
+
+/* Legacy Ch-4 layout which absolutely-positioned frames inside a stage: keep
+   it working, but switch to fade-based opacity only when the stage is present. */
+.step-through__stage > .step-through__frame {
+  display: block;
   opacity: 0;
   transition: opacity 0.25s ease;
   position: absolute;
   inset: 0;
 }
 
-.step-through__frame.is-active {
+.step-through__stage > .step-through__frame.is-active {
   opacity: 1;
   position: relative;
 }

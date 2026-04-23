@@ -3,7 +3,7 @@
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
     <div class="snapshot-prereq">
-      <a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a>
+      <a href="../part-02/chapter-10-ownership-first-contact.md">Ch 10: Ownership</a>
     </div>
   </div>
   <div class="snapshot-cell">
@@ -25,7 +25,7 @@
   <div class="concept-link-body">
     <strong>Builds on Chapter 10</strong>
     Ch 10 taught the three ownership rules. This chapter shows the engineering consequence: ownership IS resource management. Scope end IS cleanup.
-    <a href="../part-02/chapter-10-ownership-first-contact.html">Revisit Ch 10 →</a>
+    <a href="../part-02/chapter-10-ownership-first-contact.md">Revisit Ch 10 →</a>
   </div>
 </div>
 <div class="concept-link needed-for">
@@ -33,7 +33,7 @@
   <div class="concept-link-body">
     <strong>You'll need this for Chapter 20</strong>
     Move semantics, Copy, Clone, and Drop are the four transfer events that express what ownership means at each step.
-    <a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.html">Ch 20: Move/Copy/Clone/Drop →</a>
+    <a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.md">Ch 20: Move/Copy/Clone/Drop →</a>
   </div>
 </div>
 

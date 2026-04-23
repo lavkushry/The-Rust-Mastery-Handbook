@@ -1900,3 +1900,170 @@ html.ayu blockquote.callout--learning-objective .callout__label {
     padding: 0.2rem 0.42rem;
   }
 }
+
+/* =========================================================
+   Part 0 "Rust in One Hour" — beginner-friendly components
+   Added in the beginner-first rewrite (April 2026).
+   ========================================================= */
+
+.one-sentence {
+  max-width: 68ch;
+  margin: 1.5rem 0 2rem;
+  padding: 1rem 1.25rem;
+  border-left: 4px solid var(--compiler);
+  background: linear-gradient(90deg, rgba(2, 62, 138, 0.06), rgba(2, 62, 138, 0.01));
+  border-radius: 6px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.one-sentence strong {
+  color: var(--compiler);
+}
+
+.eli5 {
+  max-width: 68ch;
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: rgba(82, 183, 136, 0.08);
+  border-left: 4px solid var(--valid);
+  border-radius: 6px;
+}
+
+.eli5 .eli5__head,
+.eli5__head {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--valid);
+  font-weight: 700;
+}
+
+.eli5 p,
+.eli5 ul,
+.eli5 ol {
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.analogy-card {
+  max-width: 68ch;
+  margin: 1.75rem 0;
+  padding: 0;
+  border: 1px solid rgba(33, 158, 188, 0.35);
+  border-radius: 12px;
+  background: rgba(33, 158, 188, 0.04);
+  overflow: hidden;
+}
+
+.analogy-card__head {
+  padding: 0.6rem 1.25rem;
+  background: var(--trait);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.analogy-card__body {
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.analogy-card__body p:last-child,
+.analogy-card__body ol:last-child,
+.analogy-card__body ul:last-child {
+  margin-bottom: 0;
+}
+
+.try-this {
+  max-width: 68ch;
+  margin: 1.75rem 0;
+  padding: 1rem 1.25rem;
+  border: 2px dashed var(--perf);
+  border-radius: 10px;
+  background: rgba(255, 190, 11, 0.06);
+}
+
+.try-this__head {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.try-this ol,
+.try-this ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.playground-run {
+  max-width: 68ch;
+  margin: 0.75rem 0 1.5rem;
+  font-size: 0.92rem;
+}
+
+.playground-run a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: var(--compiler);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.playground-run a:hover,
+.playground-run a:focus-visible {
+  background: #012a5e;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(2, 62, 138, 0.28);
+  color: #fff;
+  text-decoration: none;
+  outline: none;
+}
+
+.playground-run a:focus-visible {
+  outline: 3px solid rgba(255, 190, 11, 0.65);
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .one-sentence {
+    background: rgba(58, 134, 255, 0.08);
+    color: #e7ecf3;
+  }
+  .eli5 {
+    background: rgba(82, 183, 136, 0.12);
+    color: #e7ecf3;
+  }
+  .analogy-card {
+    background: rgba(33, 158, 188, 0.1);
+  }
+  .analogy-card__body {
+    color: #e7ecf3;
+  }
+  .try-this {
+    background: rgba(255, 190, 11, 0.1);
+    color: #e7ecf3;
+  }
+}

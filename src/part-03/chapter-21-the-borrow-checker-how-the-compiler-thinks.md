@@ -4,9 +4,9 @@
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
     <div class="snapshot-prereq">
-      <a href="../part-03/chapter-16-ownership-as-resource-management.html">Ch 16: Ownership as RAII</a>
-      <a href="../part-03/chapter-17-borrowing-constrained-access.html">Ch 17: Borrowing Rules</a>
-      <a href="../part-03/chapter-18-lifetimes-relationships-not-durations.html">Ch 18: Lifetimes</a>
+      <a href="../part-03/chapter-16-ownership-as-resource-management.md">Ch 16: Ownership as RAII</a>
+      <a href="../part-03/chapter-17-borrowing-constrained-access.md">Ch 17: Borrowing Rules</a>
+      <a href="../part-03/chapter-18-lifetimes-relationships-not-durations.md">Ch 18: Lifetimes</a>
     </div>
   </div>
   <div class="snapshot-cell">

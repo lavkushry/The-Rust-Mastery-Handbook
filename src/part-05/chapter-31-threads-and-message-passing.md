@@ -3,8 +3,8 @@
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
     <div class="snapshot-prereq">
-      <a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a>
-      <a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.html">Ch 20: Move/Copy/Clone</a>
+      <a href="../part-02/chapter-10-ownership-first-contact.md">Ch 10: Ownership</a>
+      <a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.md">Ch 20: Move/Copy/Clone</a>
     </div>
   </div>
   <div class="snapshot-cell">
@@ -26,7 +26,7 @@
   <div class="concept-link-body">
     <strong>You'll need this for Chapters 32 and 33</strong>
     Ch 32 introduces <code>Arc</code>/<code>Mutex</code> for shared state (the other concurrency model). Ch 33 applies the same ownership rules to async, where <code>Send + 'static</code> plays the same role as <code>move</code> does here.
-    <a href="../part-05/chapter-32-shared-state-arc-mutex-and-send-sync.html">Ch 32: Shared State →</a>
+    <a href="../part-05/chapter-32-shared-state-arc-mutex-and-send-sync.md">Ch 32: Shared State →</a>
   </div>
 </div>
 

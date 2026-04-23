@@ -1,6 +1,16 @@
 # Summary
 
 - [Title Page and Table of Contents](00_title_and_toc.md)
+- [Part 0 - Rust in One Hour](part-00/index.md)
+  - [Why You Will Actually Like Rust](part-00/00-preface-why-this-book.md)
+  - [Hello, Rust](part-00/01-hello-rust.md)
+  - [Values, Names, and the "let" Word](part-00/02-values-bindings-and-mutability.md)
+  - [The Shape of Data](part-00/03-the-shape-of-data.md)
+  - [Ownership in One Page](part-00/04-ownership-in-one-page.md)
+  - [Borrowing in One Page](part-00/05-borrowing-in-one-page.md)
+  - [Option and Result](part-00/06-option-and-result.md)
+  - [Your First CLI](part-00/07-your-first-cli.md)
+  - [Where to Next](part-00/08-where-to-next.md)
 - [Part 1 - Why Rust Exists](part-01/index.md)
   - [Chapter 1: The Systems Programming Problem](part-01/chapter-01-the-systems-programming-problem.md)
   - [Chapter 2: Rust's Design Philosophy](part-01/chapter-02-rusts-design-philosophy.md)

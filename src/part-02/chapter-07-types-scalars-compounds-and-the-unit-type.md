@@ -1,6 +1,6 @@
 # Chapter 7: Types, Scalars, Compounds, and the Unit Type
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-06-variables-mutability-and-shadowing.html">Ch 6: Variables</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-06-variables-mutability-and-shadowing.md">Ch 6: Variables</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Scalar types: integers, floats, bool, char</li><li>Compound types: tuples, arrays, and <code>()</code></li><li>Type inference and explicit annotations</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">25<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 15 min exercises</div></div>
 </div>

@@ -1,6 +1,6 @@
 # Chapter 45: Crate Architecture, Workspaces, and Semver
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-15-modules-crates-and-visibility.html">Ch 15: Modules</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-15-modules-crates-and-visibility.md">Ch 15: Modules</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Workspace layout for multi-crate projects</li><li>Semantic versioning and public API stability</li><li>Feature flags and conditional compilation</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">30<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 15 min exercises</div></div>
 </div>

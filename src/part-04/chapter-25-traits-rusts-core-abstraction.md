@@ -3,8 +3,8 @@
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
     <div class="snapshot-prereq">
-      <a href="../part-02/chapter-12-structs.html">Ch 12: Structs</a>
-      <a href="../part-02/chapter-13-enums-and-pattern-matching.html">Ch 13: Enums</a>
+      <a href="../part-02/chapter-12-structs.md">Ch 12: Structs</a>
+      <a href="../part-02/chapter-13-enums-and-pattern-matching.md">Ch 13: Enums</a>
     </div>
   </div>
   <div class="snapshot-cell">
@@ -26,7 +26,7 @@
   <div class="concept-link-body">
     <strong>You'll need this for Chapter 42</strong>
     Advanced traits (trait objects, GATs, supertraits) build directly on the capability model you learn here.
-    <a href="../part-07/chapter-42-advanced-traits-trait-objects-and-gats.html">Ch 42: Advanced Traits →</a>
+    <a href="../part-07/chapter-42-advanced-traits-trait-objects-and-gats.md">Ch 42: Advanced Traits →</a>
   </div>
 </div>
 

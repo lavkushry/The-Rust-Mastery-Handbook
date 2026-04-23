@@ -1,6 +1,6 @@
 # Chapter 9: Control Flow
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-08-functions-and-expressions.html">Ch 8: Functions</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-08-functions-and-expressions.md">Ch 8: Functions</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>if</code>/<code>else</code> as expressions that return values</li><li><code>loop</code>, <code>while</code>, <code>for</code> — loop flavors</li><li>Pattern matching preview with <code>match</code></li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">20<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 15 min exercises</div></div>
 </div>

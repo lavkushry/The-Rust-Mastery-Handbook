@@ -4,8 +4,8 @@
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
     <div class="snapshot-prereq">
-      <a href="../part-02/chapter-11-borrowing-and-references-first-contact.html">Ch 11: Borrowing</a>
-      <a href="../part-03/chapter-17-borrowing-constrained-access.html">Ch 17: Borrow Rules</a>
+      <a href="../part-02/chapter-11-borrowing-and-references-first-contact.md">Ch 11: Borrowing</a>
+      <a href="../part-03/chapter-17-borrowing-constrained-access.md">Ch 17: Borrow Rules</a>
     </div>
   </div>
   <div class="snapshot-cell">
@@ -27,7 +27,7 @@
   <div class="concept-link-body">
     <strong>Builds on Chapter 11</strong>
     A lifetime annotation makes explicit what the compiler already checks: every reference must be valid for as long as it is used.
-    <a href="../part-02/chapter-11-borrowing-and-references-first-contact.html">Revisit Ch 11 →</a>
+    <a href="../part-02/chapter-11-borrowing-and-references-first-contact.md">Revisit Ch 11 →</a>
   </div>
 </div>
 <div class="concept-link needed-for">
@@ -35,7 +35,7 @@
   <div class="concept-link-body">
     <strong>You'll need this for Chapter 39</strong>
     Ch 39 explores advanced lifetime patterns: higher-ranked trait bounds, lifetime variance, and subtyping — all built on the model you learn here.
-    <a href="../part-06/chapter-39-lifetimes-in-depth.html">Ch 39: Lifetimes in Depth →</a>
+    <a href="../part-06/chapter-39-lifetimes-in-depth.md">Ch 39: Lifetimes in Depth →</a>
   </div>
 </div>
 
@@ -143,7 +143,7 @@
 
 ## Chapter Resources
 
-* **Official Source:** [The Rust Reference: Lifetimes](https://doc.rust-lang.org/reference/lifetimes.html)
+* **Official Source:** [The Rust Reference: Lifetimes](https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html)
 * **Rustonomicon:** [Lifetimes](https://doc.rust-lang.org/nomicon/lifetimes.html)
 * **Rust by Example:** [Lifetimes](https://doc.rust-lang.org/rust-by-example/scope/lifetime.html)
 

@@ -3,9 +3,15 @@
 [![Build Book](https://github.com/lavkushry/The-Rust-Mastery-Handbook/actions/workflows/ci.yml/badge.svg)](https://github.com/lavkushry/The-Rust-Mastery-Handbook/actions/workflows/ci.yml)
 [![Deploy Pages](https://github.com/lavkushry/The-Rust-Mastery-Handbook/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/lavkushry/The-Rust-Mastery-Handbook/actions/workflows/deploy-pages.yml)
 
-A long-form Rust systems engineering handbook for developers who want more than syntax: ownership reasoning, compiler mental models, and practical open-source contribution readiness.
+**The simplest Rust book in the world — and the deepest handbook when you are ready.**
 
-This repository publishes a multi-part Rust learning handbook built with mdBook, with chapterized content, visual diagrams, printable PDF export, and a contributor-oriented documentation workflow.
+The Rust Mastery Handbook is a two-in-one book. Open it at Part 0 and you get *Rust in One Hour* — eight short, picture-first, analogy-first chapters that teach the eighty percent of Rust a working developer actually uses in a day. Keep reading and the same book becomes a long-form systems handbook covering ownership reasoning, compiler mental models, concurrency, unsafe, and open-source contribution readiness.
+
+No one else on the internet has both in one book. That is the point.
+
+Built with mdBook. Picture-heavy. Playground-linked. Printable as a PDF. Contributor-friendly.
+
+> See [docs/transformation-plan.md](docs/transformation-plan.md) for the multi-session rewrite currently in progress to bring every chapter into the new beginner-first voice.
 
 ## Start Here
 
@@ -16,12 +22,14 @@ This repository publishes a multi-part Rust learning handbook built with mdBook,
 
 ## Choose Your Path
 
-- You know programming but are new to Rust:
-  Start at [docs/getting-started.md](docs/getting-started.md), then read [src/00_title_and_toc.md](src/00_title_and_toc.md) and continue in order from Part 1.
-- You are a systems/backend engineer moving into Rust:
-  Start with [docs/use-cases.md](docs/use-cases.md), then prioritize Parts 3, 5, 6, and 8 for ownership depth, concurrency, systems topics, and contribution readiness.
-- You want to contribute to this handbook:
-  Start with [CONTRIBUTING.md](CONTRIBUTING.md), [docs/review-checklist.md](docs/review-checklist.md), and [docs/good-first-issues.md](docs/good-first-issues.md).
+- **You have never touched Rust** and you have heard it is hard:
+  Go straight to [Part 0 — Rust in One Hour](src/part-00/index.md). Sixty minutes of reading. Picture-first. Every code sample runnable in the Rust Playground in one click. When you finish it, you will be able to read almost any Rust code in the wild.
+- **You know some Rust syntax** and you want the real mental model:
+  Skim [Part 0](src/part-00/index.md) to calibrate, then read [Part 2 — Core Rust Foundations](src/part-02/index.md) and [Part 3 — The Heart of Rust](src/part-03/index.md). Part 3 is the crown jewel on ownership.
+- **You are a systems or backend engineer moving into Rust:**
+  Start with [docs/use-cases.md](docs/use-cases.md), skim [Part 0](src/part-00/index.md) for shared vocabulary, then prioritize Parts 3, 5, 6, and 8 for ownership depth, concurrency, systems topics, and contribution readiness.
+- **You want to contribute to this handbook:**
+  Start with [CONTRIBUTING.md](CONTRIBUTING.md), [docs/transformation-plan.md](docs/transformation-plan.md), [docs/review-checklist.md](docs/review-checklist.md), and [docs/good-first-issues.md](docs/good-first-issues.md).
 
 ## Table of Contents
 
@@ -61,9 +69,11 @@ This repository publishes a multi-part Rust learning handbook built with mdBook,
 
 ## Why This Exists
 
-Most Rust learning material is excellent for language onboarding, but often too shallow for engineers who need to reason about real-world codebases, architecture tradeoffs, and contribution pathways.
+Most Rust books teach the syntax and assume you will absorb the mental model by osmosis. You don't. That is why "Rust is hard" became a reputation.
 
-The Rust Mastery Handbook is designed to bridge that gap by connecting first-principles Rust concepts to practical systems engineering and open-source contribution patterns.
+This book flips that. Part 0 teaches the mental model first — with pictures, analogies, and runnable code — before the syntax has to carry any real weight. By the time you need the syntax, you already know what it is saying. The rest of the book is depth, not difficulty.
+
+The result: a book that is genuinely gentle for a Python or JavaScript developer who has heard Rust is scary, and still rigorous enough for an engineer writing a kernel module three hundred pages later.
 
 ## Rust Handbook for Systems Engineers
 

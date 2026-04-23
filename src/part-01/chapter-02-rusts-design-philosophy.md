@@ -1,6 +1,6 @@
 # Chapter 2: Rust's Design Philosophy
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-01/chapter-01-the-systems-programming-problem.html">Ch 1: Systems Problem</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-01/chapter-01-the-systems-programming-problem.md">Ch 1: Systems Problem</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Zero-cost abstractions as a design principle</li><li>Correctness, performance, and productivity tradeoffs</li><li>Why Rust chose ownership over GC</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">25<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 10 min exercises</div></div>
 </div>

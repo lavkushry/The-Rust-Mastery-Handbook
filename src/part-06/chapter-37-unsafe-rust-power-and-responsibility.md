@@ -1,10 +1,10 @@
 # Chapter 37: Unsafe Rust, Power and Responsibility
 <div class="chapter-snapshot">
-  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-17-borrowing-constrained-access.html">Ch 17: Borrow Rules</a><a href="../part-03/chapter-19-stack-vs-heap-where-data-lives.html">Ch 19: Stack/Heap</a></div></div>
+  <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-17-borrowing-constrained-access.md">Ch 17: Borrow Rules</a><a href="../part-03/chapter-19-stack-vs-heap-where-data-lives.md">Ch 19: Stack/Heap</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>The 5 unsafe superpowers and nothing more</li><li>Safe abstraction over unsafe implementation</li><li>Sound wrappers: prove preconditions, expose safe API</li></ul></div>
   <div class="snapshot-cell"><h4>Reading time</h4><div class="snapshot-time">40<span class="snapshot-time-unit"> min</span></div><div style="font-size:0.72rem;opacity:0.45;margin-top:0.25rem">+ 20 min exercises</div></div>
 </div>
-<div class="concept-link needed-for"><div class="concept-link-icon">→</div><div class="concept-link-body"><strong>You'll need this for Chapter 38</strong>FFI (Foreign Function Interface) requires <code>unsafe</code> to call into C code. This chapter's sound-wrapper patterns are essential for building safe abstractions over foreign libraries.<a href="../part-06/chapter-38-ffi-talking-to-c-without-lying.html">Preview Ch 38 →</a></div></div>
+<div class="concept-link needed-for"><div class="concept-link-icon">→</div><div class="concept-link-body"><strong>You'll need this for Chapter 38</strong>FFI (Foreign Function Interface) requires <code>unsafe</code> to call into C code. This chapter's sound-wrapper patterns are essential for building safe abstractions over foreign libraries.<a href="../part-06/chapter-38-ffi-talking-to-c-without-lying.md">Preview Ch 38 →</a></div></div>
 
 <div class="diagram-grid diagram-grid--two">
   <figure class="visual-figure" style="--chapter-accent: var(--unsafe);">

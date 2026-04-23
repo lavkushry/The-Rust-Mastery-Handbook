@@ -4,7 +4,7 @@
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
     <div class="snapshot-prereq">
-      <a href="../part-02/chapter-10-ownership-first-contact.html">Ch 10: Ownership</a>
+      <a href="../part-02/chapter-10-ownership-first-contact.md">Ch 10: Ownership</a>
     </div>
   </div>
   <div class="snapshot-cell">
@@ -26,7 +26,7 @@
   <div class="concept-link-body">
     <strong>Builds on Chapter 10</strong>
     Borrowing exists because of ownership — a reference borrows the owner's data without taking ownership.
-    <a href="../part-02/chapter-10-ownership-first-contact.html">Revisit Ch 10 →</a>
+    <a href="../part-02/chapter-10-ownership-first-contact.md">Revisit Ch 10 →</a>
   </div>
 </div>
 

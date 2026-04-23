@@ -133,6 +133,12 @@
   gap: 0.45rem;
 }
 
+.quiz__options > li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .quiz__option {
   padding: 0.65rem 0.9rem;
   border-radius: 10px;

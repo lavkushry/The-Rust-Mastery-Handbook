@@ -76,13 +76,16 @@
       const letters = ["A", "B", "C", "D", "E", "F"];
 
       options.forEach((opt, i) => {
-        // normalise li -> button
+        // normalise li -> li>button (keeping <li> as a direct <ul> child
+        // satisfies the WCAG rule "ul/ol must only directly contain li")
         if (opt.tagName === "LI") {
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "quiz__option";
           btn.innerHTML = `<span class="quiz__marker">${letters[i] || ""}</span>${opt.innerHTML}`;
-          opt.replaceWith(btn);
+          // replace li's children with the button (keep the li as a container)
+          opt.innerHTML = "";
+          opt.appendChild(btn);
           opt = btn;
         } else {
           opt.classList.add("quiz__option");

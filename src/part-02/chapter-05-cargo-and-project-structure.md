@@ -267,6 +267,92 @@ The build graph, version constraints, feature surface, and package boundaries sh
 - `Cargo.lock` exists for reproducibility, but libraries and binaries use it differently.
 - Workspaces are about real crate boundaries, not decorative complexity.
 
+## wordc, step 8 — `cargo test` and the first unit test
+
+<div class="ferris-says" data-variant="insight">
+<p>The Part 0 version of <code>wordc</code> had one function doing everything: read args, read file, count words, print. That's fine for a first draft, but it leaves nothing you can <em>test</em>. In this step we extract a pure function, <code>count_words(text: &amp;str) -&gt; usize</code>, and add a unit test right next to it. Then we run the whole thing with <code>cargo test</code> — Cargo's built-in test runner, no framework to install.</p>
+</div>
+
+Open `src/main.rs` in the `wordc` project and refactor so the counting logic is a separate function:
+
+```rust
+use std::env;
+use std::fs;
+use std::process;
+
+fn count_words(text: &str) -> usize {
+    text.split_whitespace().count()
+}
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    let path = match args.get(1) {
+        Some(p) => p,
+        None => {
+            eprintln!("usage: wordc <path>");
+            process::exit(1);
+        }
+    };
+
+    let text = fs::read_to_string(path).unwrap_or_else(|e| {
+        eprintln!("could not read {path}: {e}");
+        process::exit(1);
+    });
+
+    println!("{path} has {} words.", count_words(&text));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn empty_string_has_zero_words() {
+        assert_eq!(count_words(""), 0);
+    }
+
+    #[test]
+    fn whitespace_only_has_zero_words() {
+        assert_eq!(count_words("   \t\n  "), 0);
+    }
+
+    #[test]
+    fn counts_words_separated_by_any_whitespace() {
+        assert_eq!(count_words("rust is fast"), 3);
+        assert_eq!(count_words("rust\tis\nfast"), 3);
+        assert_eq!(count_words("  leading and trailing  "), 3);
+    }
+}
+```
+
+Now run:
+
+```bash
+cargo test
+```
+
+You will see:
+
+```text
+running 3 tests
+test tests::empty_string_has_zero_words ... ok
+test tests::whitespace_only_has_zero_words ... ok
+test tests::counts_words_separated_by_any_whitespace ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored
+```
+
+Three things just happened that deserve noting:
+
+- **`#[cfg(test)]`** compiles the inner module <em>only</em> when `cargo test` runs. In a normal `cargo build` the tests add zero bytes to your binary.
+- **`use super::*;`** pulls the function under test into the test module. The module is a sibling, not a parent, so this imports up and over.
+- **The assertion macros** (`assert_eq!`, `assert_ne!`, `assert!`) print the actual and expected values on failure — far more useful than a bare boolean.
+
+<div class="ferris-says" data-variant="warning">
+<p>If you find yourself writing "a test that spins up a real HTTP server to verify one line of logic", step back. The pattern above — extract a pure function and unit-test it next to its definition — covers 80% of real-world testing needs and keeps the feedback loop sub-second.</p>
+</div>
+
 ## Memory Hook
 
 If source files are the rooms of a house, `Cargo.toml` is the blueprint and permit packet that says which rooms exist and how utilities reach them.

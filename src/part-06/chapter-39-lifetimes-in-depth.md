@@ -54,6 +54,24 @@
   </figure>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Chapter 18 introduced lifetimes as relationships. This chapter pushes that idea until the harder corners (variance, higher-ranked trait bounds, <code>'static</code> bounds) stop being mysterious. Read this onramp first.</p>
+</div>
+
+Three things to remember before the depth content:
+
+**`'static` does not mean "lives forever".** It means "is allowed to live forever if necessary." A `&'static str` like `"hello"` is baked into the binary, yes — but a `T: 'static` *bound* on a generic only means "this value contains no borrows that would constrain how long it can live." A `String` satisfies `T: 'static` because it owns its data. The bound is about *what could limit the lifetime*, not "infinite duration."
+
+**Variance is the rule for which lifetimes can substitute for which.** Shared references `&T` are "covariant in `'a`" — a `&'static str` works wherever a `&'a str` is wanted, because longer-lived can stand in for shorter-lived (it satisfies *more* constraints, not fewer). Mutable references `&mut T` are "invariant in `T`" — no substitution allowed — because the function might *write* a shorter-lived reference into the slot, breaking the longer-lived caller.
+
+**Higher-ranked trait bounds (`for<'a>`)** are how you say "this works for *any* lifetime the caller picks." A function taking `F: for<'a> Fn(&'a str) -> usize` accepts a closure that works for *every* possible input lifetime. You'll meet `for<'a>` mostly in trait objects and closures over references.
+
+<div class="ferris-says">
+<p>None of these three need to be at the tip of your tongue when you write Rust day-to-day. They show up when you're <em>reading</em> harder libraries (<code>tokio</code>, <code>serde</code>, <code>actix</code>) and want their function signatures to make sense. That's what this chapter equips you for.</p>
+</div>
+
 ## Step 1 - The Problem
 
 Beginner lifetime errors are usually about "this borrow does not live long enough." Advanced lifetime reasoning is different. The hard problems are:
@@ -263,6 +281,87 @@ Advanced lifetimes are Rust's way of saying exactly which borrowed relationships
 ## What Invariant Is Rust Protecting Here?
 
 Borrow substitutions across generic code must preserve validity: a shorter-lived borrow must not be smuggled into a place that promises longer validity, especially through mutation or erased abstractions.
+
+## Variance — a step-through
+
+<div class="ferris-says" data-variant="insight">
+<p>Variance is the rule that decides which lifetimes are <em>substitutable</em> for which. <code>&amp;'a T</code> is covariant in <code>'a</code>: longer lifetimes can stand in for shorter ones. <code>&amp;'a mut T</code> is invariant in <code>T</code>: no substitution allowed. Step through to see <em>why</em> these rules differ — they're not arbitrary.</p>
+</div>
+
+<div class="step-through" data-title="Why &T is covariant and &mut T is invariant">
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 320" role="img" aria-label="Frame 1: covariance of shared references. A long lifetime 'static reference is shown being used where a shorter 'a lifetime is expected, with a green checkmark. The arrow shows substitution direction: longer can stand in for shorter.">
+      <rect x="10" y="10" width="700" height="300" rx="16" fill="#ecfdf5" stroke="#047857"></rect>
+      <text x="360" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#047857;font-weight:bold">Frame 1 — <code>&amp;'a T</code> is <em>covariant</em> in <code>'a</code></text>
+      <text x="60" y="84" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">fn print_str&lt;'a&gt;(s: &amp;'a str) { println!("{s}"); }</text>
+      <text x="60" y="124" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">let global: &amp;'static str = "hello";  // lives forever</text>
+      <text x="60" y="148" style="font-family:var(--font-code);font-size:15px;fill:#047857">print_str(global);  // OK — &amp;'static substitutes for &amp;'a</text>
+      <rect x="60" y="180" width="600" height="80" rx="10" fill="#fff" stroke="#047857"></rect>
+      <text x="80" y="206" style="font-family:var(--font-display);font-size:14px;fill:#047857">Read it as: <code>'static</code>: <code>'a</code>. The lifetime relation flows the</text>
+      <text x="80" y="226" style="font-family:var(--font-display);font-size:14px;fill:#047857">same direction as the type — <em>longer is a subtype of shorter</em>.</text>
+      <text x="80" y="246" style="font-family:var(--font-display);font-size:13px;fill:#1a1a2e">Anywhere a "lives at least as long as 'a" is required, "lives forever" works.</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 320" role="img" aria-label="Frame 2: invariance of mutable references. A function takes a mutable reference to a Vec of strings with lifetime 'a. Calling it with a Vec of static strings would be unsound because the function might write a shorter-lived reference into it.">
+      <rect x="10" y="10" width="700" height="300" rx="16" fill="#fef2f2" stroke="#d62828"></rect>
+      <text x="360" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#d62828;font-weight:bold">Frame 2 — <code>&amp;'a mut T</code> is <em>invariant</em> in <code>T</code></text>
+      <text x="60" y="84" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">fn replace&lt;'a&gt;(v: &amp;mut Vec&lt;&amp;'a str&gt;, s: &amp;'a str) {</text>
+      <text x="80" y="106" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">v[0] = s;  // writes &amp;'a str into the Vec</text>
+      <text x="60" y="128" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">}</text>
+      <text x="60" y="160" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">let mut globals: Vec&lt;&amp;'static str&gt; = vec!["hi"];</text>
+      <text x="60" y="184" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">let local = String::from("bye");</text>
+      <text x="60" y="208" style="font-family:var(--font-code);font-size:14px;fill:#d62828">replace(&amp;mut globals, &amp;local);</text>
+      <text x="60" y="232" style="font-family:var(--font-code);font-size:14px;fill:#d62828">// would write &amp;'local into Vec&lt;&amp;'static&gt; — UB if allowed!</text>
+      <text x="360" y="282" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#d62828">If <code>&amp;mut</code> were covariant, the callee could store</text>
+      <text x="360" y="302" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#d62828">a shorter-lived reference where a longer-lived one is expected.</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 320" role="img" aria-label="Frame 3: a side-by-side rule summary. Shared references are covariant in their lifetime parameter; the inner T's variance is propagated. Mutable references are covariant in the lifetime but invariant in T. Cells and mutex's interior types are invariant.">
+      <rect x="10" y="10" width="700" height="300" rx="16" fill="#fffdf8" stroke="rgba(2,62,138,0.14)"></rect>
+      <text x="360" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#1d3557;font-weight:bold">Frame 3 — the variance reference table</text>
+      <g font-family="var(--font-code)" font-size="14">
+        <text x="60" y="80" fill="#1a1a2e">&amp;'a T</text>
+        <text x="200" y="80" fill="#047857">covariant in 'a</text>
+        <text x="380" y="80" fill="#047857">covariant in T</text>
+        <text x="60" y="108" fill="#1a1a2e">&amp;'a mut T</text>
+        <text x="200" y="108" fill="#047857">covariant in 'a</text>
+        <text x="380" y="108" fill="#d62828">INVARIANT in T</text>
+        <text x="60" y="136" fill="#1a1a2e">Cell&lt;T&gt;, RefCell&lt;T&gt;</text>
+        <text x="200" y="136" fill="#1a1a2e">—</text>
+        <text x="380" y="136" fill="#d62828">INVARIANT in T</text>
+        <text x="60" y="164" fill="#1a1a2e">Box&lt;T&gt;, Vec&lt;T&gt;</text>
+        <text x="200" y="164" fill="#1a1a2e">—</text>
+        <text x="380" y="164" fill="#047857">covariant in T</text>
+        <text x="60" y="192" fill="#1a1a2e">fn(T) -&gt; ()</text>
+        <text x="200" y="192" fill="#1a1a2e">—</text>
+        <text x="380" y="192" fill="#d62828">CONTRAVARIANT in T</text>
+        <text x="60" y="220" fill="#1a1a2e">fn() -&gt; T</text>
+        <text x="200" y="220" fill="#1a1a2e">—</text>
+        <text x="380" y="220" fill="#047857">covariant in T</text>
+      </g>
+      <text x="360" y="276" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#457b9d">Rule of thumb: if the type can <em>write</em> to <code>T</code>, it's invariant.</text>
+      <text x="360" y="296" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#457b9d">Read-only positions are covariant; argument positions are contravariant.</text>
+    </svg>
+  </div>
+</div>
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Variance</span></div>
+  <p class="quiz__q"><code>&amp;'a T</code> is <em>covariant</em> in <code>'a</code>. In plain English, that means:</p>
+  <ul class="quiz__options">
+    <li>Longer lifetimes can be substituted where shorter lifetimes are expected — a <code>&amp;'static str</code> can be used wherever a <code>&amp;'a str</code> is wanted.</li>
+    <li>Lifetimes can be freely reordered.</li>
+    <li>The reference type is invariant; you cannot substitute lifetimes at all.</li>
+    <li>Shorter lifetimes can be substituted for longer ones — never sound.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Covariance over <code>'a</code> says: anywhere a borrow of lifetime <code>'a</code> is wanted, a borrow that lives <em>longer</em> works. <code>&amp;'static T</code> outlives every <code>'a</code>, so it's always assignable. Mutable references <code>&amp;mut T</code> are <em>invariant</em> in <code>T</code>, which is why <code>&amp;mut Vec&lt;&amp;'static str&gt;</code> cannot be passed where <code>&amp;mut Vec&lt;&amp;'a str&gt;</code> is expected — it would let the callee write a shorter-lived reference into a longer-lived slot.</div>
+  <div class="quiz__explain quiz__explain--wrong">Re-read the variance section. Which direction is sound for shared references?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

@@ -243,6 +243,22 @@ Rust catches many mistakes before the program runs, but it cannot tell whether y
 
 Behavioral contracts, public examples, and regression boundaries must stay true even when internal implementations change.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Doc tests</span></div>
+  <p class="quiz__q">A doc test in a Rust public function:</p>
+  <ul class="quiz__options">
+    <li>Is a comment Rust ignores.</li>
+    <li>Is compiled and executed by <code>cargo test</code> as if it were a real test, ensuring the example you put in the docs <em>actually compiles and runs</em>.</li>
+    <li>Is rendered to the docs but never executed.</li>
+    <li>Only runs under <code>cargo doc</code>.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Doc tests are one of Rust's killer features for library quality: every <code>```</code>-fenced example in a doc comment is a real, compiled, executed test. The day your example stops compiling is the day your CI turns red — your docs cannot drift from your code.</div>
+  <div class="quiz__explain quiz__explain--wrong">Try running <code>cargo test</code> on a crate with doc examples. What runs?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - Unit, integration, and doctests serve different purposes.

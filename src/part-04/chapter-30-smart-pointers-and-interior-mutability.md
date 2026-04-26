@@ -272,6 +272,22 @@ Smart pointers exist because not all ownership problems look the same. Some valu
 
 Pointer-like abstractions must preserve the intended ownership count, mutation discipline, and thread-safety guarantees rather than collapsing all sharing into one vague mutable object model.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Rc vs Arc</span></div>
+  <p class="quiz__q">When should you reach for <code>Arc&lt;T&gt;</code> instead of <code>Rc&lt;T&gt;</code>?</p>
+  <ul class="quiz__options">
+    <li>When <code>T</code> is large, since <code>Arc</code> uses less memory.</li>
+    <li>When the value will be shared <em>across threads</em> — <code>Arc</code> uses atomic refcount operations and is <code>Send + Sync</code>; <code>Rc</code> is single-thread-only.</li>
+    <li>When you want the value mutable.</li>
+    <li>When you don't know yet — they're identical.</li>
+  </ul>
+  <div class="quiz__explain">Correct. The "A" stands for "atomic". <code>Rc</code>'s non-atomic refcount is faster but unsound across threads, so the type system literally refuses to let you send it (<code>Rc</code> is not <code>Send</code>). Pick <code>Rc</code> when staying single-threaded; pay the atomic cost only when you actually share across threads.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at the trait bounds: which one is <code>Send + Sync</code>?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - Pick smart pointers for ownership shape, not as a reflex.

@@ -338,6 +338,22 @@ Your first contribution should make a maintainer's life easier, not more uncerta
 
 Contributions should preserve project invariants while minimizing reviewer uncertainty about correctness, scope, and maintenance cost.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>First-PR scope</span></div>
+  <p class="quiz__q">For a first PR to a project you've just opened, which scope is most likely to land?</p>
+  <ul class="quiz__options">
+    <li>A large refactor that "cleans up" the codebase.</li>
+    <li>A surgical fix to one issue: a typo in docs, a clarifying error message, a missing test for an existing function, or a small bug with a clear reproducer. Demonstrates respect for maintainers' time and existing structure.</li>
+    <li>An entire new subsystem.</li>
+    <li>Renaming files for consistency.</li>
+  </ul>
+  <div class="quiz__explain">Correct. A first contribution is as much a <em>relationship-builder</em> as it is code. Surgical scope earns trust: the maintainer can review it in one sitting, agree with the framing, and merge it. That trust unlocks bigger contributions later. Sweeping refactors from a stranger almost always stall, regardless of their merit.</div>
+  <div class="quiz__explain quiz__explain--wrong">What scope earns trust from a maintainer who has never met you?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - Start smaller than your ego wants.

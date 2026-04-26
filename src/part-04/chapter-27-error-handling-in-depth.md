@@ -250,6 +250,22 @@ Rust treats failure as data you must account for, not as invisible control flow.
 
 Failure paths must remain explicit and type-checked so callers cannot silently ignore or misunderstand what can go wrong.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>thiserror vs anyhow</span></div>
+  <p class="quiz__q">You are writing a library crate that other crates will depend on. Should errors use <code>thiserror</code> or <code>anyhow</code>?</p>
+  <ul class="quiz__options">
+    <li><code>anyhow</code>. Easier to write, downstream users will appreciate it.</li>
+    <li><code>thiserror</code>. Library users need to <code>match</code> on specific error variants to recover programmatically — that needs typed errors, not opaque <code>anyhow::Error</code>.</li>
+    <li>Either is fine; they're interchangeable.</li>
+    <li>Neither — return <code>String</code> errors so callers can format them.</li>
+  </ul>
+  <div class="quiz__explain">Correct. The rule of thumb: libraries return typed errors (<code>thiserror</code>) so callers can branch on them. Application binaries use <code>anyhow::Result</code> at the top level because they only need to log/exit. A library forcing <code>anyhow::Error</code> on its callers makes recovery impossible.</div>
+  <div class="quiz__explain quiz__explain--wrong">Think about who reads your error type. Can downstream crates <code>match</code> on <code>anyhow::Error</code>?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - Libraries usually want structured error types; applications usually want ergonomic propagation plus context.

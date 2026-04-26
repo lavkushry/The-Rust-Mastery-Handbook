@@ -387,6 +387,22 @@ Good Rust APIs make the right thing natural and the wrong thing awkward or impos
 
 Public values and transitions should preserve domain meaning: invalid combinations, illegal orderings, and ambiguous raw representations should be blocked or isolated at construction boundaries.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Newtypes</span></div>
+  <p class="quiz__q">You have functions like <code>charge(amount: u64, currency: &amp;str)</code> and <code>charge(amount: u64, customer_id: u64)</code>. How does type-driven design improve this?</p>
+  <ul class="quiz__options">
+    <li>Add asserts at the top of each function.</li>
+    <li>Wrap each meaningful unit in a <em>newtype</em>: <code>struct Cents(u64);</code> <code>struct CustomerId(u64);</code>. The compiler now refuses to mix them, the documentation is in the type, and the runtime cost is zero.</li>
+    <li>Add a comment.</li>
+    <li>Switch to dynamic types.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Newtypes are Rust's idiomatic way to attach meaning to a primitive. Calling <code>charge(customer_id, cents)</code> with the arguments swapped becomes a <em>compile error</em>, not a customer-support ticket. Combine with <code>From</code>/<code>Into</code> and constructors that validate, and entire categories of bugs become unrepresentable.</div>
+  <div class="quiz__explain quiz__explain--wrong">How do you make the compiler distinguish "amount in cents" from "customer id" when both are <code>u64</code>?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - Newtypes are the cheapest way to add domain meaning and validation.

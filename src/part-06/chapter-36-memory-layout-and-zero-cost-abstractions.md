@@ -327,6 +327,22 @@ Rust does not make performance a rumor. It lets you inspect how values are shape
 
 Type representation and optimization must preserve program meaning while exposing layout guarantees only when they are explicit and sound.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Niche optimisation</span></div>
+  <p class="quiz__q">Why is <code>Option&lt;&amp;T&gt;</code> the same size as <code>&amp;T</code> (one pointer) on 64-bit machines, instead of one pointer plus a discriminant byte?</p>
+  <ul class="quiz__options">
+    <li>The compiler reserves one byte at the end of the reference.</li>
+    <li><em>Niche optimisation</em>: <code>&amp;T</code> can never be null, so the compiler uses the all-zero bit pattern as the <code>None</code> case — same size, no overhead.</li>
+    <li>Rust references are 9 bytes packed.</li>
+    <li>It uses tagged-pointer tricks like ObjC.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Many Rust types have invalid bit patterns (a non-null reference, a <code>NonZeroU32</code>, an enum with fewer than 256 variants). The compiler uses these "niches" to encode the <code>None</code>/<code>Err</code>/etc. variant without a separate tag. <code>Option&lt;NonZero*&gt;</code> and <code>Option&lt;&amp;T&gt;</code> are the canonical zero-cost <code>Option</code>s.</div>
+  <div class="quiz__explain quiz__explain--wrong">References are non-null. Can the compiler reuse the all-zero pattern?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - Zero-cost means "no hidden abstraction tax you did not ask for," not "no tradeoffs anywhere."

@@ -110,6 +110,95 @@
 - When an owning variable goes out of scope, Rust automatically calls the `Drop` trait, instantly freeing the memory or closing the file.
 - This pattern is called RAII (Resource Acquisition Is Initialization), and it is why Rust rarely leaks resources even without a garbage collector.
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Before the systems-engineer track below, here is the same idea in three sentences. If you grok these, the rest of this chapter is just consequences.</p>
+</div>
+
+Ownership in Rust is the same idea as your library card. You check a book out (you *own* it). You can lend it to a friend who reads it (you *borrow* it out). When the loan period ends, the book goes back to the library — automatically — whether you remembered or not.
+
+Now substitute "book" with anything that needs cleaning up: a heap allocation, an open file, a network connection, a database transaction, a GPU buffer, a held mutex. *Every* one of those resources has the same shape: acquired, used, released. Rust's word for "the binding that releases it" is **ownership**, and the language guarantees the release happens — once, deterministically, at end of scope, even if your code panics on the way out.
+
+The acronym for this is **RAII** ("Resource Acquisition Is Initialization"). Two ways to read it: "I acquired the resource the moment I initialized the variable" (its name); or, more usefully, "the variable's lifetime *is* the resource's lifetime". The rest of this chapter shows you how that single rule lets Rust skip garbage collection and still leak nothing.
+
+<div class="ferris-says">
+<p>If you are coming from a language with <code>try { … } finally { close(); }</code> blocks, Rust does not need <code>finally</code>. Scope <em>is</em> finally — and the compiler writes the cleanup for you on every exit path.</p>
+</div>
+
+## wordc, step 11 — packaging owned state into a `WordcSession`
+
+<div class="ferris-says" data-variant="insight">
+Up to now, <code>wordc</code>'s <code>main</code> juggled four loose values: the parsed CLI, the path, the bytes, and the count. Now we'll bundle them into a single owning struct. When the struct goes out of scope, every owned field's <code>Drop</code> runs in declaration order — for free.
+</div>
+
+So far our <code>main</code> shuffled `cli`, `bytes`, `text`, `count` around as separate locals. That's fine, but it scales poorly: when wordc grows (caching the file size, tracking how long the read took, recording the line count, building a histogram), every one of those becomes another loose binding. Ownership lets us roll the whole *session* into one struct that owns its data and cleans up on its own.
+
+```rust
+use std::fs;
+use std::path::PathBuf;
+use std::time::Instant;
+
+/// Everything one invocation of wordc owns.
+///
+/// When the value is dropped, every owned field is dropped in
+/// declaration order: started_at first (trivial), then bytes, then path.
+struct WordcSession {
+    path: PathBuf,
+    bytes: Vec<u8>,
+    started_at: Instant,
+}
+
+impl WordcSession {
+    fn open(path: PathBuf) -> std::io::Result<Self> {
+        let started_at = Instant::now();
+        let bytes = fs::read(&path)?;
+        Ok(Self { path, bytes, started_at })
+    }
+
+    fn count_words(&self, min_len: usize) -> usize {
+        let text = std::str::from_utf8(&self.bytes).unwrap_or("");
+        text.split_whitespace()
+            .filter(|w| w.chars().count() >= min_len)
+            .count()
+    }
+}
+
+impl Drop for WordcSession {
+    fn drop(&mut self) {
+        let elapsed = self.started_at.elapsed();
+        eprintln!(
+            "wordc: {} closed after {:.3?}",
+            self.path.display(),
+            elapsed,
+        );
+    }
+}
+```
+
+`WordcSession` is now a *resource* in the RAII sense: constructing one acquires the file's bytes; dropping one prints a trace and frees them. Notice we never wrote a `close()` method — the language has one already, spelled "end of scope".
+
+```rust
+fn main() -> std::io::Result<()> {
+    let session = WordcSession::open(PathBuf::from("notes.txt"))?;
+    println!("{} has {} words.", session.path.display(), session.count_words(1));
+    Ok(())
+    // <-- session dropped here; bytes freed; trace printed.
+}
+```
+
+<div class="ferris-says">
+Try this: add a second <code>WordcSession</code> below the first inside <code>main</code>. Run it. The drop messages print in <em>reverse</em> order — last constructed, first dropped. That's a stack of owned resources, automatically unwound.
+</div>
+
+### What ownership bought us
+
+- `bytes: Vec<u8>` is owned by the session. When the session ends, the heap allocation goes back to the allocator. No `free()`, no `drop_bytes()` method.
+- `path: PathBuf` is owned. We could pass `&Path` everywhere instead, but owning it inside the session means callers don't need to keep their own copy alive.
+- `Drop` runs *every* time the session ends — early return on `?`, panic, normal flow. There is no path through the function where the file's bytes leak.
+
+This is why Rust does not need `try`/`finally`. The compiler emits the cleanup code at every exit, so you can't forget it.
+
 ### Recommended Reading
 
 - [Rustonomicon: Ownership and Lifetimes](https://doc.rust-lang.org/nomicon/ownership.html)

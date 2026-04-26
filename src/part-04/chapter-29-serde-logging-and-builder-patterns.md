@@ -284,6 +284,22 @@ Applications need to move data around, explain what they are doing, and construc
 
 Serialized data, diagnostic fields, and staged construction should preserve clear, machine-usable structure rather than relying on ad hoc string conventions or fragile positional arguments.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Serde derive</span></div>
+  <p class="quiz__q"><code>#[derive(Serialize, Deserialize)]</code> on a struct produces what, mechanically?</p>
+  <ul class="quiz__options">
+    <li>A runtime reflection table the format crates inspect.</li>
+    <li>Hand-written <code>impl Serialize</code> and <code>impl Deserialize</code> blocks generated at <em>compile time</em> by a procedural macro, dispatched through trait method calls — zero runtime reflection.</li>
+    <li>JSON-specific encoding logic.</li>
+    <li>An entry in a global registry the runtime walks each call.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Serde is the canonical example of "zero-cost abstraction via derives". The proc macro expands to typed code that the compiler optimises like any hand-written impl. Format crates (<code>serde_json</code>, <code>bincode</code>, …) provide a serialiser/deserialiser; your type stays format-agnostic.</div>
+  <div class="quiz__explain quiz__explain--wrong">Rust has no runtime reflection. How does Serde know your fields?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - Serde derives are part of your external data contract.

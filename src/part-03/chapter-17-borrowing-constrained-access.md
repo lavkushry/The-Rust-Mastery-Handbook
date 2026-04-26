@@ -181,6 +181,72 @@ The borrow checker sees that <code>first</code> holds <code>&v</code> (shared bo
 </div>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>The deep walkthrough below is the systems-engineer view. Here is the beginner-first version that makes the rest land easily.</p>
+</div>
+
+Imagine a Google Doc. Many people can read at the same time without anything going wrong. The moment one person starts editing, you would *not* want others reading half-applied changes. So either: many readers, no writer; or, exactly one writer, no readers. Pick a mode, swap when you need to.
+
+That is the entire borrowing rule, and Rust calls it **aliasing XOR mutation**: at any moment, a value has either many shared borrows (`&T`) or one exclusive borrow (`&mut T`), never both. The compiler proves it for you, statically, before your program runs.
+
+The reason this matters is not abstract. It eliminates an entire family of real-world bugs: iterator invalidation (mutating a list while iterating it), data races between threads, callback APIs that re-enter and corrupt their own state. None of those are reachable in safe Rust — *because* aliasing XOR mutation rules them out.
+
+<div class="ferris-says">
+<p>Many readers ↔ <code>&amp;T</code>. One writer ↔ <code>&amp;mut T</code>. The hard part is not memorising the names; it is reading code and noticing which mode each line is operating in. The walkthroughs below train exactly that skill.</p>
+</div>
+
+## wordc, step 12 — many readers over the same `&[u8]`
+
+<div class="ferris-says" data-variant="insight">
+The <code>WordcSession</code> we built last chapter <em>owns</em> the file's bytes. Now we'll fan out work over those bytes by handing out shared borrows. Many readers, no writers — exactly the case the aliasing rule allows.
+</div>
+
+A real word counter wants to compute several stats over the same file: word count, line count, longest word, the histogram of word lengths. We don't want each pass to re-read the file or clone the bytes. Borrowing makes that free.
+
+```rust
+fn count_words(text: &str, min_len: usize) -> usize {
+    text.split_whitespace().filter(|w| w.chars().count() >= min_len).count()
+}
+
+fn count_lines(text: &str) -> usize {
+    text.lines().count()
+}
+
+fn longest_word(text: &str) -> Option<&str> {
+    text.split_whitespace().max_by_key(|w| w.chars().count())
+}
+
+fn report(session: &WordcSession) {
+    let text = std::str::from_utf8(&session.bytes).unwrap_or("");
+
+    let words = count_words(text, 1);
+    let lines = count_lines(text);
+    let longest = longest_word(text).unwrap_or("");
+
+    println!("words:   {words}");
+    println!("lines:   {lines}");
+    println!("longest: {longest:?}");
+}
+```
+
+Three different functions all hold a `&str` into the *same* underlying `Vec<u8>` at the same time. The borrow checker is fine with this — they're shared borrows, and the session is alive across the entire block. There are no writers, so there is nothing for an aliased reader to race with.
+
+<div class="ferris-says" data-variant="warning">
+Now try inserting a write — e.g. mutate <code>session.bytes</code> while <code>longest</code> still references <code>text</code>. The compiler refuses (E0502): a <code>&mut</code> against the bytes would invalidate the <code>&str</code>. The aliasing rule is not arbitrary; it is exactly what protects <code>longest</code> from pointing at freed or moved memory.
+</div>
+
+### Why this is the same rule as `Vec::push`
+
+When `Vec::push` reallocates, it invalidates every borrow into the old buffer. The compiler models this as: `push` requires `&mut self`, and `&mut self` is incompatible with any outstanding `&self` borrow.
+
+`wordc::report` benefits from the same rule in the *good* direction: as long as no one writes, every reader is safe to keep its `&str`. We get parallel reads of the same bytes for free, with zero copies and zero locks.
+
+### A subtle point: `&str` vs `&[u8]`
+
+`std::str::from_utf8(&self.bytes)` returns a `Result<&str, Utf8Error>`. The `&str` *re-borrows* a piece of the `&[u8]` we already had. Both point at the same memory. The Rust type system tracks both, and ensures the `&str` cannot outlive the bytes it borrows from. We will rely on this in the next step (lifetimes).
+
 ## Readiness Check - Borrowing Confidence
 
 Before proceeding, self-check your ability to reason about aliasing and mutation.

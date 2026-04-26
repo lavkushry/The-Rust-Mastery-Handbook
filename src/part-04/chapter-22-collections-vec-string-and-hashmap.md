@@ -338,6 +338,22 @@ Collections are where a program stores and finds its data. Rust makes you be hon
 
 Collection APIs preserve ownership clarity and make absence, invalid text access, and mutation boundaries explicit instead of implicit.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Vec growth</span></div>
+  <p class="quiz__q">A <code>Vec&lt;u32&gt;</code> with capacity 8 is full. You call <code>push</code>. What happens, in order?</p>
+  <ul class="quiz__options">
+    <li>Push fails and returns an error you must handle.</li>
+    <li>The existing buffer is extended in place if there is free space after it on the heap.</li>
+    <li>A new buffer (typically 2x capacity) is allocated, all 8 elements are <em>moved</em> to it, the old buffer is freed, then the new value is written.</li>
+    <li>The new value is written to a separate overflow buffer the <code>Vec</code> keeps in reserve.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Growth is amortised O(1): every reallocation copies <em>everything</em>, but it doubles capacity, so any one element is copied at most ~log2(n) times across its lifetime. This is also exactly why <code>push</code> requires <code>&amp;mut self</code> and invalidates outstanding borrows — the old buffer's address is now invalid.</div>
+  <div class="quiz__explain quiz__explain--wrong">Heap allocators don't generally extend in place. What does <code>Vec</code> do when it runs out of room?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - Accept `&str` for read-only string inputs; own text with `String` only when ownership is needed.

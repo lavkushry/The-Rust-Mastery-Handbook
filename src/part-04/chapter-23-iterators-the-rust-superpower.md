@@ -91,4 +91,20 @@ Target Level 2+ before trait-heavy iterator implementation work.
 
 Debug chain failures by splitting the pipeline into named intermediate variables and checking each type.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Iterator laziness</span></div>
+  <p class="quiz__q">What does this line do at runtime? <code>let it = (0..1_000_000).map(|x| x * 2).filter(|x| x % 3 == 0);</code></p>
+  <ul class="quiz__options">
+    <li>Allocates a million-entry vector, doubles each, then filters into a second vector.</li>
+    <li>Nothing observable. It builds a small struct describing the pipeline. No work runs until something <em>consumes</em> the iterator.</li>
+    <li>Spawns a background thread that pre-computes the multiples of 6.</li>
+    <li>Consumes the range eagerly but defers the filter.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Iterators are lazy in Rust. <code>.map</code> and <code>.filter</code> just wrap the previous iterator in a new struct (<code>Map&lt;Filter&lt;Range&gt;, F&gt;</code>). Work happens only when you call <code>.collect()</code>, <code>.sum()</code>, <code>.for_each()</code>, or use a <code>for</code> loop. This is why long iterator chains are zero-cost — the optimiser sees through the chain to a single tight loop.</div>
+  <div class="quiz__explain quiz__explain--wrong">Re-read the chapter on lazy evaluation. When does a chain of adapters actually <em>run</em>?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## Step 1 - The Problem

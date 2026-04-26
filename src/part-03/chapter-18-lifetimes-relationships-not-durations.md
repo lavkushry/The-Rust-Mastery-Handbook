@@ -145,6 +145,24 @@
   </figure>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>"Lifetimes" is the most-feared word in Rust. It should be one of the simplest. Read this section first; the depth below clicks instantly afterwards.</p>
+</div>
+
+A lifetime is **not** a duration. It is not "how long a variable lives". A lifetime is a **relationship**: a tag the compiler attaches to a borrow that says, "this reference cannot outlive its source."
+
+Here is the everyday version. You photocopy a page from a library book. The photocopy refers back to the book. The compiler's job is to say "as long as the book exists, your photocopy is fine; the moment the book is returned and re-shelved, your photocopy must not be in active use." A lifetime annotation is just a name for that "as long as the book exists" relationship — `'a` is "the lifetime of the book", and `&'a str` means "a photocopy that can only be valid while the book is".
+
+When you see `fn longest<'a>(x: &'a str, y: &'a str) -> &'a str`, read it as: "given two photocopies whose books I'll call `'a`, I'll return another photocopy that *also* refers back to a book that lives at least `'a`." The single `'a` is a relationship between three references — input, input, output — saying they share a common minimum validity.
+
+You almost never write lifetime annotations in beginner code. The compiler infers them through three small "elision rules" we cover later. The reason this chapter exists is not so you write more `'a`s; it is so you read existing ones without flinching.
+
+<div class="ferris-says">
+<p>Lifetime annotation = "I am stating the relationship that already exists in your code so the compiler can verify it." Nothing more.</p>
+</div>
+
 ## Chapter Resources
 
 * **Official Source:** [The Rust Reference: Lifetimes](https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html)
@@ -300,6 +318,79 @@ Treat lifetime errors as relationship mismatches, not annotation shortages.
     </svg>
   </div>
 </div>
+
+## wordc, step 13 — a `WordIter<'a>` tied to its source
+
+<div class="ferris-says" data-variant="insight">
+The previous step had three little functions returning <code>&amp;str</code> values that all referred back to one big <code>&amp;str</code>. Now we'll wrap that pattern in a struct. Lifetimes will be the type-system glue that says "this iterator cannot outlive the text it scans".
+</div>
+
+Every realistic word counter eventually wants an iterator: yield each word, one at a time, without allocating a `Vec<&str>`. Standard library style:
+
+```rust
+pub struct WordIter<'a> {
+    rest: &'a str,
+    min_len: usize,
+}
+
+impl<'a> WordIter<'a> {
+    pub fn new(text: &'a str, min_len: usize) -> Self {
+        WordIter { rest: text, min_len }
+    }
+}
+
+impl<'a> Iterator for WordIter<'a> {
+    type Item = &'a str;
+
+    fn next(&mut self) -> Option<&'a str> {
+        loop {
+            let s = self.rest.trim_start();
+            if s.is_empty() { return None; }
+            let end = s.find(char::is_whitespace).unwrap_or(s.len());
+            let (word, after) = s.split_at(end);
+            self.rest = after;
+            if word.chars().count() >= self.min_len {
+                return Some(word);
+            }
+        }
+    }
+}
+```
+
+The lifetime parameter `'a` is doing real work in three places:
+
+1. **`text: &'a str`** in `new` — "the caller passes me a borrow that lives for at least region `'a`."
+2. **`rest: &'a str`** inside the struct — "I am storing a borrow that lives for at least `'a`."
+3. **`type Item = &'a str`** — "every `&str` I yield also lives for at least `'a`."
+
+The compiler now enforces a contract for free: **as long as the source `&str` is alive, the iterator and every word it yields are valid; the moment the source goes out of scope, the iterator and yielded words become unusable.** No copies, no clones, just types.
+
+```rust
+fn dump_words(session: &WordcSession, min_len: usize) {
+    let text = std::str::from_utf8(&session.bytes).unwrap_or("");
+    for word in WordIter::new(text, min_len) {
+        println!("{word}");
+    }
+}
+```
+
+`text` borrows from `session.bytes`. `WordIter::new(text, ...)` produces a `WordIter<'_>` whose lifetime is tied to `text`. Every `word: &str` yielded inside the loop is tied to `text` too. The whole chain unwinds at the end of `dump_words`.
+
+<div class="ferris-says" data-variant="warning">
+Try returning the iterator from a function whose only argument is the path: <code>fn iter_from(path: &amp;Path) -&gt; WordIter&lt;'?&gt;</code>. You can't write a lifetime that satisfies the compiler — because the bytes you'd read inside the function go out of scope when the function returns. The iterator would dangle. The compiler is doing the right thing.
+</div>
+
+### What if I want to "own" the iterator?
+
+Then change the *strategy*, not the lifetime: collect into a `Vec<String>` (each word owned), or keep the bytes alive somewhere outside the iterator and have it borrow them. There is no annotation that lets a borrow outlive its source — that would be unsoundness. Lifetimes are how Rust says "I need this referent alive at least this long" and refuses to compile if you can't promise it.
+
+### What you should be able to read now
+
+```rust
+fn longest_with_at_least<'a>(text: &'a str, min_len: usize) -> Option<&'a str>
+```
+
+In English: "given a `&str` borrow with some lifetime `'a`, I'll either return `None` or return a `&str` borrowed from the same source, with the same lifetime." The single `'a` is the *relationship*: output cannot outlive input.
 
 ## Check yourself
 

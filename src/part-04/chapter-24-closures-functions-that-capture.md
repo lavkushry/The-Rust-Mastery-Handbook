@@ -261,6 +261,22 @@ Closures are little bundles of behavior and remembered context. Rust cares about
 
 Closure calls must respect how captured data is borrowed, mutated, or consumed, so callable reuse stays consistent with ownership rules.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Closure traits</span></div>
+  <p class="quiz__q">A closure that <em>moves</em> a captured <code>String</code> out of its environment when called implements which trait(s)?</p>
+  <ul class="quiz__options">
+    <li><code>Fn</code> only.</li>
+    <li><code>FnMut</code> only.</li>
+    <li><code>FnOnce</code> only — the closure consumes the captured value, so it can be called at most once.</li>
+    <li>All three: <code>Fn</code>, <code>FnMut</code>, and <code>FnOnce</code>.</li>
+  </ul>
+  <div class="quiz__explain">Correct. The trait hierarchy is <em>callability</em>: <code>Fn: FnMut: FnOnce</code>. A closure that moves a captured non-<code>Copy</code> value can only be called once before the captured value is gone — so it implements <code>FnOnce</code> only. The compiler picks the <em>most permissive</em> trait the closure body satisfies.</div>
+  <div class="quiz__explain quiz__explain--wrong">If the closure consumes its captures, can it be called twice?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - A closure is code plus captured environment.

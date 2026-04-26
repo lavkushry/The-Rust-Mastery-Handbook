@@ -186,6 +186,22 @@ async def fetch(url: str) -> str:
 </div>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Async in Rust is not callbacks, threads, or magic. It's <em>state machines</em>. Five sentences below; the rest of the chapter unpacks each one.</p>
+</div>
+
+A *future* in Rust is a value that represents "computation I have not finished yet." It has a single method, `poll`, that the runtime calls over and over. Each call returns either "still working, ask me again later" (`Pending`) or "done, here's the answer" (`Ready(value)`). Between calls, the future stores its current state — *exactly* the variables you'd otherwise hold on the stack — inside the future struct itself.
+
+`async fn` is just syntactic sugar that *generates* one of those state-machine structs for you. Every variable you `let` inside the function becomes a field. Every `.await` becomes a yield point: "save state, return `Pending`, the runtime can come back later." That's it.
+
+The piece this chapter most has to undo is the assumption that "async" means "running in the background on a thread." It does not. A future is an inert struct. Until something calls `.poll()` on it, nothing happens. The thing that drives `.poll` is the **runtime** (Tokio, smol, async-std). One thread can drive thousands of futures by interleaving their `poll`s — that's how a single Tokio worker handles 10 000 sockets without blocking.
+
+<div class="ferris-says">
+<p>If your background is JavaScript: Rust futures are like Promises that <em>do not start until awaited</em>. If your background is Go: a future is closer to "a goroutine before <code>go</code> is typed in front of it." The runtime is the scheduler.</p>
+</div>
+
 ## Step 1 - The Problem
 
 

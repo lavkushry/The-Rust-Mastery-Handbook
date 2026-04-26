@@ -321,6 +321,22 @@ Macros are for the cases where the repeated thing is not just logic but code sha
 
 Generated code must still enter the normal compiler pipeline as valid, hygienic Rust, and macro abstractions must not bypass the type system's role in checking correctness.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>macro_rules! vs proc-macros</span></div>
+  <p class="quiz__q">Which kind of macro should you reach for to add <code>#[derive(MyTrait)]</code>?</p>
+  <ul class="quiz__options">
+    <li><code>macro_rules!</code> — declarative macros support derives.</li>
+    <li>A <em>procedural</em> macro of kind <code>derive</code>, which receives the annotated item's <code>TokenStream</code> and emits new tokens at compile time.</li>
+    <li>A build script (<code>build.rs</code>).</li>
+    <li>A trait default implementation.</li>
+  </ul>
+  <div class="quiz__explain">Correct. <code>#[derive(...)]</code> is exactly the case proc-macros were created for. Three flavours of proc-macro: function-like (<code>my_macro!(...)</code>), attribute (<code>#[my_attr]</code>), and derive (<code>#[derive(MyTrait)]</code>). All three see Rust as a <code>TokenStream</code> and produce a <code>TokenStream</code>; the difference is what the compiler hands them. <code>macro_rules!</code> cannot generate <code>impl</code>s for arbitrary structs.</div>
+  <div class="quiz__explain quiz__explain--wrong">Which kind of macro is invoked by <code>#[derive(...)]</code>?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - Use macros when syntax is the abstraction; use functions and generics otherwise.

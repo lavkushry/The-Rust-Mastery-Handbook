@@ -362,6 +362,22 @@ Traits are Rust's way of describing what a type can do, but Rust makes you choos
 
 Trait-based abstraction must remain coherent and sound: dispatch must know what function to call, erased types must still have a valid runtime representation, and borrow-dependent outputs must be described precisely.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Object safety</span></div>
+  <p class="quiz__q">A trait method that takes <code>self</code> by value (consuming) makes the trait <em>not object-safe</em>. Why?</p>
+  <ul class="quiz__options">
+    <li>Because <code>self</code> by value cannot be moved across an FFI boundary.</li>
+    <li>Because a <code>dyn Trait</code> is unsized — the size of the concrete type behind the pointer isn't known to the caller, so it cannot be passed by value, only behind a pointer (<code>&amp;self</code>, <code>&amp;mut self</code>, <code>Box&lt;Self&gt;</code>).</li>
+    <li>It's a temporary compiler limitation that will be removed.</li>
+    <li>Because <code>self</code> is a keyword.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Object safety is mechanical: a method becomes a vtable entry, which means callers don't know the concrete type's size or layout. Passing <code>self</code> by value would require knowing the size, so the compiler forbids it on object-safe traits. Methods on <code>Box&lt;Self&gt;</code>, <code>&amp;self</code>, etc. are fine — they're pointer-sized.</div>
+  <div class="quiz__explain quiz__explain--wrong">Think about how <code>dyn Trait</code> is laid out. Can a caller move the underlying value?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - `impl Trait` hides a concrete type while keeping static dispatch; `dyn Trait` erases the concrete type and uses runtime dispatch.

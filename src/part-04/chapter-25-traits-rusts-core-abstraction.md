@@ -84,4 +84,20 @@
   </figure>
 </div>
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Coherence and orphan rules</span></div>
+  <p class="quiz__q">You depend on the <code>serde</code> crate. You want to <code>impl Serialize for Vec&lt;T&gt;</code> in your own crate. Will it compile?</p>
+  <ul class="quiz__options">
+    <li>Yes, you can implement any trait for any type as long as it's <code>pub</code>.</li>
+    <li>No. The orphan rule: an <code>impl Trait for Type</code> is allowed only if either <code>Trait</code> or <code>Type</code> is local to your crate. Here both are foreign.</li>
+    <li>Yes, but only if you mark the impl <code>unsafe</code>.</li>
+    <li>Yes, but only inside a <code>mod private</code> module.</li>
+  </ul>
+  <div class="quiz__explain">Correct. The orphan rule prevents two crates from independently providing conflicting <code>impl Foo for Bar</code> definitions for foreign types. Workarounds: wrap the foreign type in a local newtype (<code>struct MyVec&lt;T&gt;(Vec&lt;T&gt;);</code>), or implement on a local type. <code>serde</code> already implements <code>Serialize for Vec&lt;T&gt; where T: Serialize</code> — you usually don't need to.</div>
+  <div class="quiz__explain quiz__explain--wrong">What's the rule about implementing foreign traits for foreign types? Search for "orphan rule".</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## Step 1 - The Problem

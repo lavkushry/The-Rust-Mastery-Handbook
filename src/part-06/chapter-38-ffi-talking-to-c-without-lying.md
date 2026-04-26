@@ -296,6 +296,22 @@ When Rust talks to C, neither side automatically understands the other's safety 
 
 Foreign data must be translated into Rust only when ABI, layout, lifetime, validity, and ownership assumptions are all satisfied simultaneously.
 
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>extern "C"</span></div>
+  <p class="quiz__q">You write <code>extern "C" { fn libc_strlen(s: *const c_char) -&gt; usize; }</code> and call it from Rust. Whose responsibility is it that <code>s</code> is a valid, null-terminated C string?</p>
+  <ul class="quiz__options">
+    <li>The compiler's — it inserts a runtime check.</li>
+    <li>The OS's — it traps on invalid pointers.</li>
+    <li><em>Yours</em>. <code>extern "C"</code> declares the C ABI and signature, but Rust cannot validate the C function's preconditions. Calling it is <code>unsafe</code> and you uphold the contract.</li>
+    <li>The C library's — modern libc validates inputs.</li>
+  </ul>
+  <div class="quiz__explain">Correct. FFI is the canonical place where Rust hands you the steering wheel. The compiler matches the ABI but cannot peek inside the C function's spec. Wrap unsafe FFI in a small, hand-audited safe Rust API that enforces the preconditions; the rest of your crate then uses the safe wrapper.</div>
+  <div class="quiz__explain quiz__explain--wrong">Rust cannot read the C function's body. Who must ensure preconditions hold?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
 ## If You Remember Only 3 Things
 
 - `repr(C)` is necessary for many FFI structs, but it is only one part of correctness.

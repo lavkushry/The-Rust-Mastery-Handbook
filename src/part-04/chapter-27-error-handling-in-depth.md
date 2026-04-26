@@ -21,6 +21,26 @@
   </figure>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Error handling in Rust looks complicated until you see the two-layer pattern. Then it's simple.</p>
+</div>
+
+There are exactly two places errors live in a Rust program:
+
+**1. Inside a library crate.** Use a typed error enum (often via `#[derive(thiserror::Error)]`). Every error case is a named variant, and downstream callers can `match` on which variant fired and decide whether to recover, retry, or propagate. This is the *narrow*, structured layer.
+
+**2. Inside an application binary.** Use `anyhow::Result<T>` (which is opaque-`Box<dyn Error + Send + Sync>` plus context machinery). The binary doesn't usually need to recover from individual error variants — it logs them and exits. `anyhow` makes this ergonomic and lets you attach `.context("loading config")` along the way for great error messages.
+
+The `?` operator is the glue. `result?` says: "if this is `Err`, return the error; if it's `Ok`, unwrap and continue." Combined with the `From` trait, `?` will *automatically convert* a library's typed error into your function's error type — which is why `thiserror` and `anyhow` interop seamlessly.
+
+What this chapter mostly does is push you past `unwrap()` (which crashes on error) and `String` errors (opaque, no variant info, no source chain) toward the typed/anyhow split that production Rust uses.
+
+<div class="ferris-says">
+<p>Quick test: if your function might return an error and you can't say what <em>kind</em>, you probably want <code>anyhow::Result</code>. If you can say "could be NotFound, PermissionDenied, or InvalidInput", you want a <code>thiserror</code> enum. The split is almost always between "library returns" (typed) and "main returns" (opaque).</p>
+</div>
+
 ## Step 1 - The Problem
 
 Systems programs fail constantly:
@@ -249,6 +269,80 @@ Rust treats failure as data you must account for, not as invisible control flow.
 ## What Invariant Is Rust Protecting Here?
 
 Failure paths must remain explicit and type-checked so callers cannot silently ignore or misunderstand what can go wrong.
+
+## wordc, step 15 — error chains with `thiserror` + `anyhow` context
+
+<div class="ferris-says" data-variant="insight">
+<p>Step 10 introduced <code>WordcError</code> at the library level. Step 15 splits the binary's <code>main</code> from the library's <code>run</code> using <code>anyhow</code>, and adds <code>.context(...)</code> at every layer so the error message tells the user exactly what was happening when the failure occurred.</p>
+</div>
+
+```rust,ignore
+// src/lib.rs — narrow, typed error for the library.
+use std::path::PathBuf;
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum WordcError {
+    #[error("could not read {path}")]
+    Io { path: PathBuf, #[source] source: std::io::Error },
+
+    #[error("file is not valid UTF-8: {path}")]
+    NotUtf8 { path: PathBuf },
+
+    #[error("min_len must be > 0 (got {0})")]
+    BadMinLen(usize),
+}
+
+pub fn open_session(path: PathBuf) -> Result<WordcSession, WordcError> {
+    let bytes = std::fs::read(&path)
+        .map_err(|e| WordcError::Io { path: path.clone(), source: e })?;
+    if std::str::from_utf8(&bytes).is_err() {
+        return Err(WordcError::NotUtf8 { path });
+    }
+    Ok(WordcSession::from_parts(path, bytes))
+}
+```
+
+```rust,ignore
+// src/main.rs — opaque, contextual error for the binary.
+use anyhow::{Context, Result};
+use clap::Parser;
+
+#[derive(Parser)]
+#[command(version, about = "count words in a file")]
+struct Cli {
+    path: std::path::PathBuf,
+    #[arg(long, default_value_t = 1)]
+    min_len: usize,
+    #[arg(long, default_value_t = 10)]
+    top: usize,
+}
+
+fn main() -> Result<()> {
+    let cli = Cli::parse();
+    let session = wordc::open_session(cli.path.clone())
+        .with_context(|| format!("opening session for {}", cli.path.display()))?;
+    wordc::run(&session, cli.min_len, cli.top)
+        .context("running word-count pipeline")?;
+    Ok(())
+}
+```
+
+When the user runs `wordc /missing.txt` the error chain printed by `anyhow` reads:
+
+```text
+Error: opening session for /missing.txt
+
+Caused by:
+    0: could not read /missing.txt
+    1: No such file or directory (os error 2)
+```
+
+Three layers, each adding context, no information lost. The library's `WordcError::Io { path, source }` shows up as the second link in the chain via `#[source]`. The OS error is the third link, automatically chained from `std::io::Error`. The first link is the `anyhow` context the binary added.
+
+<div class="ferris-says">
+<p>The discipline is: <strong>library code returns typed errors with <code>#[source]</code></strong> so callers can <code>match</code> on the variant; <strong>binary code uses <code>anyhow::Result</code> with <code>.context(...)</code></strong> so the human reading the terminal gets a story. The two interop seamlessly because <code>anyhow::Error</code> implements <code>From&lt;E: Error + Send + Sync&gt;</code>.</p>
+</div>
 
 ## Quick check
 

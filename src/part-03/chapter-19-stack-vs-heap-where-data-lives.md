@@ -102,6 +102,22 @@
   <figcaption class="visual-figure__caption">Rust needs size information to lay out values. Fat pointers are how the language carries enough metadata to talk about dynamically sized or dynamically dispatched things without hiding the representation from you.</figcaption>
 </figure>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>"Stack vs heap" sounds intimidating. The reason it matters is concrete and about three sentences long.</p>
+</div>
+
+Every value your Rust program touches lives in one of two places. The **stack** is a chunk of memory the CPU uses for local variables — known size at compile time, freed automatically when the function returns. The **heap** is a separate region for data whose size or lifetime is too dynamic for the stack — you ask the allocator for memory, and the same value can outlive the function that created it.
+
+Rust's stack/heap split is the same as C's, but with a critical difference: in Rust the compiler tracks which heap allocations are owned by which value, and inserts the cleanup code automatically. `Box<T>`, `String`, `Vec<T>`, `HashMap<…>` are all "stack handles to heap data" — a small fixed-size struct on the stack, pointing at a heap buffer.
+
+The reason to learn this distinction: it's the model that explains why `Copy` types are tiny (they live on the stack, copying is one machine instruction), why `String` and `Vec` are not `Copy` (their heap buffer cannot be safely duplicated by a `memcpy`), and why moves are usually free (you copy the small stack handle, not the heap data it points at).
+
+<div class="ferris-says">
+<p>Mental picture: stack = the desk you're working at, fixed-size drawers, automatic tidy-up when you leave. Heap = a warehouse — bigger, slower, but reusable. Rust hands out warehouse passes (<code>Box</code>, <code>String</code>, …) and tracks who has which pass.</p>
+</div>
+
 ## Readiness Check - Memory Model Reasoning
 
 Use this checkpoint before moving on to move/copy/clone semantics.

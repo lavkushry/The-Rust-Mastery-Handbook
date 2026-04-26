@@ -91,6 +91,63 @@ Target Level 2+ before trait-heavy iterator implementation work.
 
 Debug chain failures by splitting the pipeline into named intermediate variables and checking each type.
 
+## wordc, step 14 — replacing the manual loop with iterator chains
+
+<div class="ferris-says" data-variant="insight">
+<p>By Part 3 step 13, <code>WordIter&lt;'a&gt;</code> already implemented the <code>Iterator</code> trait. That single decision unlocks the entire iterator ecosystem — adapters, combinators, parallel scans, all of it. Step 14 swaps every hand-written loop in <code>wordc</code> for an iterator chain and you can feel the difference.</p>
+</div>
+
+```rust,ignore
+use std::collections::HashMap;
+
+pub fn count_words<'a>(words: impl Iterator<Item = &'a str>) -> usize {
+    words.count()
+}
+
+pub fn longest_word<'a>(words: impl Iterator<Item = &'a str>) -> Option<&'a str> {
+    words.max_by_key(|w| w.chars().count())
+}
+
+pub fn frequency_top_k<'a>(
+    words: impl Iterator<Item = &'a str>,
+    k: usize,
+) -> Vec<(&'a str, usize)> {
+    let mut freq: HashMap<&'a str, usize> = HashMap::new();
+    for w in words {
+        *freq.entry(w).or_insert(0) += 1;
+    }
+    let mut sorted: Vec<_> = freq.into_iter().collect();
+    sorted.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(b.0)));
+    sorted.truncate(k);
+    sorted
+}
+
+fn run(session: &WordcSession, min_len: usize, top_k: usize) {
+    let text = std::str::from_utf8(&session.bytes).unwrap_or("");
+
+    let total = count_words(WordIter::new(text, min_len));
+    let longest = longest_word(WordIter::new(text, min_len)).unwrap_or("");
+    let top = frequency_top_k(WordIter::new(text, min_len), top_k);
+
+    println!("words:   {total}");
+    println!("longest: {longest:?}");
+    println!("top {top_k}:");
+    for (w, n) in top {
+        println!("  {n:>6}  {w}");
+    }
+}
+```
+
+Three things to notice. First, every helper takes `impl Iterator<Item = &'a str>` — they don't care whether the words came from `WordIter`, a `Vec`, a channel, or a test fixture. **Iterator polymorphism is generic dispatch:** the compiler monomorphises each call to the exact concrete iterator and inlines the chain.
+
+Second, the chain is **lazy**. `count_words(WordIter::new(text, min_len))` does not allocate an intermediate `Vec<&str>` — the words flow through the chain one at a time, and only the final `count()` consumes them. `frequency_top_k` does allocate, but only because building a histogram intrinsically needs to remember every key.
+
+Third, the `'a` lifetime threads through the whole pipeline: every `&str` returned by `WordIter` borrows from the `&[u8]` inside `WordcSession`. The compiler enforces that no key in the `HashMap` outlives the session — drop the session and the `HashMap` is dropped first (or it would be a compile error to keep it).
+
+<div class="ferris-says">
+<p>The "iterator chain" is not a stylistic preference. It's the same machine code as the hand-written loop, with all the borrow-checking pre-paid. <code>cargo asm</code> on the chain version and the loop version produces near-identical assembly — that's what "zero-cost abstraction" buys you.</p>
+</div>
+
 ## Quick check
 
 <div class="quiz" data-answer="2">

@@ -296,6 +296,22 @@ When <code>s2</code> leaves scope, <code>Drop::drop</code> runs, freeing the hea
 </div>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Three sentences cover ownership well enough to write real code. The rest of this chapter is just the careful version of the same idea.</p>
+</div>
+
+Every value in Rust has exactly one **owner** at a time. The owner is whichever variable you most recently assigned the value to. When the owner goes out of scope, the value is destroyed automatically.
+
+That single rule replaces three things you might have used in other languages: garbage collection (no — Rust frees deterministically at end of scope), `try { … } finally { close() }` blocks (no — scope *is* the cleanup point), and reference counting in the common case (no — only when sharing is genuinely needed). Most values in idiomatic Rust have one owner, full stop.
+
+If you assign one variable to another, ownership *moves* to the new variable; the old one becomes invalid. That's a deliberate design choice — Rust assumes you wanted to *transfer* the value, not silently duplicate a heap allocation.
+
+<div class="ferris-says">
+<p>Library-card analogy: you check a book out, you can lend it to a friend (a "borrow", coming next chapter), or you can hand the book over for good (a "move"). When the loan ends, the book goes back on the shelf — automatically, no librarian effort, no leak.</p>
+</div>
+
 ## Step 1 - The Problem
 
 

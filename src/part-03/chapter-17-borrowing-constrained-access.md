@@ -197,6 +197,92 @@ The reason this matters is not abstract. It eliminates an entire family of real-
 <p>Many readers ↔ <code>&amp;T</code>. One writer ↔ <code>&amp;mut T</code>. The hard part is not memorising the names; it is reading code and noticing which mode each line is operating in. The walkthroughs below train exactly that skill.</p>
 </div>
 
+## Beginner walkthrough — every idea in this chapter, plain English
+
+<div class="ferris-says" data-variant="insight">
+<p>The onramp gave you the rule (many readers XOR one writer). This walkthrough is the rule applied — what bugs it eliminates, where it shows up in real code, and the small set of patterns for working <em>with</em> the rule rather than fighting it.</p>
+</div>
+
+### 1. The rule, restated and demonstrated
+
+At any single moment, a value can have either:
+
+- *Many* shared borrows (`&T`), each of which can read but not modify, OR
+- *Exactly one* exclusive borrow (`&mut T`), which can read and modify.
+
+Never both. The compiler proves it before your program runs.
+
+This isn't an arbitrary policy — it's a *physical* invariant. Two threads modifying the same memory without coordination is a data race, and the result is undefined. One thread modifying memory while another reads halfway through is a torn read. Rust's rule rules out both at the type-system level. The aliasing rule isn't restricting you; it's articulating the precondition that already had to hold for your program to be correct.
+
+### 2. The bug class that disappears: iterator invalidation
+
+Here is the canonical example of the rule paying off. In Python:
+
+```python
+xs = [1, 2, 3, 4]
+for x in xs:
+    if x == 2:
+        xs.append(5)        # mutate while iterating
+```
+
+This silently does the wrong thing — sometimes you visit the appended element, sometimes you don't, and on Python 3.x you may iterate forever in pathological cases. The same pattern in C++ is undefined behaviour. The same pattern in Java throws `ConcurrentModificationException` *at runtime* if you're lucky.
+
+In Rust:
+
+```rust,ignore
+let mut xs = vec![1, 2, 3, 4];
+for x in &xs {
+    if *x == 2 {
+        xs.push(5);                  // ← compile error
+    }
+}
+```
+
+`for x in &xs` takes a `&Vec<i32>` borrow. `xs.push(5)` requires `&mut Vec<i32>`. Both alive at the same point. Rule violated. The compiler refuses with E0502: "cannot borrow `xs` as mutable because it is also borrowed as immutable."
+
+The bug isn't *prevented at runtime*. It's *unrepresentable in the source code*. That's the difference.
+
+### 3. The deeper reason `Vec::push` requires `&mut`
+
+A `Vec` is a struct holding three things: a pointer to its heap buffer, a length, and a capacity. When you `push` and the length would exceed the capacity, the `Vec` allocates a *new, larger* heap buffer, copies the elements over, and frees the old one.
+
+If anyone was holding a `&i32` reference into the old buffer, that reference is now pointing at freed memory. Use-after-free.
+
+This is why `Vec::push` is `fn push(&mut self, ...)` — and why the borrow checker requires *no `&` borrows* to be alive at the same time. The rule isn't bureaucratic. It's saving you from a real, repeatable, hard-to-debug bug.
+
+### 4. When you genuinely need to mutate while reading
+
+Three escape hatches, in order of preference:
+
+**(a) Restructure the borrow scope.** Often the "I need both" feeling goes away if you read the value into a local first. `for x in xs.clone() { xs.push(...) }` works because the iterator is over the clone, not the live `xs`.
+
+**(b) Use indices instead of references.** `for i in 0..xs.len() { if xs[i] == 2 { xs.push(5); break; } }` — indices are `usize`, not borrows, so the aliasing rule doesn't constrain them. The trade-off is you give up the iterator's bounds-check elision and you have to handle the case where pushing changes `xs.len()` mid-loop.
+
+**(c) Use interior mutability.** `Cell<T>`, `RefCell<T>`, `Mutex<T>` move the borrow check from compile time to runtime. You hold a shared `&Cell<T>` and call `.set()` through it; the compiler is OK with this because the *type* opted into runtime checking. We cover these in detail in chapter 30.
+
+### 5. NLL is what makes the rule pleasant in 2024
+
+Pre-Rust-2018, a borrow's "region" extended from creation to the end of the enclosing block. Lots of obviously-fine code didn't compile because borrows were considered alive longer than they really were.
+
+Non-Lexical Lifetimes (NLL, Rust 2018+) computes the borrow's region from the *control-flow graph*: a borrow is alive only between its creation and its *last use*. This single change made huge amounts of code compile that used to require contortions.
+
+```rust,ignore
+let mut v = vec![1, 2, 3];
+let first = &v[0];
+println!("{first}");      // last use of `first`
+v.push(4);                // OK — `first` is no longer alive
+```
+
+Pre-NLL: error. Post-NLL: compiles. The rule is the same; the compiler is just smarter about *when* a borrow ends.
+
+### 6. The shape that keeps showing up
+
+Once you internalise aliasing XOR mutation, you'll start seeing the same shape repeatedly across the standard library and well-designed crates: methods that *read* take `&self`, methods that *modify* take `&mut self`, and the type of `Self` is the public contract for which kinds of access can coexist. That contract is the borrow checker's input. The rest is mechanics.
+
+<div class="ferris-says">
+<p>Most of fighting the borrow checker, the first month, is fighting against this rule. Most of <em>not</em> fighting the borrow checker, after the first month, is recognising the rule's shape early and writing your function signatures to express what you really need.</p>
+</div>
+
 ## wordc, step 12 — many readers over the same `&[u8]`
 
 <div class="ferris-says" data-variant="insight">

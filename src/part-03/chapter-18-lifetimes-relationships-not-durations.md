@@ -163,6 +163,86 @@ You almost never write lifetime annotations in beginner code. The compiler infer
 <p>Lifetime annotation = "I am stating the relationship that already exists in your code so the compiler can verify it." Nothing more.</p>
 </div>
 
+## Beginner walkthrough — every idea in this chapter, plain English
+
+<div class="ferris-says" data-variant="insight">
+<p>This is the chapter that made dozens of Rust learners give up before reading it. It's actually one of the simplest. The trick is to swap the word "lifetime" out of your head and put "relationship" in. Then the syntax stops looking arbitrary and starts looking like exactly what it is: the compiler asking you to label which references must stay valid relative to which sources.</p>
+</div>
+
+### 1. A lifetime is a label on a reference
+
+In `&'a str`, the `'a` is a *name* the compiler picks (or you write) for the relationship "this reference is valid for some region of code we'll call `'a`." The name itself is meaningless — `'a`, `'foo`, `'data` all work. What matters is that **two references with the same name share the same validity region**.
+
+You almost never write lifetime names yourself. The compiler infers them through three small rules (covered below). The reason this chapter exists is so you can *read* lifetime names in other people's code without flinching, and write them in the rare cases where the compiler genuinely can't infer.
+
+### 2. Lifetimes are *not* durations
+
+A common misreading: "`'a` means this reference exists for a long time."
+
+Wrong. `'a` is just a label for "the region of code this borrow is alive". It doesn't measure clock time or indicate "long" vs "short". `'static` doesn't even mean "lives forever" — it means "*could* live forever if needed", which a `String` literal, a `Box::leak`, or any value owning no borrows all satisfy.
+
+The simplest re-frame: replace every "lifetime" in your head with "borrow region" and the rest of the chapter falls into place.
+
+### 3. The function signature trick
+
+Look at this signature:
+
+```rust,ignore
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str
+```
+
+Read it as three statements:
+
+1. "I take two `&str` references and call their shared validity region `'a`."
+2. "I return a `&str` — and it borrows from one of the inputs."
+3. "Therefore, the returned reference is valid for as long as `'a` — meaning, as long as both inputs are valid."
+
+The `'a` on the return type is the contract: *the caller can safely use the result while both inputs are still in scope.* The compiler enforces both sides — the function body must produce a `&str` borrowing from the inputs, and the caller must not use the result after either input goes out of scope.
+
+That's the whole mechanism. Lifetime annotations are *contracts about validity regions*. Nothing more.
+
+### 4. Why most code doesn't need annotations: the elision rules
+
+In simple cases, Rust applies three "elision rules" that fill in the lifetimes for you:
+
+1. **Each input parameter that is a reference gets its own lifetime.** `fn f(s: &str)` → `fn f<'a>(s: &'a str)` automatically.
+2. **If there's exactly one input lifetime, it's assigned to all output references.** `fn first_word(s: &str) -> &str` → `fn first_word<'a>(s: &'a str) -> &'a str` automatically.
+3. **If there's `&self` or `&mut self`, its lifetime is assigned to all output references.** `fn name(&self) -> &str` → returns a borrow tied to `self`.
+
+Together, these rules cover ~95% of function signatures. You only write `'a` explicitly when the rules don't apply — typically when a function takes multiple references and the caller needs to know which one the output borrows from.
+
+### 5. Lifetimes in structs
+
+When a struct contains a reference, the struct itself has a lifetime parameter:
+
+```rust,ignore
+struct Excerpt<'a> {
+    text: &'a str,    // Excerpt borrows from somewhere
+}
+```
+
+Read it as: "an `Excerpt` is valid only as long as the `&str` it points at is valid." The compiler enforces this — any `Excerpt<'a>` value cannot outlive its source.
+
+The reason structs with references are unusual: most of the time, the cleaner design is to *own* the data instead of borrow it. `struct Excerpt { text: String }` doesn't need a lifetime parameter; it owns its bytes; it's simpler to use; the cost is one allocation. Lifetimes-in-structs is the right answer when you genuinely need to borrow (zero-copy parsers like `serde_json::from_slice`, the `wordc::WordIter<'a>` we built in step 13), and the wrong answer when you reach for it out of habit.
+
+### 6. NLL: the compiler got smarter
+
+Until 2018, a borrow's region extended to the end of the enclosing block. Tons of code felt arbitrarily restricted because the borrow was considered alive when in fact you were done with it. Non-Lexical Lifetimes (NLL) replaced "end of block" with "last use". Most of "this used to not compile and now does" Rust programmers talk about is NLL. The mental model didn't change; the compiler's analysis got tighter.
+
+### 7. The `'static` lifetime, demystified
+
+There are two distinct things called `'static`:
+
+**(a) The reference type `&'static T`** — a reference that's valid for the entire program duration. `&'static str` literals (`"hello"`) are baked into the binary. `Box::leak(...)` produces references with `'static`.
+
+**(b) The trait bound `T: 'static`** — "type `T` does not contain any borrows that would constrain its lifetime." A `String` satisfies `T: 'static` because it owns its data; an `Excerpt<'a>` does not, unless `'a = 'static`.
+
+Most beginner confusion comes from conflating these two. Almost every time you see `T: 'static` in a generic bound (like `tokio::spawn`), it's the second one — "the value can be moved between threads or stored beyond its origin scope without dangling."
+
+<div class="ferris-says">
+<p>If you can read someone else's signature with <code>'a</code> in it and explain it as "this borrow ties to that source for a region we'll call <code>'a</code>", you have already won. The depth track below adds variance, higher-ranked bounds, and elision edge cases — all useful, none scary.</p>
+</div>
+
 ## Chapter Resources
 
 * **Official Source:** [The Rust Reference: Lifetimes](https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html)

@@ -51,6 +51,24 @@
   </figure>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>"Zero-cost abstraction" is one of Rust's most-quoted phrases. Here's what it actually means before this chapter goes deep.</p>
+</div>
+
+A **zero-cost abstraction** is one where the compiled machine code is the same — or better — than the same logic written by hand without the abstraction. Iterators, generics, smart pointers, and `Option<&T>` are all examples. Pay the abstraction cost in compile time and developer ergonomics, not runtime.
+
+For this to be true, the compiler must know *exactly* how every type is laid out in memory: how many bytes, what alignment, how fields are ordered. Most of this chapter is about Rust's layout rules and why they matter.
+
+The single most surprising layout rule for newcomers is **niche optimisation**: when a type has invalid bit patterns (a non-null reference, a `NonZeroU32`, an enum with a small number of variants), the compiler reuses one of those invalid patterns to encode `Option::None`. So `Option<&T>` and `Option<NonZeroU32>` are the same size as their inner type — no overhead.
+
+The flip side is **field padding**. Rust may insert padding bytes between fields to honour alignment, exactly like C. But unlike C, Rust is allowed to *reorder* fields to minimise padding — unless you opt into a guaranteed layout with `#[repr(C)]` or `#[repr(packed)]`. Most of the time you let Rust pick.
+
+<div class="ferris-says">
+<p>The deepest implication of all this: a Rust program's binary is what a hand-written C program would be, only with the bugs the C version would have caught at runtime caught at compile time instead.</p>
+</div>
+
 ## Step 1 - The Problem
 
 Systems work is constrained by representation.
@@ -326,6 +344,52 @@ Rust does not make performance a rumor. It lets you inspect how values are shape
 ## What Invariant Is Rust Protecting Here?
 
 Type representation and optimization must preserve program meaning while exposing layout guarantees only when they are explicit and sound.
+
+## wordc, step 17 — zero-copy: borrow the file bytes, never clone
+
+<div class="ferris-says" data-variant="insight">
+<p>Up to here, <code>WordcSession::bytes</code> is a <code>Vec&lt;u8&gt;</code> — owned, heap-allocated. For a 50 MB input file that's 50 MB of allocation plus a copy on read. Step 17 swaps that for a <em>memory-mapped</em> view via <code>memmap2</code>: the OS maps the file's pages into the process's address space, and <code>wordc</code> reads them in place. Zero copy, zero allocation.</p>
+</div>
+
+```rust,ignore
+use memmap2::Mmap;
+use std::fs::File;
+
+pub struct WordcSession {
+    path: std::path::PathBuf,
+    map: Mmap,                    // page-mapped view of the file
+    started_at: std::time::Instant,
+}
+
+impl WordcSession {
+    pub fn open(path: std::path::PathBuf) -> std::io::Result<Self> {
+        let started_at = std::time::Instant::now();
+        let file = File::open(&path)?;
+        // SAFETY: the file is opened read-only and not modified by other processes
+        // for the lifetime of the Mmap. wordc holds an exclusive logical handle.
+        let map = unsafe { Mmap::map(&file)? };
+        Ok(Self { path, map, started_at })
+    }
+
+    pub fn bytes(&self) -> &[u8] {
+        &self.map
+    }
+
+    pub fn as_str(&self) -> Option<&str> {
+        std::str::from_utf8(&self.map).ok()
+    }
+}
+```
+
+Three layout consequences. First, `WordcSession` itself is now a tiny stack struct (a `PathBuf`, an `Mmap` handle, an `Instant`) — no heap data is owned by the session value itself. The file bytes live in the OS's page cache and are mapped lazily as `WordIter` walks them.
+
+Second, every `&'a str` produced by `WordIter` now borrows from the *mapped pages*, not from a heap `Vec`. The lifetime relationship is identical to the Part 3 design — `&'a str` ties to `&'a self` — but the underlying storage is pages owned by the kernel, not by `wordc`.
+
+Third, the cost model flips. For a 50 MB file: with `Vec<u8>` you pay one 50 MB heap allocation + one 50 MB read; with `Mmap` you pay zero allocation + only the pages actually touched are read from disk (the OS faults them in). For sequential scans that's about the same. For random access (e.g., "give me the first 1000 lines starting at offset N") it's a 100×+ win.
+
+<div class="ferris-says">
+<p>The reason this works without further code changes: every iterator and every helper in <code>wordc</code> already takes <code>&amp;[u8]</code> or <code>&amp;str</code> rather than <code>Vec&lt;u8&gt;</code> or <code>String</code>. Borrow-by-default code is automatically zero-copy-friendly. Owning code is automatically zero-copy-hostile.</p>
+</div>
 
 ## Quick check
 

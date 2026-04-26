@@ -228,6 +228,22 @@ int n = len(owned); // works — GC manages lifetime
 </div>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Borrowing is "lending without giving up ownership." Two sentences and an analogy below; everything else is the careful version.</p>
+</div>
+
+A **borrow** in Rust is a pointer with rules attached. `&T` means "I can read this value but not modify it"; `&mut T` means "I can read and modify it, and *I'm the only one who can right now*." The rules are enforced statically by the compiler — no runtime locks, no overhead.
+
+Imagine a Google Doc. Many people can read at the same time and nothing breaks. The moment one person enters edit mode, you don't want others reading half-applied changes. Rust enforces exactly this: at any given moment, a value has either many `&T` readers OR exactly one `&mut T` writer — never both. Picking the mode is your job; checking it is the compiler's.
+
+When you write `fn print(name: &String)`, you are saying: "I want to read the caller's `String`; I do not need to take ownership." The caller can keep using their `String` after the call. This is how almost every helper function in Rust is written — borrow what you need, return what you produce.
+
+<div class="ferris-says">
+<p>Coming from Python or JavaScript: this is the inverse of the default. There, every argument is a shared reference and you have to opt out (with <code>copy()</code>) for an unshared one. In Rust, ownership is the default and you opt into sharing by writing <code>&amp;</code>.</p>
+</div>
+
 ## Compiler Error Decoder - Borrowing Basics
 
 These are the top errors learners hit in early borrowing code.

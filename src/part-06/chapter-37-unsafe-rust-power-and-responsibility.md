@@ -54,6 +54,29 @@
   </figure>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="warning">
+<p>The single most-misunderstood word in Rust. Read this first.</p>
+</div>
+
+`unsafe` does **not** turn off Rust's safety checks. Inside an `unsafe { … }` block, Rust unlocks exactly **four** extra operations:
+
+1. Dereference a raw pointer (`*const T` / `*mut T`).
+2. Call a function declared `unsafe fn`.
+3. Read or write a `static mut`.
+4. Implement an `unsafe trait` (`Send`, `Sync`, `Pin`-related, …).
+
+That's it. That's the whole list.
+
+Type checking, borrow checking on safe references, ownership, `Drop`, and lifetime checking on `&T` and `&mut T` all stay on. What changes is that you, the programmer, take responsibility for the **safety preconditions** of those four operations — for example, "this raw pointer points at valid, properly aligned memory of the right type, and is not aliased by a `&mut` of the same type."
+
+The reason `unsafe` exists at all is to write the *implementation* of the safe abstractions everyone else uses. `Vec`, `String`, `HashMap`, `Mutex`, `Box` all contain a small unsafe core wrapped in a much larger, hand-audited safe API. The discipline is: **shrink unsafe blocks, expose a safe wrapper, comment every unsafe with a `// SAFETY:` justification.**
+
+<div class="ferris-says">
+<p>The mental model that helps: <code>unsafe</code> is a permission, not a release. The compiler is still your co-pilot for the whole flight; it's just that for this one stretch you're flying low.</p>
+</div>
+
 ## Step 1 - The Problem
 
 Safe Rust is intentionally incomplete as a systems implementation language.
@@ -361,6 +384,60 @@ Unsafe Rust exists because some low-level jobs cannot be fully checked by the co
 ## What Invariant Is Rust Protecting Here?
 
 Any value or reference created through unsafe code must still satisfy Rust's normal aliasing, lifetime, initialization, and ownership rules, even if the compiler could not verify them directly.
+
+## wordc, step 18 — using `unsafe` only at the seam
+
+<div class="ferris-says" data-variant="warning">
+<p>If <code>wordc</code> is ingesting megabytes of text, the UTF-8 validation in <code>std::str::from_utf8</code> shows up in profiles — it touches every byte. <code>std::str::from_utf8_unchecked</code> skips it but is <code>unsafe</code> because it constructs a <code>&amp;str</code> whose validity is your responsibility. Step 18 shows how to use it safely: validate <em>once</em> at the seam, then promise the rest of the program the bytes are valid.</p>
+</div>
+
+```rust,ignore
+pub struct ValidUtf8<'a> {
+    /// Invariant: `bytes` is valid UTF-8.
+    bytes: &'a [u8],
+}
+
+impl<'a> ValidUtf8<'a> {
+    /// Validate once at the seam. Constant-time after this; safe API.
+    pub fn from_bytes(bytes: &'a [u8]) -> Result<Self, std::str::Utf8Error> {
+        std::str::from_utf8(bytes)?;        // validates every byte
+        Ok(ValidUtf8 { bytes })
+    }
+
+    /// Cheap: bytes have already been validated by `from_bytes`.
+    pub fn as_str(&self) -> &'a str {
+        // SAFETY: `from_bytes` is the only constructor and it called
+        // `std::str::from_utf8`, which validates the entire slice. The
+        // slice is borrowed and cannot be mutated while `self` holds it,
+        // so the UTF-8 invariant cannot be broken behind our back.
+        unsafe { std::str::from_utf8_unchecked(self.bytes) }
+    }
+}
+
+// Usage in wordc.
+fn run(session: &WordcSession, min_len: usize) -> Result<(), WordcError> {
+    let valid = ValidUtf8::from_bytes(session.bytes())
+        .map_err(|_| WordcError::NotUtf8 { path: session.path().to_owned() })?;
+    let text: &str = valid.as_str();        // free, no re-validation
+
+    for w in WordIter::new(text, min_len) {
+        // ...
+    }
+    Ok(())
+}
+```
+
+Two things that make this acceptable, not reckless:
+
+**1. The unsafe block is one line, with a `// SAFETY:` justification.** Nothing else in `wordc` can construct a `ValidUtf8` without going through `from_bytes`. The invariant — "the wrapped `&[u8]` is valid UTF-8" — is established at exactly one spot and re-asserted nowhere else.
+
+**2. The exposed API is safe.** `as_str()` is a *safe* function. Every caller of `as_str()` gets a `&str` and never sees the unsafe machinery. If a future contributor refactors `wordc`, they cannot accidentally violate the invariant — the type system has narrowed the path of possibility.
+
+Compare with the lazy version of the same idea: scattering `unsafe { std::str::from_utf8_unchecked(...) }` calls all over the codebase, each one trusting that "obviously these bytes are UTF-8". That pattern works until the day someone changes `WordcSession::open` to read partial files, or until a future `WordcSession::write_back` writes invalid bytes. Concentrate the unsafe; expose a safe wrapper; document the invariant.
+
+<div class="ferris-says">
+<p>If you can't write the <code>// SAFETY:</code> comment in one or two sentences, the unsafe block is doing too much. Refactor until either the comment is concise <em>or</em> you find that the unsafe block isn't actually needed.</p>
+</div>
 
 ## Quick check
 

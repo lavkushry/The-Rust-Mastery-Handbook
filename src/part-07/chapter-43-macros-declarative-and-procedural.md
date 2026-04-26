@@ -51,6 +51,26 @@
   </figure>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Rust has two kinds of macros. Knowing which is which clears up half the confusion.</p>
+</div>
+
+**Declarative macros** (the `macro_rules! my_macro { ... }` ones) are pattern-match-and-expand: you describe input shapes and the corresponding Rust code to emit. Examples you already use: `vec![…]`, `println!("…")`, `assert_eq!(a, b)`. Easy to write, no extra crate, but their pattern language is limited and they can't generate `impl` blocks for arbitrary structs.
+
+**Procedural macros** are real Rust programs that run *at compile time*, take a `TokenStream` as input, and produce a `TokenStream` as output. They live in their own crate (`proc-macro = true` in `Cargo.toml`). Three flavours:
+
+- **Function-like** — invoked as `my_macro!(...)` like a declarative macro, but with full Rust at expansion time.
+- **Attribute** — invoked as `#[my_attr]` decorating an item; receives the item's tokens and replaces them.
+- **Derive** — invoked as `#[derive(MyTrait)]`; receives the annotated struct/enum and emits new `impl` blocks. This is what `serde::Serialize`, `thiserror::Error`, and `clap::Parser` use.
+
+Both kinds are *expanded* before the rest of compilation. There is no runtime reflection, no AST mutation at runtime, no monkey-patching. The macro's only job is to turn one chunk of source into another chunk of source.
+
+<div class="ferris-says">
+<p>Rule of thumb: <code>macro_rules!</code> is for syntactic sugar that fits a pattern. Proc-macros are for "I want a derive" or "I want to read the structure of a type and generate code from it." If you're tempted to write a 50-line <code>macro_rules!</code> with branches, that's the moment to switch to a proc-macro.</p>
+</div>
+
 ## Step 1 - The Problem
 
 Some code duplication is accidental. Some is structural. Functions and generics remove a lot of repetition, but not all of it.

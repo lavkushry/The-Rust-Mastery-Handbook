@@ -66,6 +66,24 @@
   </figure>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Three concepts live under "advanced traits" and they're easy to confuse. Here's the map.</p>
+</div>
+
+**`impl Trait`** — "any specific type that implements this trait, decided by *me* (the function author)." Used in return position to hide a complicated concrete type (e.g. an iterator chain) and in argument position as a shorthand for `<T: Trait>`. Always one specific type at compile time.
+
+**`dyn Trait`** — "any type that implements this trait, decided by the *caller* at runtime." Used through a pointer (`Box<dyn Trait>`, `&dyn Trait`). Stored as a fat pointer: data pointer + vtable pointer. Allows heterogeneous collections (a `Vec<Box<dyn Drawable>>`); pays a small cost (dynamic dispatch through the vtable).
+
+**Generic Associated Types (GATs)** — associated types parameterised by a generic, most often a lifetime. They let you write `fn iter<'a>(&'a self) -> Self::Iter<'a>` where `Self::Iter<'a>` borrows from `Self`. The classic motivation: a `LendingIterator` that yields items borrowed from itself.
+
+The "object safety" gate: not every trait can be used as `dyn Trait`. A trait with methods that take `self` by value, or with generic methods, can't be packed into a vtable. Common workaround: split the trait into an object-safe part and a generic part.
+
+<div class="ferris-says">
+<p>Decision rule: if you know the type at compile time and the type is the same for every call, use <code>impl Trait</code>. If you genuinely need to mix types in one collection or pick the type at runtime, accept the indirection and use <code>dyn Trait</code>. Reach for GATs only when an associated type genuinely needs a lifetime parameter.</p>
+</div>
+
 ## Step 1 - The Problem
 
 Abstraction in systems code has two common failure modes.

@@ -1,4 +1,8 @@
 # Chapter 41: Reading Compiler Errors Like a Pro
+
+<div class="ferris-says" data-variant="insight">
+<p>Compiler error messages are the most underrated tool in the language. They are written by people; they point at the exact character; they often suggest a fix. This chapter is a field guide — read a dozen real error messages and you will start recognising their structure.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -351,6 +355,22 @@ Rust errors look intimidating because they are dense, not because they are rando
 ## What Invariant Is Rust Protecting Here?
 
 The compiler is reporting that some ownership, borrowing, typing, or trait obligation could not be satisfied consistently across the program's control flow.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Reading rustc errors</span></div>
+  <p class="quiz__q">When <code>rustc</code> gives you a long error chain, the most efficient way to read it is:</p>
+  <ul class="quiz__options">
+    <li>Top-down — fix the first reported error first.</li>
+    <li>Read the <em>final summary</em>, then jump to the source span(s) the error labels, then <em>only if needed</em> read the trait-resolution stack — most errors are explained by their first labelled span.</li>
+    <li>Bottom-up — fix the last error first.</li>
+    <li>Re-run with <code>-Wno-everything</code>.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Rust's diagnostics are layered: a single root cause produces a span label, then trait-solver context, then notes. Most fixes are visible from the labelled span. Read the labels, look at the code, then escalate only if needed. The trait-resolution context exists for hard cases, not for the median error.</div>
+  <div class="quiz__explain quiz__explain--wrong">The chapter argues for label-first reading. Where do most fixes come from?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

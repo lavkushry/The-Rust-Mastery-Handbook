@@ -1,4 +1,8 @@
 # Chapter 15: Modules, Crates, and Visibility
+
+<div class="ferris-says" data-variant="insight">
+<p>Modules, crates, and the visibility rules. Rust's module system is unusual — it is neither Java's nor Python's — and is the thing most people get tripped up by when structuring their first multi-file project. This chapter makes it stop being mysterious.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-05-cargo-and-project-structure.md">Ch 5: Cargo</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>mod</code>, <code>use</code>, and <code>pub</code> visibility rules</li><li>Crate root, module tree, and re-exports</li><li>Privacy as an encapsulation tool</li></ul></div>

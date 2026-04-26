@@ -1,4 +1,8 @@
 # Chapter 27: Error Handling in Depth
+
+<div class="ferris-says" data-variant="insight">
+<p>Error handling, pushed to production quality: custom error enums, the <code>?</code> conversion, error source chains, and the <code>thiserror</code>/<code>anyhow</code>/<code>miette</code> ecosystem. This chapter is how you ship errors your future self will thank you for.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-14-option-result-and-rusts-error-philosophy.md">Ch 14: Option &amp; Result</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>thiserror</code> for libraries vs <code>anyhow</code> for apps</li><li>Error propagation chains with <code>?</code> + <code>From</code></li><li>When to panic vs when to propagate</li></ul></div>
@@ -15,6 +19,26 @@
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Propagation Chain</div><h2 class="visual-figure__title"><code>?</code> Plus <code>From</code> Plus Context</h2></div></div>
     <div class="visual-figure__body"><svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Error propagation flow showing lower-level error converted upward and annotated with context"><rect x="24" y="24" width="492" height="372" rx="24" fill="#101827" stroke="rgba(255,255,255,0.08)"></rect><rect x="170" y="56" width="200" height="46" rx="14" fill="#172554" stroke="#3a86ff" stroke-width="3"></rect><text x="214" y="84" class="svg-small" style="fill:#dbeafe;">fs::read_to_string</text><path d="M270 102 V 146" stroke="#3a86ff" stroke-width="5"></path><rect x="152" y="146" width="236" height="48" rx="16" fill="#231942" stroke="#8338ec" stroke-width="3"></rect><text x="220" y="175" class="svg-small" style="fill:#efe8ff;">? operator</text><path d="M270 194 V 238" stroke="#8338ec" stroke-width="5"></path><path d="M270 238 L 148 302 M270 238 L 392 302" stroke="#8338ec" stroke-width="5" fill="none"></path><rect x="80" y="302" width="136" height="54" rx="16" fill="#123e2e" stroke="#52b788"></rect><text x="118" y="334" class="svg-small" style="fill:#d9fbe9;">Ok path</text><rect x="324" y="302" width="136" height="54" rx="16" fill="#3a1c17" stroke="#e63946"></rect><text x="358" y="334" class="svg-small" style="fill:#ffd8cc;">Err path</text><text x="316" y="382" class="svg-small" style="fill:#fff3c4;">Err path may use From conversion first, then bubble upward with added context</text></svg></div>
   </figure>
+</div>
+
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Error handling in Rust looks complicated until you see the two-layer pattern. Then it's simple.</p>
+</div>
+
+There are exactly two places errors live in a Rust program:
+
+**1. Inside a library crate.** Use a typed error enum (often via `#[derive(thiserror::Error)]`). Every error case is a named variant, and downstream callers can `match` on which variant fired and decide whether to recover, retry, or propagate. This is the *narrow*, structured layer.
+
+**2. Inside an application binary.** Use `anyhow::Result<T>` (which is opaque-`Box<dyn Error + Send + Sync>` plus context machinery). The binary doesn't usually need to recover from individual error variants — it logs them and exits. `anyhow` makes this ergonomic and lets you attach `.context("loading config")` along the way for great error messages.
+
+The `?` operator is the glue. `result?` says: "if this is `Err`, return the error; if it's `Ok`, unwrap and continue." Combined with the `From` trait, `?` will *automatically convert* a library's typed error into your function's error type — which is why `thiserror` and `anyhow` interop seamlessly.
+
+What this chapter mostly does is push you past `unwrap()` (which crashes on error) and `String` errors (opaque, no variant info, no source chain) toward the typed/anyhow split that production Rust uses.
+
+<div class="ferris-says">
+<p>Quick test: if your function might return an error and you can't say what <em>kind</em>, you probably want <code>anyhow::Result</code>. If you can say "could be NotFound, PermissionDenied, or InvalidInput", you want a <code>thiserror</code> enum. The split is almost always between "library returns" (typed) and "main returns" (opaque).</p>
 </div>
 
 ## Step 1 - The Problem
@@ -245,6 +269,96 @@ Rust treats failure as data you must account for, not as invisible control flow.
 ## What Invariant Is Rust Protecting Here?
 
 Failure paths must remain explicit and type-checked so callers cannot silently ignore or misunderstand what can go wrong.
+
+## wordc, step 15 — error chains with `thiserror` + `anyhow` context
+
+<div class="ferris-says" data-variant="insight">
+<p>Step 10 introduced <code>WordcError</code> at the library level. Step 15 splits the binary's <code>main</code> from the library's <code>run</code> using <code>anyhow</code>, and adds <code>.context(...)</code> at every layer so the error message tells the user exactly what was happening when the failure occurred.</p>
+</div>
+
+```rust,ignore
+// src/lib.rs — narrow, typed error for the library.
+use std::path::PathBuf;
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum WordcError {
+    #[error("could not read {path}")]
+    Io { path: PathBuf, #[source] source: std::io::Error },
+
+    #[error("file is not valid UTF-8: {path}")]
+    NotUtf8 { path: PathBuf },
+
+    #[error("min_len must be > 0 (got {0})")]
+    BadMinLen(usize),
+}
+
+pub fn open_session(path: PathBuf) -> Result<WordcSession, WordcError> {
+    let bytes = std::fs::read(&path)
+        .map_err(|e| WordcError::Io { path: path.clone(), source: e })?;
+    if std::str::from_utf8(&bytes).is_err() {
+        return Err(WordcError::NotUtf8 { path });
+    }
+    Ok(WordcSession::from_parts(path, bytes))
+}
+```
+
+```rust,ignore
+// src/main.rs — opaque, contextual error for the binary.
+use anyhow::{Context, Result};
+use clap::Parser;
+
+#[derive(Parser)]
+#[command(version, about = "count words in a file")]
+struct Cli {
+    path: std::path::PathBuf,
+    #[arg(long, default_value_t = 1)]
+    min_len: usize,
+    #[arg(long, default_value_t = 10)]
+    top: usize,
+}
+
+fn main() -> Result<()> {
+    let cli = Cli::parse();
+    let session = wordc::open_session(cli.path.clone())
+        .with_context(|| format!("opening session for {}", cli.path.display()))?;
+    wordc::run(&session, cli.min_len, cli.top)
+        .context("running word-count pipeline")?;
+    Ok(())
+}
+```
+
+When the user runs `wordc /missing.txt` the error chain printed by `anyhow` reads:
+
+```text
+Error: opening session for /missing.txt
+
+Caused by:
+    0: could not read /missing.txt
+    1: No such file or directory (os error 2)
+```
+
+Three layers, each adding context, no information lost. The library's `WordcError::Io { path, source }` shows up as the second link in the chain via `#[source]`. The OS error is the third link, automatically chained from `std::io::Error`. The first link is the `anyhow` context the binary added.
+
+<div class="ferris-says">
+<p>The discipline is: <strong>library code returns typed errors with <code>#[source]</code></strong> so callers can <code>match</code> on the variant; <strong>binary code uses <code>anyhow::Result</code> with <code>.context(...)</code></strong> so the human reading the terminal gets a story. The two interop seamlessly because <code>anyhow::Error</code> implements <code>From&lt;E: Error + Send + Sync&gt;</code>.</p>
+</div>
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>thiserror vs anyhow</span></div>
+  <p class="quiz__q">You are writing a library crate that other crates will depend on. Should errors use <code>thiserror</code> or <code>anyhow</code>?</p>
+  <ul class="quiz__options">
+    <li><code>anyhow</code>. Easier to write, downstream users will appreciate it.</li>
+    <li><code>thiserror</code>. Library users need to <code>match</code> on specific error variants to recover programmatically — that needs typed errors, not opaque <code>anyhow::Error</code>.</li>
+    <li>Either is fine; they're interchangeable.</li>
+    <li>Neither — return <code>String</code> errors so callers can format them.</li>
+  </ul>
+  <div class="quiz__explain">Correct. The rule of thumb: libraries return typed errors (<code>thiserror</code>) so callers can branch on them. Application binaries use <code>anyhow::Result</code> at the top level because they only need to log/exit. A library forcing <code>anyhow::Error</code> on its callers makes recovery impossible.</div>
+  <div class="quiz__explain quiz__explain--wrong">Think about who reads your error type. Can downstream crates <code>match</code> on <code>anyhow::Error</code>?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

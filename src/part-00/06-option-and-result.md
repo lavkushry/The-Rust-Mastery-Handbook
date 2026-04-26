@@ -1,5 +1,9 @@
 # Option and Result
 
+<div class="ferris-says">
+<p>Your first null-pointer exception happened when some senior engineer returned <code>null</code> from a function and forgot to mention it in the docs. Rust does not let that happen. There is no <code>null</code>. If a function might fail to produce a value, it returns <code>Option&lt;T&gt;</code>. If it might fail with a reason, it returns <code>Result&lt;T, E&gt;</code>. You cannot use the value without first <em>answering the compiler</em> about what to do when it is missing. It feels like friction for about a day, and then it feels like relief.</p>
+</div>
+
 <div class="one-sentence">
   If you only remember one thing: <strong>in Rust, "might be missing" and "might have failed" are normal values the compiler will not let you ignore.</strong>
 </div>
@@ -142,6 +146,32 @@ They are not fine in production code for things that can fail in the real world 
   <p>If it can fail because of something outside your program, <em>handle it</em>. If it can only fail because you wrote a bug, <code>unwrap</code> is fine.</p>
 </div>
 
+## wordc, step 5
+
+Our through-line needs to handle the one way reading a file can fail — the file not existing. That is a `Result`.
+
+```rust
+use std::fs;
+use std::io;
+
+fn read_text(path: &str) -> Result<String, io::Error> {
+    fs::read_to_string(path)
+}
+
+fn main() {
+    match read_text("sample.txt") {
+        Ok(text) => println!("read {} bytes", text.len()),
+        Err(e)   => eprintln!("could not read sample.txt: {e}"),
+    }
+}
+```
+
+If the file is missing, Rust will not crash — it will tell you, in human words, what happened, on stderr. No silent zero, no null return, no magic. This is what "errors as data" looks like in practice.
+
+<div class="ferris-says" data-variant="insight">
+<p>The <code>?</code> operator you will meet in chapter 7 is the syntactic shortcut for "if this is <code>Err</code>, return the error up the stack; otherwise give me the inner value". It is one character and it carries the entire idea of "don't ignore errors, propagate them". Once you see it you will never go back to exceptions-that-can-come-from-anywhere.</p>
+</div>
+
 ## Try this
 
 <div class="try-this">
@@ -151,6 +181,22 @@ They are not fine in production code for things that can fail in the real world 
     <li>Write a function <code>fn safe_div(a: f64, b: f64) -&gt; Result&lt;f64, &amp;'static str&gt;</code> that returns <code>Err("divide by zero")</code> if <code>b</code> is zero.</li>
     <li>Take the <code>read_age</code> example above and add a call to it in <code>main</code> that prints the result cleanly.</li>
   </ol>
+</div>
+
+## Check yourself
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quiz — 1 of 1</span><span>Option &amp; Result</span></div>
+  <p class="quiz__q">A function <code>fn parse_age(s: &amp;str) -&gt; Result&lt;u32, ParseError&gt;</code> can succeed or fail. Which of these is the <em>idiomatic</em> way to get the number out?</p>
+  <ul class="quiz__options">
+    <li>Call <code>.unwrap()</code> everywhere and assume it works</li>
+    <li>Ignore the error by assigning to <code>_</code> and moving on</li>
+    <li>Use <code>match</code> to handle both <code>Ok</code> and <code>Err</code>, or use <code>?</code> to propagate the error to the caller</li>
+    <li>Convert the error to a string and <code>println!</code> it</li>
+  </ul>
+  <div class="quiz__explain">Correct. In real code you either (a) <code>match</code> and decide what to do for each case, or (b) write <code>?</code> to say "if it failed, propagate; if it worked, give me the value and keep going". That is 95% of Rust error handling. <code>unwrap()</code> is for examples and tests only.</div>
+  <div class="quiz__explain quiz__explain--wrong">Think about it: what do you do with a <code>Result</code> if you want to <em>do something different</em> when it fails vs when it succeeds?</div>
+  <button type="button" class="quiz__reset">Try again</button>
 </div>
 
 You now know enough Rust to build something real. Next: your first CLI.

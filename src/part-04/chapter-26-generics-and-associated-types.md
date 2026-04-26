@@ -1,4 +1,8 @@
 # Chapter 26: Generics and Associated Types
+
+<div class="ferris-says" data-variant="insight">
+<p>Generics let you write code that works across many types without sacrificing the speed of hand-written specialisations. Monomorphisation is the trick. Associated types are where generics go from "template" to "algebra".</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-25-traits-rusts-core-abstraction.md">Ch 25: Traits</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Monomorphization: generics compiled to concrete types</li><li>Associated types vs generic type parameters</li><li>Trait bounds as capability contracts</li></ul></div>
@@ -201,6 +205,22 @@ Generics let Rust reuse logic across many types. Associated types let a trait sa
 ## What Invariant Is Rust Protecting Here?
 
 Type relationships in generic code should be explicit enough that implementations remain unambiguous and callers retain predictable, optimizable type information.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Monomorphisation</span></div>
+  <p class="quiz__q">You write <code>fn print_all&lt;T: Debug&gt;(xs: &amp;[T]) { for x in xs { println!("{x:?}"); } }</code>. The crate calls it with <code>&amp;[u32]</code> and <code>&amp;[String]</code>. How many copies of <code>print_all</code> end up in the final binary?</p>
+  <ul class="quiz__options">
+    <li>One. Generics are erased at runtime like Java.</li>
+    <li>Two. The compiler <em>monomorphises</em> a separate machine-code copy for each concrete <code>T</code> the function is called with.</li>
+    <li>Three. One generic stub plus two specialisations.</li>
+    <li>Zero — generic functions are inlined at every call site.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Rust uses monomorphisation: for each set of concrete type arguments seen by the linker, the compiler emits one specialised copy. This is why generic Rust is as fast as hand-written specialised Rust — but also why heavy generic use can grow binary size and compile time.</div>
+  <div class="quiz__explain quiz__explain--wrong">Rust does not erase generics at runtime. How does it specialise?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

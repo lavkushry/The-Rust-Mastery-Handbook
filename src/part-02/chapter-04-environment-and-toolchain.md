@@ -1,4 +1,8 @@
 # Chapter 4: Environment and Toolchain
+
+<div class="ferris-says" data-variant="insight">
+<p>If you followed Part 0, you already installed Rust in one <code>curl</code>. This chapter goes deeper — what <code>rustup</code> actually does, how toolchains and targets work, and how to pin a version per project. Useful the first day your company's CI says "please build with 1.81.0 exactly".</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><span style="opacity:0.5;font-size:0.78rem">None — setup chapter</span></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Installing rustup and managing toolchains</li><li>rustc, cargo, clippy, rustfmt setup</li><li>Editor and IDE configuration</li></ul></div>

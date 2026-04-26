@@ -1,5 +1,10 @@
 # PART 1 - Why Rust Exists
 
+<div class="ferris-says" data-variant="insight">
+<p>Welcome to the depth track. Part 0 was the friendly warm-up — this is where we dig into the <em>why</em>. Before you can really respect Rust's design choices, you need to see the world of pain those choices were built to escape. Five bug classes have eaten decades of engineering time. In this part, you will meet each one and see exactly how Rust defuses it.</p>
+</div>
+
+
 <section class="part-spread" style="--chapter-accent: var(--error);">
   <div class="part-spread__grid">
     <div>

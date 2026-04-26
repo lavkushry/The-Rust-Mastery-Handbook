@@ -1,4 +1,8 @@
 # Chapter 46: Entering an Unfamiliar Rust Repo
+
+<div class="ferris-says" data-variant="insight">
+<p>Maintaining a crate yourself. Releases, changelogs, semver, security advisories, deprecations. The discipline of being on the other side of "why doesn't this crate get updates".</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-05-cargo-and-project-structure.md">Ch 5: Cargo</a><a href="../part-02/chapter-15-modules-crates-and-visibility.md">Ch 15: Modules</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Reading <code>Cargo.toml</code> and dependency graphs first</li><li>Finding entry points and public APIs</li><li>Understanding ownership architecture of unfamiliar code</li></ul></div>
@@ -377,6 +381,22 @@ The smartest way to learn a new Rust repo is to understand its shape before its 
 ## What Invariant Is Rust Protecting Here?
 
 Repository-level understanding must begin from declared contracts and boundaries so later code reading is anchored in what the project actually promises to users and contributors.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Reading order</span></div>
+  <p class="quiz__q">When you clone an unfamiliar Rust crate to find your bearings, the highest-leverage file to read first is:</p>
+  <ul class="quiz__options">
+    <li><code>README.md</code> — read everything end to end.</li>
+    <li><code>Cargo.toml</code> — it tells you the crate name, the dependency stack, the feature flags, the binary/library targets, and the MSRV. Two minutes of reading buys you the project's vocabulary.</li>
+    <li>The first file alphabetically in <code>src/</code>.</li>
+    <li><code>target/debug/build.log</code>.</li>
+  </ul>
+  <div class="quiz__explain">Correct. <code>Cargo.toml</code> is a project's table of contents and technology map. It exposes the dependency stack (so you know which docs to keep open), the binaries and libraries (so you know the entry points), the workspace members (so you know the structure), and the features (so you know the optional surfaces). Read it before any <code>.rs</code> file.</div>
+  <div class="quiz__explain quiz__explain--wrong">The chapter recommends a specific file as the highest-leverage entry point. Which one?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

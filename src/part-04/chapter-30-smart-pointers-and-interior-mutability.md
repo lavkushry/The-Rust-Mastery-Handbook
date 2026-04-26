@@ -1,4 +1,8 @@
 # Chapter 30: Smart Pointers and Interior Mutability
+
+<div class="ferris-says" data-variant="insight">
+<p><code>Box</code>, <code>Rc</code>, <code>Arc</code>, <code>RefCell</code>, <code>Cell</code>, <code>Mutex</code>, <code>RwLock</code> — the smart pointers. Each one solves a specific ownership puzzle. Learning <em>which one to reach for</em> is a big chunk of Rust intermediate skill.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.md">Ch 20: Move/Copy/Clone</a><a href="../part-03/chapter-17-borrowing-constrained-access.md">Ch 17: Borrow Rules</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>Box</code>, <code>Rc</code>, <code>Arc</code> — different ownership counts</li><li>Interior mutability: rule relocation, not removal</li><li>Why <code>Rc&lt;RefCell&lt;T&gt;&gt;</code> is sometimes a code smell</li></ul></div>
@@ -16,6 +20,27 @@
     <div class="visual-figure__header"><div><div class="visual-figure__eyebrow">Interior Mutability</div><h2 class="visual-figure__title">The Borrow Rule Still Exists, but Enforcement Moves</h2></div></div>
     <div class="visual-figure__body"><svg class="svg-frame" viewBox="0 0 540 420" role="img" aria-label="Compile-time versus runtime or lock-time enforcement of aliasing and mutation rules"><rect x="24" y="24" width="492" height="372" rx="24" fill="#101827" stroke="rgba(255,255,255,0.08)"></rect><rect x="52" y="110" width="180" height="180" rx="18" fill="#172554" stroke="#3a86ff" stroke-width="3"></rect><text x="92" y="144" class="svg-small" style="fill:#dbeafe;">ordinary &amp; / &amp;mut</text><text x="84" y="180" class="svg-small" style="fill:#dbeafe;">checked at compile time</text><text x="92" y="206" class="svg-small" style="fill:#dbeafe;">reject overlap early</text><path d="M232 200 H 308" stroke="#ffbe0b" stroke-width="5"></path><rect x="308" y="110" width="180" height="180" rx="18" fill="#231942" stroke="#8338ec" stroke-width="3"></rect><text x="338" y="144" class="svg-small" style="fill:#efe8ff;">RefCell / Mutex</text><text x="332" y="180" class="svg-small" style="fill:#efe8ff;">checked at runtime or under lock</text><text x="330" y="206" class="svg-small" style="fill:#efe8ff;">panic or block on violation</text><text x="128" y="338" class="svg-small" style="fill:#fff3c4;">interior mutability is not rule removal; it is rule relocation</text></svg></div>
   </figure>
+</div>
+
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Smart pointers solve specific ownership puzzles. This onramp gives you the decision tree; the rest of the chapter is the case studies.</p>
+</div>
+
+A **smart pointer** is a struct that wraps a pointer and runs custom code on drop, dereference, or both. Every smart pointer in Rust answers a specific question:
+
+- **`Box<T>`** — "I want this on the heap." (Boxed types, recursive types, returning trait objects.)
+- **`Rc<T>`** — "I want multiple owners, single-threaded." (Refcount; cleared when last clone drops.)
+- **`Arc<T>`** — "I want multiple owners, across threads." (Atomic refcount — slower but `Send + Sync`.)
+- **`RefCell<T>`** — "I want runtime borrow checking instead of compile-time." (Inside `Rc<RefCell<T>>` for shared mutability.)
+- **`Mutex<T>` / `RwLock<T>`** — "I want runtime borrow checking *across threads*." (Inside `Arc<Mutex<T>>` for shared cross-thread mutability.)
+- **`Cell<T>`** — "I want interior mutability without the runtime cost of `RefCell`, but only for `Copy` types."
+
+The pattern is always: pick the *one* that solves your puzzle, wrap your value in it, get your puzzle's specific guarantee. **Interior mutability** (`Cell`, `RefCell`, `Mutex`) is the way Rust says "I need to mutate through a `&` borrow" — it shifts the aliasing-vs-mutation check from compile time to runtime.
+
+<div class="ferris-says">
+<p>If a co-worker hands you <code>Arc&lt;Mutex&lt;T&gt;&gt;</code> in a code review, read it as: "this <code>T</code> is shared between threads (<code>Arc</code>) and protected by a lock so only one thread mutates at a time (<code>Mutex</code>)." The composition is the description.</p>
 </div>
 
 ## Step 1 - The Problem
@@ -267,6 +292,86 @@ Smart pointers exist because not all ownership problems look the same. Some valu
 ## What Invariant Is Rust Protecting Here?
 
 Pointer-like abstractions must preserve the intended ownership count, mutation discipline, and thread-safety guarantees rather than collapsing all sharing into one vague mutable object model.
+
+## wordc, step 16 — sharing a session across threads with `Arc`
+
+<div class="ferris-says" data-variant="insight">
+<p>Once <code>wordc</code> has a real workload (a 50 MB log file, top-1000 word frequency), the natural next move is to fan the work across threads. Step 16 wraps the session in <code>Arc</code> so multiple workers can read it in parallel, and uses a <code>Mutex</code> only for the shared frequency map.</p>
+</div>
+
+```rust,ignore
+use std::sync::{Arc, Mutex};
+use std::thread;
+use std::collections::HashMap;
+
+fn parallel_frequency(
+    session: Arc<WordcSession>,
+    min_len: usize,
+    threads: usize,
+) -> HashMap<String, usize> {
+    let text = std::str::from_utf8(&session.bytes).unwrap_or("");
+    let chunks: Vec<&str> = split_by_lines(text, threads);
+
+    let combined: Arc<Mutex<HashMap<String, usize>>> =
+        Arc::new(Mutex::new(HashMap::new()));
+
+    let mut handles = Vec::with_capacity(threads);
+    for chunk in chunks {
+        // Each thread gets its own clone of the Arcs (refcount up).
+        let session = Arc::clone(&session);
+        let combined = Arc::clone(&combined);
+        let chunk = chunk.to_string();   // owned per-thread copy
+
+        handles.push(thread::spawn(move || {
+            let mut local: HashMap<String, usize> = HashMap::new();
+            for w in WordIter::new(&chunk, min_len) {
+                *local.entry(w.to_string()).or_insert(0) += 1;
+            }
+
+            // Merge under the lock, briefly.
+            let mut guard = combined.lock().unwrap();
+            for (k, v) in local {
+                *guard.entry(k).or_insert(0) += v;
+            }
+
+            // The session Arc is still held; refcount drops when this thread exits.
+            drop(session);
+        }));
+    }
+
+    for h in handles {
+        h.join().unwrap();
+    }
+    Arc::try_unwrap(combined).unwrap().into_inner().unwrap()
+}
+```
+
+Read the smart pointers from outside in:
+
+- `Arc<WordcSession>` — many threads can hold a clone of this `Arc` and call `&session.bytes` at the same time. No write contention because everyone is reading.
+- `Arc<Mutex<HashMap<String, usize>>>` — the histogram is the *only* shared-mutable thing. The `Mutex` lock is held briefly during the merge step and released. The threads compute their local histograms without any lock contention; the bottleneck is just the final merges.
+
+Why `String` keys instead of `&'a str`? Because the chunks are owned per-thread (`chunk.to_string()`), the `&str` words borrow from each thread's local owned `String`. To survive across the join, the keys must outlive all threads — so we own them. This is the classic ownership-vs-sharing trade: borrow when you can, own when you must.
+
+<div class="ferris-says">
+<p>Every parallel-Rust program ends up shaped like this: <code>Arc</code> for what's <em>read</em> by many; <code>Arc&lt;Mutex&lt;…&gt;&gt;</code> for what's <em>written</em> by many; rayon, tokio, and crossbeam are libraries that automate this pattern but the underlying <code>Arc</code>/<code>Mutex</code> shape stays the same.</p>
+</div>
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Rc vs Arc</span></div>
+  <p class="quiz__q">When should you reach for <code>Arc&lt;T&gt;</code> instead of <code>Rc&lt;T&gt;</code>?</p>
+  <ul class="quiz__options">
+    <li>When <code>T</code> is large, since <code>Arc</code> uses less memory.</li>
+    <li>When the value will be shared <em>across threads</em> — <code>Arc</code> uses atomic refcount operations and is <code>Send + Sync</code>; <code>Rc</code> is single-thread-only.</li>
+    <li>When you want the value mutable.</li>
+    <li>When you don't know yet — they're identical.</li>
+  </ul>
+  <div class="quiz__explain">Correct. The "A" stands for "atomic". <code>Rc</code>'s non-atomic refcount is faster but unsound across threads, so the type system literally refuses to let you send it (<code>Rc</code> is not <code>Send</code>). Pick <code>Rc</code> when staying single-threaded; pay the atomic cost only when you actually share across threads.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at the trait bounds: which one is <code>Send + Sync</code>?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

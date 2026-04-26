@@ -1,0 +1,353 @@
+/* =========================================================
+   Part 0 — "Rust in One Hour" beginner experience
+   Ferris narrator + interactive quiz + step-through animations
+   ========================================================= */
+
+/* ---------- Ferris narrator callout ---------- */
+
+.ferris-says {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 1rem;
+  align-items: start;
+  max-width: 68ch;
+  margin: 2rem 0;
+  padding: 1.1rem 1.25rem 1.1rem 1rem;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(244, 162, 97, 0.12), rgba(244, 162, 97, 0.04));
+  border: 1px solid rgba(244, 162, 97, 0.45);
+  position: relative;
+}
+
+.ferris-says::before {
+  /* speech-bubble tail */
+  content: "";
+  position: absolute;
+  top: 28px;
+  left: 74px;
+  width: 14px;
+  height: 14px;
+  background: rgba(244, 162, 97, 0.12);
+  border-left: 1px solid rgba(244, 162, 97, 0.45);
+  border-bottom: 1px solid rgba(244, 162, 97, 0.45);
+  transform: rotate(45deg);
+}
+
+.ferris-says__avatar {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.ferris-says__body {
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--ink);
+}
+
+.ferris-says__body > :first-child {
+  margin-top: 0;
+}
+
+.ferris-says__body > :last-child {
+  margin-bottom: 0;
+}
+
+.ferris-says__name {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.ferris-says--warning {
+  background: linear-gradient(180deg, rgba(214, 40, 40, 0.08), rgba(214, 40, 40, 0.02));
+  border-color: rgba(214, 40, 40, 0.45);
+}
+.ferris-says--warning::before {
+  background: rgba(214, 40, 40, 0.08);
+  border-left-color: rgba(214, 40, 40, 0.45);
+  border-bottom-color: rgba(214, 40, 40, 0.45);
+}
+.ferris-says--warning .ferris-says__name {
+  color: #991b1b;
+}
+
+.ferris-says--insight {
+  background: linear-gradient(180deg, rgba(33, 158, 188, 0.08), rgba(33, 158, 188, 0.02));
+  border-color: rgba(33, 158, 188, 0.45);
+}
+.ferris-says--insight::before {
+  background: rgba(33, 158, 188, 0.08);
+  border-left-color: rgba(33, 158, 188, 0.45);
+  border-bottom-color: rgba(33, 158, 188, 0.45);
+}
+.ferris-says--insight .ferris-says__name {
+  color: #0e7490;
+}
+
+/* ---------- Quiz / knowledge check ---------- */
+
+.quiz {
+  max-width: 68ch;
+  margin: 2rem 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: 14px;
+  background: #fffdf8;
+  border: 2px solid rgba(2, 62, 138, 0.18);
+  box-shadow: 0 3px 0 rgba(2, 62, 138, 0.08);
+}
+
+.quiz__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--compiler);
+  font-weight: 700;
+}
+
+.quiz__q {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.08rem;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+  color: var(--ink);
+}
+
+.quiz__options {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.5rem 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.quiz__options > li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.quiz__option {
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(2, 62, 138, 0.22);
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  color: var(--ink);
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+}
+
+.quiz__option:hover:not(:disabled) {
+  background: rgba(2, 62, 138, 0.04);
+  border-color: rgba(2, 62, 138, 0.5);
+}
+
+.quiz__option:focus-visible {
+  outline: 3px solid rgba(255, 190, 11, 0.65);
+  outline-offset: 2px;
+}
+
+.quiz__option:disabled {
+  cursor: default;
+}
+
+.quiz__option--correct {
+  background: rgba(82, 183, 136, 0.14);
+  border-color: #2d6a4f;
+  color: #145a32;
+  font-weight: 600;
+}
+
+.quiz__option--wrong {
+  background: rgba(214, 40, 40, 0.1);
+  border-color: #b91c1c;
+  color: #7f1d1d;
+  font-weight: 600;
+}
+
+.quiz__option--eliminated {
+  opacity: 0.55;
+}
+
+.quiz__marker {
+  display: inline-block;
+  width: 1.5em;
+  font-weight: 700;
+  color: rgba(2, 62, 138, 0.65);
+}
+
+.quiz__explain {
+  margin-top: 0.75rem;
+  padding: 0.75rem 0.95rem;
+  border-radius: 10px;
+  background: rgba(82, 183, 136, 0.08);
+  border-left: 4px solid #2d6a4f;
+  font-size: 0.96rem;
+  line-height: 1.55;
+  display: none;
+}
+
+.quiz__explain--wrong {
+  background: rgba(214, 40, 40, 0.08);
+  border-left-color: #b91c1c;
+}
+
+.quiz__explain.is-visible {
+  display: block;
+  animation: quizFade 0.3s ease;
+}
+
+@keyframes quizFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.quiz__reset {
+  margin-top: 0.75rem;
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  border: 1px solid rgba(2, 62, 138, 0.35);
+  border-radius: 999px;
+  color: var(--compiler);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  display: none;
+}
+
+.quiz__reset.is-visible { display: inline-block; }
+
+/* ---------- Step-through animation frame ---------- */
+
+.step-through {
+  max-width: 68ch;
+  margin: 2rem 0;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(2, 62, 138, 0.18);
+  background: #fffdf8;
+  position: relative;
+}
+
+.step-through__stage {
+  position: relative;
+  min-height: 260px;
+}
+
+/* Frames in a step-through hide by default and only the .is-active one shows.
+   This works both with and without a .step-through__stage wrapper. */
+.step-through__frame {
+  display: none;
+}
+
+.step-through__frame.is-active {
+  display: block;
+}
+
+/* Legacy Ch-4 layout which absolutely-positioned frames inside a stage: keep
+   it working, but switch to fade-based opacity only when the stage is present. */
+.step-through__stage > .step-through__frame {
+  display: block;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  position: absolute;
+  inset: 0;
+}
+
+.step-through__stage > .step-through__frame.is-active {
+  opacity: 1;
+  position: relative;
+}
+
+.step-through__controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.step-through__controls button {
+  padding: 0.35rem 0.9rem;
+  border: 1px solid rgba(2, 62, 138, 0.35);
+  background: #fff;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  color: var(--compiler);
+  cursor: pointer;
+}
+
+.step-through__controls button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.step-through__progress {
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  color: #475569;
+}
+
+/* ---------- Chapter hero scene ---------- */
+
+.chapter-scene {
+  max-width: 100%;
+  margin: 0 0 2rem 0;
+  padding: 1rem;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at top, rgba(244, 162, 97, 0.12), transparent 60%),
+              radial-gradient(ellipse at bottom right, rgba(33, 158, 188, 0.1), transparent 60%),
+              #fffdf8;
+  border: 1px solid rgba(2, 62, 138, 0.12);
+}
+
+.chapter-scene svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chapter-scene__caption {
+  margin-top: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: #475569;
+  text-align: center;
+}
+
+/* ---------- Dark mode ---------- */
+
+@media (prefers-color-scheme: dark) {
+  .quiz { background: #0f1c2b; border-color: rgba(58, 134, 255, 0.3); }
+  .quiz__option { background: #0b1524; color: #e7ecf3; }
+  .quiz__option:hover:not(:disabled) { background: rgba(58, 134, 255, 0.14); }
+  .step-through { background: #0f1c2b; border-color: rgba(58, 134, 255, 0.3); }
+  .step-through__controls button { background: #0b1524; color: #e7ecf3; }
+  .chapter-scene {
+    background: radial-gradient(ellipse at top, rgba(244, 162, 97, 0.22), transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(33, 158, 188, 0.18), transparent 60%),
+                #0f1c2b;
+  }
+  .ferris-says { color: #e7ecf3; }
+  .ferris-says__body { color: #e7ecf3; }
+}

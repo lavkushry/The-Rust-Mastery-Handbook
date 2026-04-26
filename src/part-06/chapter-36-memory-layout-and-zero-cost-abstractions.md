@@ -1,4 +1,8 @@
 # Chapter 36: Memory Layout and Zero-Cost Abstractions
+
+<div class="ferris-says" data-variant="insight">
+<p>Memory layout — what your data actually looks like in RAM — is the unglamorous prerequisite for "zero-cost abstractions" to mean anything. This chapter peeks at alignment, padding, niche optimisation, and why Rust's <code>enum Option&lt;&amp;T&gt;</code> is only 8 bytes.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-19-stack-vs-heap-where-data-lives.md">Ch 19: Stack/Heap</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Struct layout, alignment, and padding rules</li><li>Zero-cost abstractions: what the compiler actually generates</li><li><code>#[repr(C)]</code> vs default Rust layout</li></ul></div>
@@ -45,6 +49,24 @@
       </svg>
     </div>
   </figure>
+</div>
+
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>"Zero-cost abstraction" is one of Rust's most-quoted phrases. Here's what it actually means before this chapter goes deep.</p>
+</div>
+
+A **zero-cost abstraction** is one where the compiled machine code is the same — or better — than the same logic written by hand without the abstraction. Iterators, generics, smart pointers, and `Option<&T>` are all examples. Pay the abstraction cost in compile time and developer ergonomics, not runtime.
+
+For this to be true, the compiler must know *exactly* how every type is laid out in memory: how many bytes, what alignment, how fields are ordered. Most of this chapter is about Rust's layout rules and why they matter.
+
+The single most surprising layout rule for newcomers is **niche optimisation**: when a type has invalid bit patterns (a non-null reference, a `NonZeroU32`, an enum with a small number of variants), the compiler reuses one of those invalid patterns to encode `Option::None`. So `Option<&T>` and `Option<NonZeroU32>` are the same size as their inner type — no overhead.
+
+The flip side is **field padding**. Rust may insert padding bytes between fields to honour alignment, exactly like C. But unlike C, Rust is allowed to *reorder* fields to minimise padding — unless you opt into a guaranteed layout with `#[repr(C)]` or `#[repr(packed)]`. Most of the time you let Rust pick.
+
+<div class="ferris-says">
+<p>The deepest implication of all this: a Rust program's binary is what a hand-written C program would be, only with the bugs the C version would have caught at runtime caught at compile time instead.</p>
 </div>
 
 ## Step 1 - The Problem
@@ -322,6 +344,68 @@ Rust does not make performance a rumor. It lets you inspect how values are shape
 ## What Invariant Is Rust Protecting Here?
 
 Type representation and optimization must preserve program meaning while exposing layout guarantees only when they are explicit and sound.
+
+## wordc, step 17 — zero-copy: borrow the file bytes, never clone
+
+<div class="ferris-says" data-variant="insight">
+<p>Up to here, <code>WordcSession::bytes</code> is a <code>Vec&lt;u8&gt;</code> — owned, heap-allocated. For a 50 MB input file that's 50 MB of allocation plus a copy on read. Step 17 swaps that for a <em>memory-mapped</em> view via <code>memmap2</code>: the OS maps the file's pages into the process's address space, and <code>wordc</code> reads them in place. Zero copy, zero allocation.</p>
+</div>
+
+```rust,ignore
+use memmap2::Mmap;
+use std::fs::File;
+
+pub struct WordcSession {
+    path: std::path::PathBuf,
+    map: Mmap,                    // page-mapped view of the file
+    started_at: std::time::Instant,
+}
+
+impl WordcSession {
+    pub fn open(path: std::path::PathBuf) -> std::io::Result<Self> {
+        let started_at = std::time::Instant::now();
+        let file = File::open(&path)?;
+        // SAFETY: the file is opened read-only and not modified by other processes
+        // for the lifetime of the Mmap. wordc holds an exclusive logical handle.
+        let map = unsafe { Mmap::map(&file)? };
+        Ok(Self { path, map, started_at })
+    }
+
+    pub fn bytes(&self) -> &[u8] {
+        &self.map
+    }
+
+    pub fn as_str(&self) -> Option<&str> {
+        std::str::from_utf8(&self.map).ok()
+    }
+}
+```
+
+Three layout consequences. First, `WordcSession` itself is now a tiny stack struct (a `PathBuf`, an `Mmap` handle, an `Instant`) — no heap data is owned by the session value itself. The file bytes live in the OS's page cache and are mapped lazily as `WordIter` walks them.
+
+Second, every `&'a str` produced by `WordIter` now borrows from the *mapped pages*, not from a heap `Vec`. The lifetime relationship is identical to the Part 3 design — `&'a str` ties to `&'a self` — but the underlying storage is pages owned by the kernel, not by `wordc`.
+
+Third, the cost model flips. For a 50 MB file: with `Vec<u8>` you pay one 50 MB heap allocation + one 50 MB read; with `Mmap` you pay zero allocation + only the pages actually touched are read from disk (the OS faults them in). For sequential scans that's about the same. For random access (e.g., "give me the first 1000 lines starting at offset N") it's a 100×+ win.
+
+<div class="ferris-says">
+<p>The reason this works without further code changes: every iterator and every helper in <code>wordc</code> already takes <code>&amp;[u8]</code> or <code>&amp;str</code> rather than <code>Vec&lt;u8&gt;</code> or <code>String</code>. Borrow-by-default code is automatically zero-copy-friendly. Owning code is automatically zero-copy-hostile.</p>
+</div>
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Niche optimisation</span></div>
+  <p class="quiz__q">Why is <code>Option&lt;&amp;T&gt;</code> the same size as <code>&amp;T</code> (one pointer) on 64-bit machines, instead of one pointer plus a discriminant byte?</p>
+  <ul class="quiz__options">
+    <li>The compiler reserves one byte at the end of the reference.</li>
+    <li><em>Niche optimisation</em>: <code>&amp;T</code> can never be null, so the compiler uses the all-zero bit pattern as the <code>None</code> case — same size, no overhead.</li>
+    <li>Rust references are 9 bytes packed.</li>
+    <li>It uses tagged-pointer tricks like ObjC.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Many Rust types have invalid bit patterns (a non-null reference, a <code>NonZeroU32</code>, an enum with fewer than 256 variants). The compiler uses these "niches" to encode the <code>None</code>/<code>Err</code>/etc. variant without a separate tag. <code>Option&lt;NonZero*&gt;</code> and <code>Option&lt;&amp;T&gt;</code> are the canonical zero-cost <code>Option</code>s.</div>
+  <div class="quiz__explain quiz__explain--wrong">References are non-null. Can the compiler reuse the all-zero pattern?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

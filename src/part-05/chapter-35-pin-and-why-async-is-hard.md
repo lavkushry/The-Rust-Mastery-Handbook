@@ -1,4 +1,8 @@
 # Chapter 35: Pin and Why Async Is Hard
+
+<div class="ferris-says" data-variant="insight">
+<p>Pinning, <code>Pin</code>, self-referential types. The one genuinely weird corner of async Rust. Approach it once, understand it, and mostly forget about it for the rest of your career — frameworks hide it well.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-05/chapter-33-async-await-and-futures.md">Ch 33: Async/Await</a><a href="../part-03/chapter-20-move-semantics-copy-clone-and-drop.md">Ch 20: Move Semantics</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Why some futures break if moved after internal references form</li><li><code>Pin</code> = "this value must not move from its current address"</li><li><code>Box::pin</code> and <code>tokio::pin!</code> in practice</li></ul></div>
@@ -47,6 +51,24 @@
       </svg>
     </div>
   </figure>
+</div>
+
+## In plain English first
+
+<div class="ferris-says" data-variant="warning">
+<p><code>Pin</code> exists for one reason. Once you see the reason, every API choice in this chapter follows from it.</p>
+</div>
+
+When the compiler turns your `async fn` into a state-machine struct, that struct can end up holding pointers into *itself*. (Example: you `let s = String::from(...)` and then write `let r = &s` and then `.await`. Both `s` and `r` end up as fields of the same struct. `r` is a pointer back into `s`.)
+
+Self-referential structs are dangerous in Rust because moving a value normally invalidates pointers *into* the old location. If something moves the future struct after `r` was stored, `r` now points at freed memory. Use-after-free.
+
+`Pin<P>` is a type-system promise: "the value behind this pointer will not be moved again before it is dropped." That's the entire idea. Once a future is wrapped in `Pin<&mut Future>`, the runtime can poll it confidently — the internal pointers stay valid because the future does not move.
+
+`Pin` is a *type*, not a runtime mechanism. It costs zero bytes and zero CPU cycles. The whole machinery is enforced by the compiler refusing to compile code that would let you obtain a `&mut T` to a pinned value's interior (without the type opting in to `Unpin`).
+
+<div class="ferris-says">
+<p>You almost never write <code>Pin</code> by hand. The runtime's <code>spawn</code>/<code>block_on</code> hands you a pinned future, and crates like <code>pin-project-lite</code> handle the awkward ergonomics. Knowing <em>why</em> it exists is the win — that's what this chapter teaches.</p>
 </div>
 
 ## Step 1 - The Problem
@@ -186,6 +208,88 @@ And pinned field projection in libraries often uses a helper macro crate:
 - `pin-project-lite`
 
 Those crates exist because manually projecting pinned fields is easy to get wrong in unsafe code.
+
+## Why pinning matters — a step-through
+
+<div class="ferris-says" data-variant="insight">
+<p>The cleanest way to <em>see</em> why <code>Pin</code> exists is to watch what would go wrong without it. The compiler turns <code>async fn</code> into a state-machine struct that holds borrows into <em>itself</em>. Move that struct after the borrows are recorded, and the borrows now point at garbage. Step through the four frames.</p>
+</div>
+
+<div class="step-through" data-title="Why a self-referential async future cannot be moved">
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 320" role="img" aria-label="Frame 1: an async function with a let binding to a local string and an await on a future that borrows that string">
+      <rect x="10" y="10" width="700" height="300" rx="16" fill="#fffdf8" stroke="rgba(2,62,138,0.14)"></rect>
+      <text x="360" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#1d3557;font-weight:bold">Frame 1 — the async fn you wrote</text>
+      <text x="60" y="78" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">async fn run() {</text>
+      <text x="80" y="104" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">let s = String::from("hello");</text>
+      <text x="80" y="130" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">let r: &amp;str = &amp;s;</text>
+      <text x="80" y="156" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">slow_print(r).await;</text>
+      <text x="60" y="182" style="font-family:var(--font-code);font-size:15px;fill:#1a1a2e">}</text>
+      <text x="60" y="232" style="font-family:var(--font-display);font-size:14px;fill:#457b9d">Looks ordinary. <tspan font-family="var(--font-code)">r</tspan> borrows from <tspan font-family="var(--font-code)">s</tspan>;</text>
+      <text x="60" y="252" style="font-family:var(--font-display);font-size:14px;fill:#457b9d">both live in the same stack frame.</text>
+      <text x="60" y="278" style="font-family:var(--font-display);font-size:14px;fill:#1d3557">But what stack frame? <tspan font-family="var(--font-code)">async fn</tspan> doesn't run until polled.</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 320" role="img" aria-label="Frame 2: the async fn is rewritten by the compiler into a state-machine enum holding both s and a pointer back into s, with an arrow showing the self-reference">
+      <rect x="10" y="10" width="700" height="300" rx="16" fill="#eff6ff" stroke="#1d3557"></rect>
+      <text x="360" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#1d3557;font-weight:bold">Frame 2 — what the compiler builds</text>
+      <text x="60" y="78" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">enum RunFuture {</text>
+      <text x="80" y="100" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">Start,</text>
+      <text x="80" y="122" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">SuspendedAtAwait {</text>
+      <text x="100" y="144" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">s: String,</text>
+      <text x="100" y="166" style="font-family:var(--font-code);font-size:14px;fill:#d62828">r: *const str,  // points into s</text>
+      <text x="80" y="188" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">},</text>
+      <text x="80" y="210" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">Done,</text>
+      <text x="60" y="232" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">}</text>
+      <rect x="430" y="100" width="220" height="100" rx="8" fill="#fef2f2" stroke="#d62828"></rect>
+      <text x="540" y="124" text-anchor="middle" style="font-family:var(--font-display);font-size:14px;fill:#d62828;font-weight:bold">SELF-REFERENTIAL</text>
+      <text x="440" y="148" style="font-family:var(--font-display);font-size:13px;fill:#1a1a2e"><tspan font-family="var(--font-code)">r</tspan> stores the address of</text>
+      <text x="440" y="168" style="font-family:var(--font-display);font-size:13px;fill:#1a1a2e"><tspan font-family="var(--font-code)">s</tspan>'s heap pointer — but they</text>
+      <text x="440" y="188" style="font-family:var(--font-display);font-size:13px;fill:#1a1a2e">live <em>in the same struct</em>.</text>
+      <text x="60" y="282" style="font-family:var(--font-display);font-size:13px;fill:#457b9d">Local borrows that crossed an <tspan font-family="var(--font-code)">await</tspan> become struct fields.</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 320" role="img" aria-label="Frame 3: the state-machine struct is moved from one memory location to another. The internal pointer r still points at the old location, which is now garbage. A red arrow shows the dangling pointer.">
+      <rect x="10" y="10" width="700" height="300" rx="16" fill="#fef2f2" stroke="#d62828"></rect>
+      <text x="360" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#d62828;font-weight:bold">Frame 3 — what happens if the future is <em>moved</em></text>
+      <rect x="50" y="80" width="240" height="90" rx="8" fill="#fff" stroke="#94a3b8" stroke-dasharray="6 4"></rect>
+      <text x="170" y="106" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#94a3b8">old location (now garbage)</text>
+      <text x="60" y="134" style="font-family:var(--font-code);font-size:13px;fill:#94a3b8">s: String("hello")</text>
+      <text x="60" y="154" style="font-family:var(--font-code);font-size:13px;fill:#94a3b8">r: 0x7fff…1100</text>
+      <rect x="430" y="80" width="240" height="90" rx="8" fill="#fff" stroke="#1d3557"></rect>
+      <text x="550" y="106" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#1d3557">new location (after move)</text>
+      <text x="440" y="134" style="font-family:var(--font-code);font-size:13px;fill:#1a1a2e">s: String("hello")</text>
+      <text x="440" y="154" style="font-family:var(--font-code);font-size:13px;fill:#d62828">r: 0x7fff…1100  ← stale!</text>
+      <path d="M440 154 Q 360 200 290 154" stroke="#d62828" stroke-width="2" fill="none" marker-end="url(#dangle)"></path>
+      <defs>
+        <marker id="dangle" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#d62828"></path></marker>
+      </defs>
+      <text x="360" y="232" text-anchor="middle" style="font-family:var(--font-display);font-size:14px;fill:#d62828">The internal pointer still references the <em>old</em> address.</text>
+      <text x="360" y="252" text-anchor="middle" style="font-family:var(--font-display);font-size:14px;fill:#1a1a2e">Future polled here would dereference freed stack memory.</text>
+      <text x="360" y="282" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#457b9d">This is the bug <code>Pin</code> exists to prevent.</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 320" role="img" aria-label="Frame 4: the same future is wrapped in Pin, which provides the guarantee that the inner value will not be moved again. The internal pointer r is now valid because the future stays put.">
+      <rect x="10" y="10" width="700" height="300" rx="16" fill="#ecfdf5" stroke="#047857"></rect>
+      <text x="360" y="40" text-anchor="middle" style="font-family:var(--font-display);font-size:17px;fill:#047857;font-weight:bold">Frame 4 — <code>Pin&lt;&amp;mut RunFuture&gt;</code> fixes it</text>
+      <rect x="200" y="80" width="320" height="100" rx="8" fill="#fff" stroke="#047857"></rect>
+      <text x="360" y="104" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#047857">pinned location (cannot be moved)</text>
+      <text x="220" y="134" style="font-family:var(--font-code);font-size:14px;fill:#1a1a2e">s: String("hello")</text>
+      <text x="220" y="158" style="font-family:var(--font-code);font-size:14px;fill:#047857">r: ptr-into-s — stable!</text>
+      <path d="M340 158 Q 280 175 240 158" stroke="#047857" stroke-width="2" fill="none" marker-end="url(#stable)"></path>
+      <defs>
+        <marker id="stable" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#047857"></path></marker>
+      </defs>
+      <text x="60" y="220" style="font-family:var(--font-display);font-size:14px;fill:#1a1a2e"><code>Pin&lt;P&gt;</code> is a <em>type-system promise</em>: the value behind <code>P</code> won't be moved</text>
+      <text x="60" y="240" style="font-family:var(--font-display);font-size:14px;fill:#1a1a2e">again before it's dropped. <code>poll</code> takes <code>Pin&lt;&amp;mut Self&gt;</code> precisely so</text>
+      <text x="60" y="260" style="font-family:var(--font-display);font-size:14px;fill:#1a1a2e">the executor cannot accidentally invalidate the future's internal pointers.</text>
+      <text x="360" y="290" text-anchor="middle" style="font-family:var(--font-display);font-size:13px;fill:#047857">No runtime overhead. The whole guarantee is enforced in the type signatures.</text>
+    </svg>
+  </div>
+</div>
 
 ## Step 7 - Common Misconceptions
 

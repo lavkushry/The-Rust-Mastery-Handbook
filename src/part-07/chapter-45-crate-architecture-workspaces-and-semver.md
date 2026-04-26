@@ -1,4 +1,8 @@
 # Chapter 45: Crate Architecture, Workspaces, and Semver
+
+<div class="ferris-says" data-variant="insight">
+<p>Crate architecture in practice — workspaces, feature flags, conditional compilation, semver discipline. The engineering hygiene that lets teams ship Rust libraries and services for years without the codebase rotting.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-15-modules-crates-and-visibility.md">Ch 15: Modules</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Workspace layout for multi-crate projects</li><li>Semantic versioning and public API stability</li><li>Feature flags and conditional compilation</li></ul></div>
@@ -350,6 +354,22 @@ A crate is not just code. It is a promise to other code. Rust's tooling pushes y
 ## What Invariant Is Rust Protecting Here?
 
 Public APIs, features, and crate boundaries should evolve in ways that preserve downstream correctness and expectations unless a deliberate breaking release says otherwise.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Semver in Rust</span></div>
+  <p class="quiz__q">Renaming a public field of a public struct from <code>name</code> to <code>label</code> is which kind of version bump under semver?</p>
+  <ul class="quiz__options">
+    <li>Patch (0.0.X) — implementation detail.</li>
+    <li>Minor (0.X.0) — backwards-compatible new functionality.</li>
+    <li>Major (X.0.0) — a breaking change. Every downstream crate referencing <code>foo.name</code> stops compiling.</li>
+    <li>None — public fields are not part of the API.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Public fields are part of your API surface. Renaming them, or changing their type, is a major-version-breaking change. Many libraries make fields private and expose getters/setters specifically to keep their semver surface narrow. The Rust API Guidelines and the <code>cargo-semver-checks</code> tool can help you avoid accidental breakage.</div>
+  <div class="quiz__explain quiz__explain--wrong">A downstream crate using <code>foo.name</code> stops compiling. Which version component must change?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

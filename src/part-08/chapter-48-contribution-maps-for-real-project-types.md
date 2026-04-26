@@ -1,4 +1,8 @@
 # Chapter 48: Contribution Maps for Real Project Types
+
+<div class="ferris-says" data-variant="insight">
+<p>Contribution maps — how real Rust codebases are laid out. CLI tools, web services, async frameworks, procedural macros. You will know, before you clone, where to look first for each category of project.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-08/chapter-47-making-your-first-contributions.md">Ch 47: First Contributions</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Contribution maps for CLI, web, library, and async projects</li><li>Where to look for approachable work in each project type</li><li>Building contribution confidence through pattern recognition</li></ul></div>
@@ -399,6 +403,22 @@ Different Rust projects are built around different jobs, so they hide their impo
 ## What Invariant Is Rust Protecting Here?
 
 Contribution strategy should fit the repository's architectural shape so changes happen in the right layer and preserve the dominant invariants of that project family.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Mapping a project</span></div>
+  <p class="quiz__q">When the chapter recommends building a "contribution map" for a project, the goal is to:</p>
+  <ul class="quiz__options">
+    <li>Memorise the file tree.</li>
+    <li>Know, for a given <em>kind</em> of bug or feature (parser fix, perf regression, new CLI flag, doc improvement), <em>where in the codebase the change lives</em> — so you stop hunting and start fixing.</li>
+    <li>Track who wrote which file.</li>
+    <li>Estimate hours for each file.</li>
+  </ul>
+  <div class="quiz__explain">Correct. A contribution map is the personal index that turns a strange repo into a legible one. Once you know "parser bugs live in <code>src/syntax/</code>, perf regressions are usually <code>core::eval</code>, CLI flags route through <code>src/bin/main.rs::run()</code>", every later contribution costs an order of magnitude less time than the first one.</div>
+  <div class="quiz__explain quiz__explain--wrong">The chapter pitches the map as a way to skip what step?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

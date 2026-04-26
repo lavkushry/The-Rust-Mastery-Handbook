@@ -1,5 +1,9 @@
 # Part 0: Rust in One Hour
 
+<div class="ferris-says" data-variant="insight">
+<p>Welcome! I am <strong>Ferris</strong>, and I will be your guide for the next nine chapters. Part 0 is the whole of "daily Rust" compressed into about an hour of reading. No lifetimes, no <code>unsafe</code>, no generics — just the ideas you will use every day. We build one program together (<code>wordc</code>, a small file-counting CLI) and ship it by the end. Take your time; click every <strong>Run</strong> button; try every quiz. Ready?</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Who this part is for</h4>

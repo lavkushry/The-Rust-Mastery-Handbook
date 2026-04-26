@@ -1,4 +1,8 @@
 # Chapter 42: Advanced Traits, Trait Objects, and GATs
+
+<div class="ferris-says" data-variant="insight">
+<p>Designing a crate for others to use. API versioning, semver in practice, feature flags, re-exports, documentation as a contract. The difference between a crate used 10 times and a crate used 10,000 times is mostly here.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-25-traits-rusts-core-abstraction.md">Ch 25: Traits</a><a href="../part-04/chapter-26-generics-and-associated-types.md">Ch 26: Generics</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Dynamic dispatch via <code>dyn Trait</code> and vtables</li><li>GATs: generic associated types</li><li>Object safety rules and when to use <code>impl Trait</code> vs <code>dyn Trait</code></li></ul></div>
@@ -60,6 +64,24 @@
       </svg>
     </div>
   </figure>
+</div>
+
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Three concepts live under "advanced traits" and they're easy to confuse. Here's the map.</p>
+</div>
+
+**`impl Trait`** — "any specific type that implements this trait, decided by *me* (the function author)." Used in return position to hide a complicated concrete type (e.g. an iterator chain) and in argument position as a shorthand for `<T: Trait>`. Always one specific type at compile time.
+
+**`dyn Trait`** — "any type that implements this trait, decided by the *caller* at runtime." Used through a pointer (`Box<dyn Trait>`, `&dyn Trait`). Stored as a fat pointer: data pointer + vtable pointer. Allows heterogeneous collections (a `Vec<Box<dyn Drawable>>`); pays a small cost (dynamic dispatch through the vtable).
+
+**Generic Associated Types (GATs)** — associated types parameterised by a generic, most often a lifetime. They let you write `fn iter<'a>(&'a self) -> Self::Iter<'a>` where `Self::Iter<'a>` borrows from `Self`. The classic motivation: a `LendingIterator` that yields items borrowed from itself.
+
+The "object safety" gate: not every trait can be used as `dyn Trait`. A trait with methods that take `self` by value, or with generic methods, can't be packed into a vtable. Common workaround: split the trait into an object-safe part and a generic part.
+
+<div class="ferris-says">
+<p>Decision rule: if you know the type at compile time and the type is the same for every call, use <code>impl Trait</code>. If you genuinely need to mix types in one collection or pick the type at runtime, accept the indirection and use <code>dyn Trait</code>. Reach for GATs only when an associated type genuinely needs a lifetime parameter.</p>
 </div>
 
 ## Step 1 - The Problem
@@ -357,6 +379,22 @@ Traits are Rust's way of describing what a type can do, but Rust makes you choos
 ## What Invariant Is Rust Protecting Here?
 
 Trait-based abstraction must remain coherent and sound: dispatch must know what function to call, erased types must still have a valid runtime representation, and borrow-dependent outputs must be described precisely.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Object safety</span></div>
+  <p class="quiz__q">A trait method that takes <code>self</code> by value (consuming) makes the trait <em>not object-safe</em>. Why?</p>
+  <ul class="quiz__options">
+    <li>Because <code>self</code> by value cannot be moved across an FFI boundary.</li>
+    <li>Because a <code>dyn Trait</code> is unsized — the size of the concrete type behind the pointer isn't known to the caller, so it cannot be passed by value, only behind a pointer (<code>&amp;self</code>, <code>&amp;mut self</code>, <code>Box&lt;Self&gt;</code>).</li>
+    <li>It's a temporary compiler limitation that will be removed.</li>
+    <li>Because <code>self</code> is a keyword.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Object safety is mechanical: a method becomes a vtable entry, which means callers don't know the concrete type's size or layout. Passing <code>self</code> by value would require knowing the size, so the compiler forbids it on object-safe traits. Methods on <code>Box&lt;Self&gt;</code>, <code>&amp;self</code>, etc. are fine — they're pointer-sized.</div>
+  <div class="quiz__explain quiz__explain--wrong">Think about how <code>dyn Trait</code> is laid out. Can a caller move the underlying value?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

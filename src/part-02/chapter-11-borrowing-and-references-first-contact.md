@@ -1,5 +1,9 @@
 # Chapter 11: Borrowing and References, First Contact
 
+<div class="ferris-says" data-variant="insight">
+<p>Borrowing rules, but with all the tricky cases: re-borrows, two-phase borrows, borrows through methods, borrows across control flow. If Part 0 Chapter 5 gave you the <em>aliasing rule</em>, this chapter shows you how the compiler actually enforces it.</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -224,6 +228,22 @@ int n = len(owned); // works — GC manages lifetime
 </div>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Borrowing is "lending without giving up ownership." Two sentences and an analogy below; everything else is the careful version.</p>
+</div>
+
+A **borrow** in Rust is a pointer with rules attached. `&T` means "I can read this value but not modify it"; `&mut T` means "I can read and modify it, and *I'm the only one who can right now*." The rules are enforced statically by the compiler — no runtime locks, no overhead.
+
+Imagine a Google Doc. Many people can read at the same time and nothing breaks. The moment one person enters edit mode, you don't want others reading half-applied changes. Rust enforces exactly this: at any given moment, a value has either many `&T` readers OR exactly one `&mut T` writer — never both. Picking the mode is your job; checking it is the compiler's.
+
+When you write `fn print(name: &String)`, you are saying: "I want to read the caller's `String`; I do not need to take ownership." The caller can keep using their `String` after the call. This is how almost every helper function in Rust is written — borrow what you need, return what you produce.
+
+<div class="ferris-says">
+<p>Coming from Python or JavaScript: this is the inverse of the default. There, every argument is a shared reference and you have to opt out (with <code>copy()</code>) for an unshared one. In Rust, ownership is the default and you opt into sharing by writing <code>&amp;</code>.</p>
+</div>
+
 ## Compiler Error Decoder - Borrowing Basics
 
 These are the top errors learners hit in early borrowing code.
@@ -236,4 +256,32 @@ These are the top errors learners hit in early borrowing code.
 
 When debugging, first mark where each borrow starts and where its last use occurs. Most fixes come from shrinking one overlapping region.
 
-## Step 1 - The Problem
+## Check yourself
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quiz — 1 of 2</span><span>Aliasing rule</span></div>
+  <p class="quiz__q">Rust's aliasing rule, in one sentence, says:</p>
+  <ul class="quiz__options">
+    <li>You may have as many references as you want, as long as you never mutate.</li>
+    <li>References are cheap; the compiler only checks for null references.</li>
+    <li>At any given point, you may have either <em>one</em> <code>&amp;mut T</code> <em>or</em> any number of <code>&amp;T</code> — never both.</li>
+    <li>Mutable references are forbidden; use <code>Cell</code> instead.</li>
+  </ul>
+  <div class="quiz__explain">Correct. "Many readers <em>or</em> one writer, never both." This single rule eliminates data races and iterator-invalidation bugs at compile time. It is the rule the borrow checker spends most of its time enforcing.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at the "Aliasing XOR Mutation" invariant described in the chapter. The rule is binary, not a preference.</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="quiz__head"><span>Quiz — 2 of 2</span><span>E0502</span></div>
+  <p class="quiz__q">You see <code>error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immutable</code>. What is the <em>most common</em> fix?</p>
+  <ul class="quiz__options">
+    <li>End the immutable borrow earlier — finish using it before taking the mutable one.</li>
+    <li>Clone the data to work around the borrow checker.</li>
+    <li>Wrap <code>v</code> in <code>Rc&lt;RefCell&gt;</code> to bypass the rule.</li>
+    <li>Add <code>#[allow(unused_borrow)]</code>.</li>
+  </ul>
+  <div class="quiz__explain">Correct. In most real E0502 cases, the two borrows just overlap a little too long. Restructuring the code so the shared borrow ends before the mutable one begins solves 80%+ of these errors. Clone, RefCell, and allow-lints are last resorts — the compiler usually points at a scope you can actually shrink.</div>
+  <div class="quiz__explain quiz__explain--wrong">Re-read the Compiler Error Decoder above. What does the "Typical fix direction" column say for E0502?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>

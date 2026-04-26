@@ -1,5 +1,9 @@
 # Where to Next
 
+<div class="ferris-says" data-variant="insight">
+<p>You started this book never having written a line of Rust. A couple of hours later you have shipped a real command-line tool, understood ownership, and read your first compiler errors like an adult. That is not a small thing. Most people who try to learn Rust from scratch on the internet give up around ownership — you blew past it. You earned this chapter.</p>
+</div>
+
 <div class="one-sentence">
   If you only remember one thing: <strong>you now know enough Rust to read almost any Rust code in the wild. The rest of this book is depth on top of the ideas you already have.</strong>
 </div>
@@ -52,6 +56,11 @@ The tone changes a little after Part 0. The book is a real handbook — when we 
   <p>Rust's reputation as "hard" comes from one thing: most books teach the syntax and assume you will <em>figure out</em> the mental model. You don't. You absorb it.</p>
   <p>This book tries to flip that. Part 0 was the mental model first. The syntax was just the notation we used to write down what we already understood. If you felt like "oh, that was fine" — that's the feeling we were aiming for. It wasn't luck. It was the order of teaching.</p>
   <p>Go build something.</p>
+</div>
+
+<div class="ferris-says">
+<p>One last thing. Keep the <code>wordc</code> project open. In Part 1 we will take the same idea — a file-processing CLI — and push on it harder. More flags, better error handling, tests, release-mode optimisations, property-based testing. Same program, just gradually better. That is how Rust actually feels: you build small things, you extend them, and somewhere along the way the language gets out of your way.</p>
+<p>Go build something.</p>
 </div>
 
 <a href="../part-01/index.md">Continue to Part 1 — Why Rust Exists →</a>

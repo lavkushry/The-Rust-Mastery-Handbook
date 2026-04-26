@@ -1,4 +1,8 @@
 # Chapter 17: Borrowing, Constrained Access
+
+<div class="ferris-says" data-variant="insight">
+<p>Borrowing, pushed until it breaks. We go past "one writer or many readers" into <em>why</em> that rule exists, what it rules out (a shocking number of real-world bugs), and the clever workarounds (<code>Cell</code>, <code>RefCell</code>, interior mutability) that let you bend the rule when you need to.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -177,6 +181,158 @@ The borrow checker sees that <code>first</code> holds <code>&v</code> (shared bo
 </div>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>The deep walkthrough below is the systems-engineer view. Here is the beginner-first version that makes the rest land easily.</p>
+</div>
+
+Imagine a Google Doc. Many people can read at the same time without anything going wrong. The moment one person starts editing, you would *not* want others reading half-applied changes. So either: many readers, no writer; or, exactly one writer, no readers. Pick a mode, swap when you need to.
+
+That is the entire borrowing rule, and Rust calls it **aliasing XOR mutation**: at any moment, a value has either many shared borrows (`&T`) or one exclusive borrow (`&mut T`), never both. The compiler proves it for you, statically, before your program runs.
+
+The reason this matters is not abstract. It eliminates an entire family of real-world bugs: iterator invalidation (mutating a list while iterating it), data races between threads, callback APIs that re-enter and corrupt their own state. None of those are reachable in safe Rust — *because* aliasing XOR mutation rules them out.
+
+<div class="ferris-says">
+<p>Many readers ↔ <code>&amp;T</code>. One writer ↔ <code>&amp;mut T</code>. The hard part is not memorising the names; it is reading code and noticing which mode each line is operating in. The walkthroughs below train exactly that skill.</p>
+</div>
+
+## Beginner walkthrough — every idea in this chapter, plain English
+
+<div class="ferris-says" data-variant="insight">
+<p>The onramp gave you the rule (many readers XOR one writer). This walkthrough is the rule applied — what bugs it eliminates, where it shows up in real code, and the small set of patterns for working <em>with</em> the rule rather than fighting it.</p>
+</div>
+
+### 1. The rule, restated and demonstrated
+
+At any single moment, a value can have either:
+
+- *Many* shared borrows (`&T`), each of which can read but not modify, OR
+- *Exactly one* exclusive borrow (`&mut T`), which can read and modify.
+
+Never both. The compiler proves it before your program runs.
+
+This isn't an arbitrary policy — it's a *physical* invariant. Two threads modifying the same memory without coordination is a data race, and the result is undefined. One thread modifying memory while another reads halfway through is a torn read. Rust's rule rules out both at the type-system level. The aliasing rule isn't restricting you; it's articulating the precondition that already had to hold for your program to be correct.
+
+### 2. The bug class that disappears: iterator invalidation
+
+Here is the canonical example of the rule paying off. In Python:
+
+```python
+xs = [1, 2, 3, 4]
+for x in xs:
+    if x == 2:
+        xs.append(5)        # mutate while iterating
+```
+
+This silently does the wrong thing — sometimes you visit the appended element, sometimes you don't, and on Python 3.x you may iterate forever in pathological cases. The same pattern in C++ is undefined behaviour. The same pattern in Java throws `ConcurrentModificationException` *at runtime* if you're lucky.
+
+In Rust:
+
+```rust,ignore
+let mut xs = vec![1, 2, 3, 4];
+for x in &xs {
+    if *x == 2 {
+        xs.push(5);                  // ← compile error
+    }
+}
+```
+
+`for x in &xs` takes a `&Vec<i32>` borrow. `xs.push(5)` requires `&mut Vec<i32>`. Both alive at the same point. Rule violated. The compiler refuses with E0502: "cannot borrow `xs` as mutable because it is also borrowed as immutable."
+
+The bug isn't *prevented at runtime*. It's *unrepresentable in the source code*. That's the difference.
+
+### 3. The deeper reason `Vec::push` requires `&mut`
+
+A `Vec` is a struct holding three things: a pointer to its heap buffer, a length, and a capacity. When you `push` and the length would exceed the capacity, the `Vec` allocates a *new, larger* heap buffer, copies the elements over, and frees the old one.
+
+If anyone was holding a `&i32` reference into the old buffer, that reference is now pointing at freed memory. Use-after-free.
+
+This is why `Vec::push` is `fn push(&mut self, ...)` — and why the borrow checker requires *no `&` borrows* to be alive at the same time. The rule isn't bureaucratic. It's saving you from a real, repeatable, hard-to-debug bug.
+
+### 4. When you genuinely need to mutate while reading
+
+Three escape hatches, in order of preference:
+
+**(a) Restructure the borrow scope.** Often the "I need both" feeling goes away if you read the value into a local first. `for x in xs.clone() { xs.push(...) }` works because the iterator is over the clone, not the live `xs`.
+
+**(b) Use indices instead of references.** `for i in 0..xs.len() { if xs[i] == 2 { xs.push(5); break; } }` — indices are `usize`, not borrows, so the aliasing rule doesn't constrain them. The trade-off is you give up the iterator's bounds-check elision and you have to handle the case where pushing changes `xs.len()` mid-loop.
+
+**(c) Use interior mutability.** `Cell<T>`, `RefCell<T>`, `Mutex<T>` move the borrow check from compile time to runtime. You hold a shared `&Cell<T>` and call `.set()` through it; the compiler is OK with this because the *type* opted into runtime checking. We cover these in detail in chapter 30.
+
+### 5. NLL is what makes the rule pleasant in 2024
+
+Pre-Rust-2018, a borrow's "region" extended from creation to the end of the enclosing block. Lots of obviously-fine code didn't compile because borrows were considered alive longer than they really were.
+
+Non-Lexical Lifetimes (NLL, Rust 2018+) computes the borrow's region from the *control-flow graph*: a borrow is alive only between its creation and its *last use*. This single change made huge amounts of code compile that used to require contortions.
+
+```rust,ignore
+let mut v = vec![1, 2, 3];
+let first = &v[0];
+println!("{first}");      // last use of `first`
+v.push(4);                // OK — `first` is no longer alive
+```
+
+Pre-NLL: error. Post-NLL: compiles. The rule is the same; the compiler is just smarter about *when* a borrow ends.
+
+### 6. The shape that keeps showing up
+
+Once you internalise aliasing XOR mutation, you'll start seeing the same shape repeatedly across the standard library and well-designed crates: methods that *read* take `&self`, methods that *modify* take `&mut self`, and the type of `Self` is the public contract for which kinds of access can coexist. That contract is the borrow checker's input. The rest is mechanics.
+
+<div class="ferris-says">
+<p>Most of fighting the borrow checker, the first month, is fighting against this rule. Most of <em>not</em> fighting the borrow checker, after the first month, is recognising the rule's shape early and writing your function signatures to express what you really need.</p>
+</div>
+
+## wordc, step 12 — many readers over the same `&[u8]`
+
+<div class="ferris-says" data-variant="insight">
+The <code>WordcSession</code> we built last chapter <em>owns</em> the file's bytes. Now we'll fan out work over those bytes by handing out shared borrows. Many readers, no writers — exactly the case the aliasing rule allows.
+</div>
+
+A real word counter wants to compute several stats over the same file: word count, line count, longest word, the histogram of word lengths. We don't want each pass to re-read the file or clone the bytes. Borrowing makes that free.
+
+```rust
+fn count_words(text: &str, min_len: usize) -> usize {
+    text.split_whitespace().filter(|w| w.chars().count() >= min_len).count()
+}
+
+fn count_lines(text: &str) -> usize {
+    text.lines().count()
+}
+
+fn longest_word(text: &str) -> Option<&str> {
+    text.split_whitespace().max_by_key(|w| w.chars().count())
+}
+
+fn report(session: &WordcSession) {
+    let text = std::str::from_utf8(&session.bytes).unwrap_or("");
+
+    let words = count_words(text, 1);
+    let lines = count_lines(text);
+    let longest = longest_word(text).unwrap_or("");
+
+    println!("words:   {words}");
+    println!("lines:   {lines}");
+    println!("longest: {longest:?}");
+}
+```
+
+Three different functions all hold a `&str` into the *same* underlying `Vec<u8>` at the same time. The borrow checker is fine with this — they're shared borrows, and the session is alive across the entire block. There are no writers, so there is nothing for an aliased reader to race with.
+
+<div class="ferris-says" data-variant="warning">
+Now try inserting a write — e.g. mutate <code>session.bytes</code> while <code>longest</code> still references <code>text</code>. The compiler refuses (E0502): a <code>&mut</code> against the bytes would invalidate the <code>&str</code>. The aliasing rule is not arbitrary; it is exactly what protects <code>longest</code> from pointing at freed or moved memory.
+</div>
+
+### Why this is the same rule as `Vec::push`
+
+When `Vec::push` reallocates, it invalidates every borrow into the old buffer. The compiler models this as: `push` requires `&mut self`, and `&mut self` is incompatible with any outstanding `&self` borrow.
+
+`wordc::report` benefits from the same rule in the *good* direction: as long as no one writes, every reader is safe to keep its `&str`. We get parallel reads of the same bytes for free, with zero copies and zero locks.
+
+### A subtle point: `&str` vs `&[u8]`
+
+`std::str::from_utf8(&self.bytes)` returns a `Result<&str, Utf8Error>`. The `&str` *re-borrows* a piece of the `&[u8]` we already had. Both point at the same memory. The Rust type system tracks both, and ensures the `&str` cannot outlive the bytes it borrows from. We will rely on this in the next step (lifetimes).
+
 ## Readiness Check - Borrowing Confidence
 
 Before proceeding, self-check your ability to reason about aliasing and mutation.
@@ -199,4 +355,32 @@ Target Level 2+ before moving to Chapter 21.
 
 Always ask: "Which borrow must stay live here?" Then eliminate or shorten the other one.
 
-## Step 1 - The Problem
+## Check yourself
+
+<div class="quiz" data-answer="3">
+  <div class="quiz__head"><span>Quiz — 1 of 2</span><span>Interior mutability</span></div>
+  <p class="quiz__q">You have a <code>Vec&lt;T&gt;</code> that one reader needs to observe and one writer needs to append to, all from a single thread. Which primitive is appropriate?</p>
+  <ul class="quiz__options">
+    <li><code>Arc&lt;Mutex&lt;Vec&lt;T&gt;&gt;&gt;</code> — it is always safe, so use it.</li>
+    <li>Raw pointers and <code>unsafe</code>.</li>
+    <li>Two independent <code>Vec</code>s, one per role.</li>
+    <li><code>RefCell&lt;Vec&lt;T&gt;&gt;</code> — it enforces the aliasing rule at <em>runtime</em>, single-threaded, no lock cost.</li>
+  </ul>
+  <div class="quiz__explain">Correct. <code>RefCell</code> is the single-threaded interior-mutability primitive: it checks "one writer or many readers" at runtime and panics on violation. <code>Mutex</code> solves the same problem for cross-thread, with a real OS-level lock. Using <code>Mutex</code> where <code>RefCell</code> would do is leaving performance on the table.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at the chapter's section on <code>Cell</code> / <code>RefCell</code>. Which one solves this single-threaded case without an OS lock?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
+<div class="quiz" data-answer="0">
+  <div class="quiz__head"><span>Quiz — 2 of 2</span><span>NLL</span></div>
+  <p class="quiz__q">What does "non-lexical lifetimes" change about Rust's borrow checker?</p>
+  <ul class="quiz__options">
+    <li>A borrow ends at its <em>last use</em>, not at the closing brace of the scope — so more correct programs now compile.</li>
+    <li>You can skip the borrow checker entirely with <code>#[no_nll]</code>.</li>
+    <li>Borrows now live forever unless explicitly ended.</li>
+    <li>Lifetimes become dynamic; they are tracked at runtime.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Pre-NLL, a borrow was "alive" from creation until the end of its enclosing <code>{}</code> block — often much longer than needed. NLL made the borrow end at its <em>last real use</em>, which is a much tighter and more intuitive model. Many programs that "should obviously compile" only started compiling after NLL landed in 2018.</div>
+  <div class="quiz__explain quiz__explain--wrong">Re-read the NLL section. The key word is <em>last use</em>.</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>

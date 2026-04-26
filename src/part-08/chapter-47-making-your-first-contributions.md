@@ -1,4 +1,8 @@
 # Chapter 47: Making Your First Contributions
+
+<div class="ferris-says" data-variant="insight">
+<p>Your first open-source contribution — picking an issue, reading the contributor guide, scoping the change, passing CI, responding to review. The <em>meta</em>-skill. Rust projects tend to be friendly to beginners; this chapter tells you how to walk in confident.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-08/chapter-46-entering-an-unfamiliar-rust-repo.md">Ch 46: Entering a Repo</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Good first issue selection strategy</li><li>Writing tests, docs, and small fixes</li><li>Code review norms in Rust projects</li></ul></div>
@@ -333,6 +337,22 @@ Your first contribution should make a maintainer's life easier, not more uncerta
 ## What Invariant Is Rust Protecting Here?
 
 Contributions should preserve project invariants while minimizing reviewer uncertainty about correctness, scope, and maintenance cost.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>First-PR scope</span></div>
+  <p class="quiz__q">For a first PR to a project you've just opened, which scope is most likely to land?</p>
+  <ul class="quiz__options">
+    <li>A large refactor that "cleans up" the codebase.</li>
+    <li>A surgical fix to one issue: a typo in docs, a clarifying error message, a missing test for an existing function, or a small bug with a clear reproducer. Demonstrates respect for maintainers' time and existing structure.</li>
+    <li>An entire new subsystem.</li>
+    <li>Renaming files for consistency.</li>
+  </ul>
+  <div class="quiz__explain">Correct. A first contribution is as much a <em>relationship-builder</em> as it is code. Surgical scope earns trust: the maintainer can review it in one sitting, agree with the framing, and merge it. That trust unlocks bigger contributions later. Sweeping refactors from a stranger almost always stall, regardless of their merit.</div>
+  <div class="quiz__explain quiz__explain--wrong">What scope earns trust from a maintainer who has never met you?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

@@ -1,4 +1,8 @@
 # Chapter 16: Ownership as Resource Management
+
+<div class="ferris-says" data-variant="insight">
+<p>Ownership is not just about memory. <em>Ownership is about every resource</em> — files, locks, network connections, GPU handles, database transactions. When you understand that, the pattern RAII (resource-acquisition-is-initialisation) stops being an acronym and starts feeling obvious. This is the chapter where Rust's design philosophy finally reveals itself.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -106,6 +110,171 @@
 - When an owning variable goes out of scope, Rust automatically calls the `Drop` trait, instantly freeing the memory or closing the file.
 - This pattern is called RAII (Resource Acquisition Is Initialization), and it is why Rust rarely leaks resources even without a garbage collector.
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Before the systems-engineer track below, here is the same idea in three sentences. If you grok these, the rest of this chapter is just consequences.</p>
+</div>
+
+Ownership in Rust is the same idea as your library card. You check a book out (you *own* it). You can lend it to a friend who reads it (you *borrow* it out). When the loan period ends, the book goes back to the library — automatically — whether you remembered or not.
+
+Now substitute "book" with anything that needs cleaning up: a heap allocation, an open file, a network connection, a database transaction, a GPU buffer, a held mutex. *Every* one of those resources has the same shape: acquired, used, released. Rust's word for "the binding that releases it" is **ownership**, and the language guarantees the release happens — once, deterministically, at end of scope, even if your code panics on the way out.
+
+The acronym for this is **RAII** ("Resource Acquisition Is Initialization"). Two ways to read it: "I acquired the resource the moment I initialized the variable" (its name); or, more usefully, "the variable's lifetime *is* the resource's lifetime". The rest of this chapter shows you how that single rule lets Rust skip garbage collection and still leak nothing.
+
+<div class="ferris-says">
+<p>If you are coming from a language with <code>try { … } finally { close(); }</code> blocks, Rust does not need <code>finally</code>. Scope <em>is</em> finally — and the compiler writes the cleanup for you on every exit path.</p>
+</div>
+
+## Beginner walkthrough — every idea in this chapter, plain English
+
+<div class="ferris-says" data-variant="insight">
+<p>The "In plain English first" section gave you the three-sentence summary. This section is the full guided tour — the same content the depth track covers, only in everyday words. Read this whole section before the structured material below; it makes the depth feel like a refinement instead of a wall.</p>
+</div>
+
+### 1. Ownership is one rule, applied to everything that needs cleanup
+
+Every value in your Rust program lives somewhere. A small one (a `u32`, a `bool`) lives directly on the stack — the chunk of memory the CPU uses for local variables. A bigger one (a `String`, a `Vec`, a network socket, a file handle) has *two* parts: a small "handle" on the stack, and the actual data somewhere else (heap memory, an open file descriptor, a port).
+
+The rule is: **whichever variable is the most-recent name for that handle is the *owner*.** When the owner goes out of scope (the function returns, the block ends, an early `return` fires, even a `panic!`), Rust runs cleanup automatically — frees the heap memory, closes the file, releases the socket, releases the lock. *Without* you writing the cleanup, *on every exit path*, even ones you didn't think of.
+
+That's it. That single rule does the work of a garbage collector, a `try { } finally { }` block, a destructor, a connection pool's "release on close" — all of them — without runtime cost. The compiler emits the cleanup code at every exit point at compile time.
+
+### 2. Why this is bigger than memory
+
+Memory is the easy case because every program has it. The deeper insight is that the *exact same pattern* applies to every resource your program manages.
+
+A `File` value, when it goes out of scope, calls `close()` on the underlying file descriptor. A `MutexGuard` value, when it goes out of scope, releases the mutex lock. A `tokio::sync::Semaphore::acquire()` permit, when it goes out of scope, returns the permit to the pool. A `rusqlite::Transaction`, when it goes out of scope, *rolls itself back* unless you called `.commit()`.
+
+The acronym for this is **RAII** — "Resource Acquisition Is Initialization." Two ways to read it: "I acquired the resource when I initialized the variable" (literal); or, more useful, "the variable's lifetime *is* the resource's lifetime" (operational).
+
+Once you have RAII, you stop needing `try`/`finally`. Scope *is* finally. You stop needing connection-pool wrapper functions. You stop needing "close in the error path or the success path?" code reviews. The resource is released when the variable holding it ends. Period.
+
+### 3. What the code looks like in practice
+
+You almost never *write* `Drop::drop` by hand. The standard library has already implemented `Drop` for everything you need — `String`, `Vec`, `Box`, `File`, `Mutex`, `Arc`, `Rc`, `TcpStream`. When you write `let s = String::from("hello");`, you're already opting into RAII. When `s` ends its scope, the heap buffer holding `"hello"` is freed. You did nothing extra.
+
+When you do write a `Drop` impl, it's almost always for a custom resource — a database connection, a hardware handle, a temp directory cleanup, a metrics flush. The pattern is:
+
+```rust,ignore
+struct TempDir { path: PathBuf }
+
+impl Drop for TempDir {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.path);
+    }
+}
+```
+
+That's three lines, and it guarantees the directory is removed even if the function holding the `TempDir` panics on the way out.
+
+### 4. The drop order rule
+
+When several owned values end at the same scope, they drop in **reverse order of declaration**:
+
+```rust,ignore
+fn run() {
+    let listener = TcpListener::bind(...);
+    let cache = Cache::new(...);
+    let logger = Logger::new(...);
+
+    do_work(&listener, &cache, &logger);
+    // ↓ scope ends; drop order:
+    //   1. logger
+    //   2. cache
+    //   3. listener
+}
+```
+
+This is not a quirk; it's a guarantee you can rely on. If `cache` has a reference to `logger`, you write the code as above and let scope end. The logger drops *after* the cache, so the cache can flush logs on its own way out.
+
+### 5. The single trap most beginners hit: trying to move out of a `Drop` type
+
+Once a struct implements `Drop`, you cannot destructure it to move its fields out — the compiler refuses (E0509). The reason is that `Drop` runs as a single atomic step on the whole value; the compiler can't let you take a piece of it away and then run `Drop` on the rest. The fix is one of:
+
+- Borrow the field instead of moving it (`&self.field` or `&mut self.field`).
+- Wrap the field in `Option<T>` and use `Option::take()` to leave a `None` behind on the way out.
+- Reorganise the struct so the `Drop` impl is on a smaller helper type that owns only what genuinely needs cleanup.
+
+When you internalise this rule, your structs naturally start owning *only* what they're responsible for cleaning up — which is the deepest design lesson of the whole chapter.
+
+<div class="ferris-says">
+<p>If you got this far, you understand <em>most</em> of what makes Rust feel different from other languages. The depth content below adds the formal edges: drop-order trade-offs, the <code>ManuallyDrop</code> escape hatch, recursive type design. None of it is mysterious from here.</p>
+</div>
+
+## wordc, step 11 — packaging owned state into a `WordcSession`
+
+<div class="ferris-says" data-variant="insight">
+Up to now, <code>wordc</code>'s <code>main</code> juggled four loose values: the parsed CLI, the path, the bytes, and the count. Now we'll bundle them into a single owning struct. When the struct goes out of scope, every owned field's <code>Drop</code> runs in declaration order — for free.
+</div>
+
+So far our <code>main</code> shuffled `cli`, `bytes`, `text`, `count` around as separate locals. That's fine, but it scales poorly: when wordc grows (caching the file size, tracking how long the read took, recording the line count, building a histogram), every one of those becomes another loose binding. Ownership lets us roll the whole *session* into one struct that owns its data and cleans up on its own.
+
+```rust
+use std::fs;
+use std::path::PathBuf;
+use std::time::Instant;
+
+/// Everything one invocation of wordc owns.
+///
+/// When the value is dropped, every owned field is dropped in
+/// declaration order: started_at first (trivial), then bytes, then path.
+struct WordcSession {
+    path: PathBuf,
+    bytes: Vec<u8>,
+    started_at: Instant,
+}
+
+impl WordcSession {
+    fn open(path: PathBuf) -> std::io::Result<Self> {
+        let started_at = Instant::now();
+        let bytes = fs::read(&path)?;
+        Ok(Self { path, bytes, started_at })
+    }
+
+    fn count_words(&self, min_len: usize) -> usize {
+        let text = std::str::from_utf8(&self.bytes).unwrap_or("");
+        text.split_whitespace()
+            .filter(|w| w.chars().count() >= min_len)
+            .count()
+    }
+}
+
+impl Drop for WordcSession {
+    fn drop(&mut self) {
+        let elapsed = self.started_at.elapsed();
+        eprintln!(
+            "wordc: {} closed after {:.3?}",
+            self.path.display(),
+            elapsed,
+        );
+    }
+}
+```
+
+`WordcSession` is now a *resource* in the RAII sense: constructing one acquires the file's bytes; dropping one prints a trace and frees them. Notice we never wrote a `close()` method — the language has one already, spelled "end of scope".
+
+```rust
+fn main() -> std::io::Result<()> {
+    let session = WordcSession::open(PathBuf::from("notes.txt"))?;
+    println!("{} has {} words.", session.path.display(), session.count_words(1));
+    Ok(())
+    // <-- session dropped here; bytes freed; trace printed.
+}
+```
+
+<div class="ferris-says">
+Try this: add a second <code>WordcSession</code> below the first inside <code>main</code>. Run it. The drop messages print in <em>reverse</em> order — last constructed, first dropped. That's a stack of owned resources, automatically unwound.
+</div>
+
+### What ownership bought us
+
+- `bytes: Vec<u8>` is owned by the session. When the session ends, the heap allocation goes back to the allocator. No `free()`, no `drop_bytes()` method.
+- `path: PathBuf` is owned. We could pass `&Path` everywhere instead, but owning it inside the session means callers don't need to keep their own copy alive.
+- `Drop` runs *every* time the session ends — early return on `?`, panic, normal flow. There is no path through the function where the file's bytes leak.
+
+This is why Rust does not need `try`/`finally`. The compiler emits the cleanup code at every exit, so you can't forget it.
+
 ### Recommended Reading
 
 - [Rustonomicon: Ownership and Lifetimes](https://doc.rust-lang.org/nomicon/ownership.html)
@@ -134,4 +303,32 @@ If you are below Level 2 in any row, revisit the code reading drills in this cha
 
 If your cleanup logic feels complicated, model it as ownership transitions first, then encode it in API boundaries.
 
-## Step 1 - The Problem
+## Check yourself
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quiz — 1 of 2</span><span>RAII</span></div>
+  <p class="quiz__q">In Rust, what is the relationship between a <code>File</code> value and the underlying OS file descriptor?</p>
+  <ul class="quiz__options">
+    <li>The file descriptor is leaked unless you call <code>file.close()</code> manually.</li>
+    <li>A background thread polls unused <code>File</code>s and closes them periodically.</li>
+    <li>When the <code>File</code> goes out of scope, its <code>Drop</code> impl automatically closes the descriptor. No <code>close()</code> method exists — scope owns cleanup.</li>
+    <li><code>File</code> is just a number; you close it with <code>libc::close</code> directly.</li>
+  </ul>
+  <div class="quiz__explain">Correct. This is RAII: the <em>lifetime</em> of the <code>File</code> value <em>is</em> the lifetime of the resource. Drop runs at the end of scope. No close(), no try-with-resources, no finally block — just ownership. The same pattern applies to <code>Mutex</code> locks, TCP sockets, database connections, GPU handles, everything.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at the chapter's definition of RAII. What runs when the owner goes out of scope?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="quiz__head"><span>Quiz — 2 of 2</span><span>Resource flow</span></div>
+  <p class="quiz__q">Which of these API designs <em>best</em> encodes "this function takes responsibility for closing the stream"?</p>
+  <ul class="quiz__options">
+    <li><code>fn write_payload(stream: &amp;mut Stream, data: &amp;[u8])</code></li>
+    <li><code>fn send_and_close(stream: Stream, data: &amp;[u8])</code></li>
+    <li><code>fn send_with_callback(stream: Stream, cb: fn(&amp;mut Stream))</code></li>
+    <li><code>fn write_payload(data: &amp;[u8], close_stream: bool)</code></li>
+  </ul>
+  <div class="quiz__explain">Correct. Taking <code>stream: Stream</code> (by value, not by reference) <em>moves ownership into the function</em>. The caller cannot use it again. At the end of the function, the <code>Stream</code> is dropped — closing it. The signature itself documents the contract; no comment needed.</div>
+  <div class="quiz__explain quiz__explain--wrong">Think about ownership transfer. Which signature <em>takes</em> the stream rather than borrowing it?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>

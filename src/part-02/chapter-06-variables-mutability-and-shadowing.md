@@ -1,4 +1,8 @@
 # Chapter 6: Variables, Mutability, and Shadowing
+
+<div class="ferris-says" data-variant="insight">
+<p>You met <code>let</code> and <code>let mut</code> in Part 0. Here we go one level deeper — shadowing rules, const vs static, type annotations you choose vs ones the compiler infers. Small surface, a lot of hidden depth.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-05-cargo-and-project-structure.md">Ch 5: Cargo</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>let</code> vs <code>let mut</code> — immutable by default</li><li>Shadowing is rebinding, not mutation</li><li>Why Rust defaults to immutability</li></ul></div>

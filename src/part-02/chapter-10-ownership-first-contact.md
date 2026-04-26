@@ -1,4 +1,8 @@
 # Chapter 10: Ownership, First Contact
+
+<div class="ferris-says" data-variant="insight">
+<p>Part 0's ownership summary was the "friendly version". Here is the real thing — with full compiler-error walkthroughs, edge cases around closures and method calls, and the subtle places where moves happen without you writing a single <code>=</code>. This is the chapter most beginners re-read twice. Do not skip it.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -292,6 +296,22 @@ When <code>s2</code> leaves scope, <code>Drop::drop</code> runs, freeing the hea
 </div>
 </div>
 
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Three sentences cover ownership well enough to write real code. The rest of this chapter is just the careful version of the same idea.</p>
+</div>
+
+Every value in Rust has exactly one **owner** at a time. The owner is whichever variable you most recently assigned the value to. When the owner goes out of scope, the value is destroyed automatically.
+
+That single rule replaces three things you might have used in other languages: garbage collection (no — Rust frees deterministically at end of scope), `try { … } finally { close() }` blocks (no — scope *is* the cleanup point), and reference counting in the common case (no — only when sharing is genuinely needed). Most values in idiomatic Rust have one owner, full stop.
+
+If you assign one variable to another, ownership *moves* to the new variable; the old one becomes invalid. That's a deliberate design choice — Rust assumes you wanted to *transfer* the value, not silently duplicate a heap allocation.
+
+<div class="ferris-says">
+<p>Library-card analogy: you check a book out, you can lend it to a friend (a "borrow", coming next chapter), or you can hand the book over for good (a "move"). When the loan ends, the book goes back on the shelf — automatically, no librarian effort, no leak.</p>
+</div>
+
 ## Step 1 - The Problem
 
 
@@ -336,6 +356,36 @@ Use this table while reading compiler output. The goal is to map each error to t
 | E0716      | A temporary value was dropped while still borrowed | Bind temporary values to named variables before borrowing                      |
 
 If you still feel stuck, jump to `rustc --explain <CODE>` and connect the explanation back to the ownership timeline in this chapter.
+
+## Check yourself
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quiz — 1 of 2</span><span>Moves</span></div>
+  <p class="quiz__q">Given <code>let a = String::from("rust"); let b = a;</code>, what is the state of <code>a</code> immediately after the second line?</p>
+  <ul class="quiz__options">
+    <li><code>a</code> is a copy of <code>b</code>; both are independent <code>String</code>s on the heap.</li>
+    <li><code>a</code> and <code>b</code> share the same heap allocation via a reference count.</li>
+    <li><code>a</code> is no longer usable — the ownership has <em>moved</em> to <code>b</code>, and reading <code>a</code> is a compile error.</li>
+    <li><code>a</code> is set to <code>None</code> and can be overwritten later.</li>
+  </ul>
+  <div class="quiz__explain">Correct. <code>String</code> does not implement <code>Copy</code>, so <code>=</code> performs a <em>move</em>. The compiler marks <code>a</code> as invalidated and rejects any later use — this is E0382 "use of moved value". Rust's assignment moves ownership; it does not copy data.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at the E0382 row in the Compiler Error Decoder above. Which option describes "use of moved value"?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
+
+<div class="quiz" data-answer="1">
+  <div class="quiz__head"><span>Quiz — 2 of 2</span><span>Drop</span></div>
+  <p class="quiz__q">When exactly does the <code>Drop</code> implementation of a <code>Vec&lt;i32&gt;</code> run?</p>
+  <ul class="quiz__options">
+    <li>When the garbage collector runs its next sweep.</li>
+    <li>At the end of the scope where the <code>Vec</code>'s <em>current owner</em> is defined, deterministically and without runtime cost.</li>
+    <li>When all references to the <code>Vec</code> have been dropped, like Rc.</li>
+    <li>Never — memory is leaked unless you call <code>free()</code> manually.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Rust has no garbage collector. Drop is deterministic — it runs at the end of the <em>owner's</em> scope (not the reference's scope, not a GC sweep). You can look at any function and know, line-by-line, when each value dies. This is why Rust programs have such predictable latency.</div>
+  <div class="quiz__explain quiz__explain--wrong">Re-read the section on RAII and drop above. What determines <em>when</em> Drop runs?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## Chapter Resources
 * **Official Source:** [The Rust Programming Language, Chapter 4: Understanding Ownership](https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html)

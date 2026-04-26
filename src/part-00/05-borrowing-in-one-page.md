@@ -1,5 +1,9 @@
 # Borrowing in One Page
 
+<div class="ferris-says">
+<p>Ownership, you now know, is strict: one value, one owner. If every function took ownership, you would have to clone everything — expensive and tedious. <strong>Borrowing</strong> is the pressure-release valve. A borrow says: "you may look, but do not take; I will want it back." And because the compiler knows exactly how long a borrow lives, you get the speed of C-style pointers with none of the bugs.</p>
+</div>
+
 <div class="one-sentence">
   If you only remember one thing: <strong>a borrow lets a function look at your value without taking it over, and the compiler guarantees the value will still be valid while the borrow lives.</strong>
 </div>
@@ -130,6 +134,75 @@ fn main() {
 
 Read the error when it shouts at you. It will tell you, to the character, which borrow was already live and what you tried to do.
 
+## Watch the rule in action
+
+<div class="ferris-says" data-variant="insight">
+<p>Step through these frames. Notice how each state is <em>either</em> "readers" <em>or</em> "one writer", never both at once. Keyboard arrows work too.</p>
+</div>
+
+<div class="step-through" data-title="The aliasing rule, one frame at a time">
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 280" role="img" aria-label="Frame 1: A box labelled s owns the string rust. No borrows exist yet.">
+      <rect x="10" y="10" width="700" height="260" rx="16" fill="#fffdf8" stroke="rgba(2,62,138,0.14)"></rect>
+      <text x="360" y="44" text-anchor="middle" style="font-family:var(--font-display);font-size:18px;fill:#1d3557;font-weight:bold">Frame 1 — just an owner, no borrows</text>
+      <rect x="280" y="100" width="160" height="80" rx="12" fill="#ffffff" stroke="#1d3557" stroke-width="3"></rect>
+      <text x="360" y="135" text-anchor="middle" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">s = "rust"</text>
+      <text x="360" y="162" text-anchor="middle" style="font-family:var(--font-display);font-size:12px;fill:#457b9d">(the owner)</text>
+      <text x="360" y="230" text-anchor="middle" style="font-family:var(--font-code);font-size:14px;fill:#1d3557">let mut s = String::from("rust");</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 280" role="img" aria-label="Frame 2: Three shared borrows r1, r2, r3 all pointing at s. All are readers. This is legal.">
+      <rect x="10" y="10" width="700" height="260" rx="16" fill="#eef6ff" stroke="#457b9d"></rect>
+      <text x="360" y="44" text-anchor="middle" style="font-family:var(--font-display);font-size:18px;fill:#1d3557;font-weight:bold">Frame 2 — many readers, all at once. Fine.</text>
+      <rect x="280" y="100" width="160" height="80" rx="12" fill="#ffffff" stroke="#457b9d" stroke-width="3"></rect>
+      <text x="360" y="135" text-anchor="middle" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">s = "rust"</text>
+      <text x="360" y="162" text-anchor="middle" style="font-family:var(--font-display);font-size:12px;fill:#457b9d">(owner)</text>
+      <circle cx="80" cy="80" r="22" fill="#457b9d"></circle>
+      <text x="80" y="86" text-anchor="middle" style="font-family:var(--font-code);font-size:12px;fill:#fff">&amp;s</text>
+      <path d="M102 82 L 280 130" stroke="#457b9d" stroke-width="3"></path>
+      <circle cx="80" cy="150" r="22" fill="#457b9d"></circle>
+      <text x="80" y="156" text-anchor="middle" style="font-family:var(--font-code);font-size:12px;fill:#fff">&amp;s</text>
+      <path d="M102 150 L 280 140" stroke="#457b9d" stroke-width="3"></path>
+      <circle cx="80" cy="220" r="22" fill="#457b9d"></circle>
+      <text x="80" y="226" text-anchor="middle" style="font-family:var(--font-code);font-size:12px;fill:#fff">&amp;s</text>
+      <path d="M102 220 L 280 160" stroke="#457b9d" stroke-width="3"></path>
+      <text x="560" y="230" text-anchor="middle" style="font-family:var(--font-code);font-size:13px;fill:#1d3557">let r1 = &amp;s; let r2 = &amp;s; let r3 = &amp;s;</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 280" role="img" aria-label="Frame 3: All shared borrows have ended. A single mutable borrow w now points at s and holds an exclusive lock.">
+      <rect x="10" y="10" width="700" height="260" rx="16" fill="#fff5eb" stroke="#f4a261"></rect>
+      <text x="360" y="44" text-anchor="middle" style="font-family:var(--font-display);font-size:18px;fill:#b45309;font-weight:bold">Frame 3 — shared borrows ended, one writer takes over. Fine.</text>
+      <rect x="280" y="100" width="160" height="80" rx="12" fill="#ffffff" stroke="#f4a261" stroke-width="3"></rect>
+      <text x="360" y="135" text-anchor="middle" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">s = "rust"</text>
+      <text x="360" y="162" text-anchor="middle" style="font-family:var(--font-display);font-size:12px;fill:#b45309">(locked by w)</text>
+      <circle cx="80" cy="150" r="26" fill="#f4a261"></circle>
+      <text x="80" y="156" text-anchor="middle" style="font-family:var(--font-code);font-size:14px;fill:#fff">&amp;mut s</text>
+      <path d="M106 150 L 280 145" stroke="#f4a261" stroke-width="5"></path>
+      <text x="80" y="200" text-anchor="middle" style="font-family:var(--font-code);font-size:12px;fill:#b45309">= w</text>
+      <text x="560" y="230" text-anchor="middle" style="font-family:var(--font-code);font-size:13px;fill:#b45309">let w = &amp;mut s;</text>
+    </svg>
+  </div>
+  <div class="step-through__frame">
+    <svg viewBox="0 0 720 280" role="img" aria-label="Frame 4: A second borrow is attempted while the mutable w is still alive. The compiler rejects this with error E0502. A red X marks the attempted new borrow.">
+      <rect x="10" y="10" width="700" height="260" rx="16" fill="#fef2f2" stroke="#d62828"></rect>
+      <text x="360" y="44" text-anchor="middle" style="font-family:var(--font-display);font-size:18px;fill:#d62828;font-weight:bold">Frame 4 — try to add a reader while w lives. Rejected.</text>
+      <rect x="280" y="100" width="160" height="80" rx="12" fill="#ffffff" stroke="#f4a261" stroke-width="3"></rect>
+      <text x="360" y="135" text-anchor="middle" style="font-family:var(--font-code);font-size:16px;fill:#1a1a2e">s = "rust"</text>
+      <text x="360" y="162" text-anchor="middle" style="font-family:var(--font-display);font-size:12px;fill:#b45309">(still locked by w)</text>
+      <circle cx="80" cy="100" r="24" fill="#f4a261"></circle>
+      <text x="80" y="106" text-anchor="middle" style="font-family:var(--font-code);font-size:13px;fill:#fff">&amp;mut s</text>
+      <path d="M104 100 L 280 130" stroke="#f4a261" stroke-width="5"></path>
+      <text x="80" y="138" text-anchor="middle" style="font-family:var(--font-code);font-size:11px;fill:#b45309">= w (alive)</text>
+      <circle cx="80" cy="220" r="24" fill="#e5e7eb" stroke="#d62828" stroke-width="3"></circle>
+      <text x="80" y="226" text-anchor="middle" style="font-family:var(--font-code);font-size:13px;fill:#d62828">&amp;s</text>
+      <path d="M60 200 L 100 240 M100 200 L 60 240" stroke="#d62828" stroke-width="4"></path>
+      <text x="560" y="230" text-anchor="middle" style="font-family:var(--font-code);font-size:12px;fill:#d62828">let r = &amp;s; // E0502: cannot borrow</text>
+    </svg>
+  </div>
+</div>
+
 <div class="analogy-card">
   <div class="analogy-card__head">Why the rule</div>
   <div class="analogy-card__body">
@@ -171,6 +244,30 @@ fn main() {
   <p><strong>Default habit:</strong> your functions take <code>&amp;str</code>, not <code>String</code>. Callers can pass either — Rust will do the coercion for you. You keep the flexibility, they keep ownership of their data.</p>
 </div>
 
+## wordc, step 4
+
+Our through-line needs a function that counts words in a block of text. It should *borrow* the text — the caller keeps the String, we just peek at it.
+
+```rust
+fn count_words(text: &str) -> u32 {
+    text.split_whitespace().count() as u32
+}
+
+fn main() {
+    let sample = String::from("ferris loves rust very much");
+    let n = count_words(&sample);       // pass a borrow, not the String
+    println!("{sample} → {n} words");   // sample is still usable!
+}
+```
+
+<p class="playground-run"><a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&code=fn%20count_words%28text%3A%20%26str%29%20-%3E%20u32%20%7B%0A%20%20%20%20text.split_whitespace%28%29.count%28%29%20as%20u32%0A%7D%0A%0Afn%20main%28%29%20%7B%0A%20%20%20%20let%20sample%20%3D%20String%3A%3Afrom%28%22ferris%20loves%20rust%20very%20much%22%29%3B%0A%20%20%20%20let%20n%20%3D%20count_words%28%26sample%29%3B%0A%20%20%20%20println%21%28%22%7Bsample%7D%20%E2%86%92%20%7Bn%7D%20words%22%29%3B%0A%7D" target="_blank" rel="noopener">▶ Run this in the Rust Playground</a></p>
+
+Two small but huge details: `count_words` takes `&str` (a borrowed slice), and `main` passes `&sample` (a borrow of the String). No ownership changes hands. That is the whole idea.
+
+<div class="ferris-says" data-variant="insight">
+<p>You have now seen <em>the</em> idiom you will write on every Rust function for the rest of your career. Functions take <code>&amp;str</code> or <code>&amp;[T]</code> or <code>&amp;T</code> by default; they take <code>String</code> or <code>Vec&lt;T&gt;</code> or <code>T</code> only when they genuinely need to <em>own</em> the value (to store it somewhere, to consume it, to hand it to a thread). If you can remember only one rule from Part 0: <strong>borrow by default, own only when needed</strong>.</p>
+</div>
+
 ## Try this
 
 <div class="try-this">
@@ -180,6 +277,22 @@ fn main() {
     <li>Write a function <code>fn shout(s: &amp;mut String)</code> that appends <code>"!"</code> to its argument. Call it on a <code>let mut msg = String::from("hi");</code> and print the result.</li>
     <li>Write a program that holds both an <code>&amp;s</code> and an <code>&amp;mut s</code> at the same time. Read the error. It will tell you exactly which line to move.</li>
   </ol>
+</div>
+
+## Check yourself
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quiz — 1 of 1</span><span>Borrowing</span></div>
+  <p class="quiz__q">Which set of references is <em>legal</em> to hold at the same time on a single <code>String</code>?</p>
+  <ul class="quiz__options">
+    <li>Two <code>&amp;mut</code> references</li>
+    <li>One <code>&amp;mut</code> reference and one <code>&amp;</code> reference</li>
+    <li>Three <code>&amp;</code> references (no <code>&amp;mut</code>)</li>
+    <li>Any combination — references are cheap and don't conflict</li>
+  </ul>
+  <div class="quiz__explain">Correct. The aliasing rule: <strong>many readers <em>or</em> one writer, never both</strong>. Three shared borrows is fine because nobody is writing. Two <code>&amp;mut</code> is not. Mixing them is not. This one rule is the reason Rust eliminates entire classes of data-race bugs at compile time.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at the "aliasing rule" section. Read it out loud. Many readers OR one writer — never both.</div>
+  <button type="button" class="quiz__reset">Try again</button>
 </div>
 
 Now for the other idea Rust is famous for — how errors and missing values are just ordinary data.

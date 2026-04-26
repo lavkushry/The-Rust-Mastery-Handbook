@@ -1,4 +1,8 @@
 # Chapter 43: Macros, Declarative and Procedural
+
+<div class="ferris-says" data-variant="insight">
+<p>Workspaces, monorepos, shared build caches, <code>sccache</code>, incremental builds. The engineering side of Rust: how teams of 20 or 200 stay productive in large codebases.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-25-traits-rusts-core-abstraction.md">Ch 25: Traits</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>macro_rules!</code> for pattern-based code generation</li><li>Procedural macros: derive, attribute, function-like</li><li>When macros help vs when they obscure</li></ul></div>
@@ -45,6 +49,26 @@
       </svg>
     </div>
   </figure>
+</div>
+
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>Rust has two kinds of macros. Knowing which is which clears up half the confusion.</p>
+</div>
+
+**Declarative macros** (the `macro_rules! my_macro { ... }` ones) are pattern-match-and-expand: you describe input shapes and the corresponding Rust code to emit. Examples you already use: `vec![…]`, `println!("…")`, `assert_eq!(a, b)`. Easy to write, no extra crate, but their pattern language is limited and they can't generate `impl` blocks for arbitrary structs.
+
+**Procedural macros** are real Rust programs that run *at compile time*, take a `TokenStream` as input, and produce a `TokenStream` as output. They live in their own crate (`proc-macro = true` in `Cargo.toml`). Three flavours:
+
+- **Function-like** — invoked as `my_macro!(...)` like a declarative macro, but with full Rust at expansion time.
+- **Attribute** — invoked as `#[my_attr]` decorating an item; receives the item's tokens and replaces them.
+- **Derive** — invoked as `#[derive(MyTrait)]`; receives the annotated struct/enum and emits new `impl` blocks. This is what `serde::Serialize`, `thiserror::Error`, and `clap::Parser` use.
+
+Both kinds are *expanded* before the rest of compilation. There is no runtime reflection, no AST mutation at runtime, no monkey-patching. The macro's only job is to turn one chunk of source into another chunk of source.
+
+<div class="ferris-says">
+<p>Rule of thumb: <code>macro_rules!</code> is for syntactic sugar that fits a pattern. Proc-macros are for "I want a derive" or "I want to read the structure of a type and generate code from it." If you're tempted to write a 50-line <code>macro_rules!</code> with branches, that's the moment to switch to a proc-macro.</p>
 </div>
 
 ## Step 1 - The Problem
@@ -316,6 +340,22 @@ Macros are for the cases where the repeated thing is not just logic but code sha
 ## What Invariant Is Rust Protecting Here?
 
 Generated code must still enter the normal compiler pipeline as valid, hygienic Rust, and macro abstractions must not bypass the type system's role in checking correctness.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>macro_rules! vs proc-macros</span></div>
+  <p class="quiz__q">Which kind of macro should you reach for to add <code>#[derive(MyTrait)]</code>?</p>
+  <ul class="quiz__options">
+    <li><code>macro_rules!</code> — declarative macros support derives.</li>
+    <li>A <em>procedural</em> macro of kind <code>derive</code>, which receives the annotated item's <code>TokenStream</code> and emits new tokens at compile time.</li>
+    <li>A build script (<code>build.rs</code>).</li>
+    <li>A trait default implementation.</li>
+  </ul>
+  <div class="quiz__explain">Correct. <code>#[derive(...)]</code> is exactly the case proc-macros were created for. Three flavours of proc-macro: function-like (<code>my_macro!(...)</code>), attribute (<code>#[my_attr]</code>), and derive (<code>#[derive(MyTrait)]</code>). All three see Rust as a <code>TokenStream</code> and produce a <code>TokenStream</code>; the difference is what the compiler hands them. <code>macro_rules!</code> cannot generate <code>impl</code>s for arbitrary structs.</div>
+  <div class="quiz__explain quiz__explain--wrong">Which kind of macro is invoked by <code>#[derive(...)]</code>?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

@@ -1,4 +1,8 @@
 # Chapter 32: Shared State, Arc, Mutex, and Send/Sync
+
+<div class="ferris-says" data-variant="insight">
+<p>When multiple threads need the same data, you need <code>Arc</code> and <code>Mutex</code>. When multiple threads need to <em>read</em> the same data, <code>Arc&lt;RwLock&gt;</code>. Understanding <code>Send</code> and <code>Sync</code> is what separates "I copy-pasted concurrency code" from "I design concurrent Rust".</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-05/chapter-31-threads-and-message-passing.md">Ch 31: Threads</a><a href="../part-04/chapter-30-smart-pointers-and-interior-mutability.md">Ch 30: Smart Pointers</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>Send</code> vs <code>Sync</code> — the thread-safety gates</li><li><code>Arc&lt;Mutex&lt;T&gt;&gt;</code> pattern and its tradeoffs</li><li>Why <code>Rc</code>/<code>RefCell</code> cannot cross thread boundaries</li></ul></div>

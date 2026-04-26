@@ -1,4 +1,8 @@
 # Chapter 14: `Option`, `Result`, and Rust's Error Philosophy
+
+<div class="ferris-says" data-variant="insight">
+<p><code>Option</code> and <code>Result</code> you have met. This chapter covers the full ecosystem: <code>?</code>, the <code>From</code> conversion dance, <code>anyhow</code> vs <code>thiserror</code>, and the debate over whether errors should be "fat" (rich) or "thin" (fast). The chapter that settles your error-handling style for the rest of your Rust career.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -147,5 +151,89 @@
   </div>
   <figcaption class="visual-figure__caption">Reach for <code>?</code> first in production code — it keeps the happy path linear and makes errors the caller's problem. Use <code>match</code> when you need local recovery. Use <code>.unwrap()</code> only when you can prove the value is always present, or in tests.</figcaption>
 </figure>
+
+## wordc, step 10 — typed errors with `thiserror`
+
+<div class="ferris-says" data-variant="insight">
+<p>Up to now, <code>wordc</code> has been calling <code>process::exit(1)</code> every time something goes wrong and printing a string to <code>stderr</code>. That works, but it gives up the thing <code>Result</code> is for — <em>typed</em> errors that tell the caller what kind of failure happened. In this step we introduce a <code>WordcError</code> enum, derive <code>thiserror::Error</code> on it, and bubble errors up with <code>?</code> so <code>main</code> becomes almost boring to read.</p>
+</div>
+
+Add `thiserror` to the `wordc` project:
+
+```bash
+cargo add thiserror
+```
+
+Now define a proper error type. The `#[from]` attribute auto-generates a `From<std::io::Error>` impl so `?` can lift an I/O error straight into a `WordcError`:
+
+```rust
+use clap::Parser;
+use std::fs;
+use std::path::PathBuf;
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+enum WordcError {
+    #[error("could not read {path}: {source}")]
+    Io {
+        path: PathBuf,
+        #[source]
+        source: std::io::Error,
+    },
+
+    #[error("file {path} is not valid UTF-8")]
+    NotUtf8 { path: PathBuf },
+}
+
+#[derive(Parser)]
+#[command(version, about)]
+struct Cli {
+    path: PathBuf,
+    #[arg(short = 'n', long, default_value_t = 1)]
+    min_len: usize,
+}
+
+fn count_words(text: &str, min_len: usize) -> usize {
+    text.split_whitespace().filter(|w| w.chars().count() >= min_len).count()
+}
+
+fn run(cli: &Cli) -> Result<usize, WordcError> {
+    let bytes = fs::read(&cli.path).map_err(|source| WordcError::Io {
+        path: cli.path.clone(),
+        source,
+    })?;
+    let text = std::str::from_utf8(&bytes).map_err(|_| WordcError::NotUtf8 {
+        path: cli.path.clone(),
+    })?;
+    Ok(count_words(text, cli.min_len))
+}
+
+fn main() {
+    let cli = Cli::parse();
+    match run(&cli) {
+        Ok(count) => println!("{} has {count} words.", cli.path.display()),
+        Err(e) => {
+            eprintln!("wordc: {e}");
+            std::process::exit(1);
+        }
+    }
+}
+```
+
+Run `cargo run -- /etc/shadow` on a Linux box and you now see:
+
+```text
+wordc: could not read /etc/shadow: Permission denied (os error 13)
+```
+
+Notice:
+
+- The user-visible message is composed automatically by `#[error("...")]`, which is just a format string that can refer to the enum's fields.
+- The inner `std::io::Error` is preserved as a <em>source</em>. If someone calls `run` from a library, they can `match` on `WordcError` and inspect the original `io::Error`. The information is not thrown away by a `String`.
+- `main` shrank back down to "parse args → call `run` → print or fail". All the <em>typed</em> failure handling lives in `run` and is visible in the function signature.
+
+<div class="ferris-says" data-variant="warning">
+<p>Rule of thumb: <strong>library crates</strong> should expose <code>thiserror</code>-based enums so callers can pattern-match on the failure kind. <strong>Application crates</strong> (the ones that have a <code>main</code>) often use <code>anyhow::Error</code> at the top level so any error type can bubble up. Both are idiomatic; they just sit at different layers.</p>
+</div>
 
 ## Step 1 - The Problem

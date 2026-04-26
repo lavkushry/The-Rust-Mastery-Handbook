@@ -1,5 +1,9 @@
 # Chapter 21: The Borrow Checker, How the Compiler Thinks
 
+<div class="ferris-says" data-variant="insight">
+<p>The borrow checker, as an algorithm. By the end of this chapter you will be able to look at a function and predict what the borrow checker is going to say about it — before you hit compile. That mental simulation is the mark of a fluent Rust programmer.</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -195,6 +199,24 @@ println!("{r}");             // borrow extends to here
     Borrow of <code>r</code> ends at its last use (line 4), not at scope end. Moving <code>println!</code> above <code>push_str</code> would fix it.
   </div>
 </div>
+</div>
+
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>The borrow checker isn't magic and isn't a heuristic. It's a graph-walker with two simple rules and one observation.</p>
+</div>
+
+Every reference in your program has a **region** — the span of code where it's "alive" (created, used, then last-used). The borrow checker computes the region for every reference by walking the control-flow graph of your function.
+
+It then enforces two rules: **(1)** at any point in the graph, a value has either ≥1 `&T` borrows OR ≤1 `&mut T` borrow — never both; **(2)** every reference's region must fit inside its referent's lifetime — you can't keep a borrow longer than the data it points at.
+
+The reason the borrow checker rejects code is almost always one of these two rules being violated *somewhere along a control-flow edge* — not just "in your text". E0502 ("cannot borrow as mutable while immutably borrowed") is rule 1; E0597 ("borrowed value does not live long enough") is rule 2.
+
+The checker's evolution from "lexical" (Rust 1.0–1.30) to "non-lexical" (NLL, Rust 1.31+) is one of the great usability wins of the language. Pre-NLL, the region of a borrow extended to the end of its enclosing block. Post-NLL, the region ends at the borrow's *last use*. Same code, much smarter compiler, much more code accepted.
+
+<div class="ferris-says">
+<p>When a borrow-checker error feels arbitrary, ask the two diagnostic questions: (a) is there a path through the control flow where two incompatible borrows are alive at once? (b) is there a path where a reference outlives its referent? Almost every error answers yes to one of these.</p>
 </div>
 
 ## Readiness Check - Borrow Checker Mental Simulation

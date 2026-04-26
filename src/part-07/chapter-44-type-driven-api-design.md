@@ -1,4 +1,8 @@
 # Chapter 44: Type-Driven API Design
+
+<div class="ferris-says" data-variant="insight">
+<p>Type-driven API design: when the types say so much that the docs become a polite formality. Typestate, sealed traits, newtypes, builder phases. This is where Rust starts feeling like a design tool instead of a programming language.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-25-traits-rusts-core-abstraction.md">Ch 25: Traits</a><a href="../part-04/chapter-26-generics-and-associated-types.md">Ch 26: Generics</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Typestate pattern: compile-time state machines</li><li>Newtype pattern for semantic wrapper types</li><li>Making illegal states unrepresentable</li></ul></div>
@@ -382,6 +386,22 @@ Good Rust APIs make the right thing natural and the wrong thing awkward or impos
 ## What Invariant Is Rust Protecting Here?
 
 Public values and transitions should preserve domain meaning: invalid combinations, illegal orderings, and ambiguous raw representations should be blocked or isolated at construction boundaries.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Newtypes</span></div>
+  <p class="quiz__q">You have functions like <code>charge(amount: u64, currency: &amp;str)</code> and <code>charge(amount: u64, customer_id: u64)</code>. How does type-driven design improve this?</p>
+  <ul class="quiz__options">
+    <li>Add asserts at the top of each function.</li>
+    <li>Wrap each meaningful unit in a <em>newtype</em>: <code>struct Cents(u64);</code> <code>struct CustomerId(u64);</code>. The compiler now refuses to mix them, the documentation is in the type, and the runtime cost is zero.</li>
+    <li>Add a comment.</li>
+    <li>Switch to dynamic types.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Newtypes are Rust's idiomatic way to attach meaning to a primitive. Calling <code>charge(customer_id, cents)</code> with the arguments swapped becomes a <em>compile error</em>, not a customer-support ticket. Combine with <code>From</code>/<code>Into</code> and constructors that validate, and entire categories of bugs become unrepresentable.</div>
+  <div class="quiz__explain quiz__explain--wrong">How do you make the compiler distinguish "amount in cents" from "customer id" when both are <code>u64</code>?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

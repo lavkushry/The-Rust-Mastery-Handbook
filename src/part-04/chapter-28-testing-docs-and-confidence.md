@@ -1,4 +1,8 @@
 # Chapter 28: Testing, Docs, and Confidence
+
+<div class="ferris-says" data-variant="insight">
+<p>Tests, doc tests, integration tests, bench tests, property tests. Rust's testing story is best-in-class because the compiler has already caught most of the bugs other language's tests exist to catch. Here is how to cover the rest.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-05-cargo-and-project-structure.md">Ch 5: Cargo</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>#[test]</code>, <code>#[should_panic]</code>, and integration tests</li><li>Doc tests as living documentation</li><li>Test organization: unit, integration, doc</li></ul></div>
@@ -238,6 +242,22 @@ Rust catches many mistakes before the program runs, but it cannot tell whether y
 ## What Invariant Is Rust Protecting Here?
 
 Behavioral contracts, public examples, and regression boundaries must stay true even when internal implementations change.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Doc tests</span></div>
+  <p class="quiz__q">A doc test in a Rust public function:</p>
+  <ul class="quiz__options">
+    <li>Is a comment Rust ignores.</li>
+    <li>Is compiled and executed by <code>cargo test</code> as if it were a real test, ensuring the example you put in the docs <em>actually compiles and runs</em>.</li>
+    <li>Is rendered to the docs but never executed.</li>
+    <li>Only runs under <code>cargo doc</code>.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Doc tests are one of Rust's killer features for library quality: every <code>```</code>-fenced example in a doc comment is a real, compiled, executed test. The day your example stops compiling is the day your CI turns red — your docs cannot drift from your code.</div>
+  <div class="quiz__explain quiz__explain--wrong">Try running <code>cargo test</code> on a crate with doc examples. What runs?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

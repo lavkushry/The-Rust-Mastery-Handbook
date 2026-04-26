@@ -1,4 +1,8 @@
 # Chapter 49: The `rustc` Compilation Pipeline
+
+<div class="ferris-says" data-variant="insight">
+<p>Trait resolution, coherence, orphan rules, the infamous "type inference errors". What the compiler is doing when it tells you it cannot pick an implementation.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-03/chapter-21-the-borrow-checker-how-the-compiler-thinks.md">Ch 21: Borrow Checker</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Lexing → parsing → HIR → MIR → LLVM IR → machine code</li><li>Where borrow checking happens in the pipeline</li><li>Why MIR matters for optimization and analysis</li></ul></div>

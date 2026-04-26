@@ -1,4 +1,8 @@
 # Chapter 50: RFCs, Language Design, and How Rust Evolves
+
+<div class="ferris-says" data-variant="insight">
+<p>The compiler as a learning partner. You will write bad code. It will explain why. This chapter is a tour of the error messages you will see most, and a manual for reading them like a letter from a senior engineer.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-01/chapter-02-rusts-design-philosophy.md">Ch 2: Philosophy</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>The RFC process: propose → discuss → implement</li><li>Edition system for backwards-compatible evolution</li><li>How to follow and participate in language design</li></ul></div>

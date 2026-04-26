@@ -1,5 +1,9 @@
 # Chapter 19: Stack vs Heap, Where Data Lives
 
+<div class="ferris-says" data-variant="insight">
+<p>Stack vs heap: what goes where, why it matters, and why Rust lets you decide. If you come from Python or JS you may have spent a career ignoring this distinction. In Rust, understanding it makes the type system obvious.</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-10-ownership-first-contact.md">Ch 10: Ownership</a><a href="../part-03/chapter-16-ownership-as-resource-management.md">Ch 16: RAII</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Stack frames, heap allocation, and static data</li><li>Thin vs fat pointers in Rust</li><li>Why "String lives on the heap" is incomplete</li></ul></div>
@@ -97,6 +101,22 @@
   </div>
   <figcaption class="visual-figure__caption">Rust needs size information to lay out values. Fat pointers are how the language carries enough metadata to talk about dynamically sized or dynamically dispatched things without hiding the representation from you.</figcaption>
 </figure>
+
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>"Stack vs heap" sounds intimidating. The reason it matters is concrete and about three sentences long.</p>
+</div>
+
+Every value your Rust program touches lives in one of two places. The **stack** is a chunk of memory the CPU uses for local variables — known size at compile time, freed automatically when the function returns. The **heap** is a separate region for data whose size or lifetime is too dynamic for the stack — you ask the allocator for memory, and the same value can outlive the function that created it.
+
+Rust's stack/heap split is the same as C's, but with a critical difference: in Rust the compiler tracks which heap allocations are owned by which value, and inserts the cleanup code automatically. `Box<T>`, `String`, `Vec<T>`, `HashMap<…>` are all "stack handles to heap data" — a small fixed-size struct on the stack, pointing at a heap buffer.
+
+The reason to learn this distinction: it's the model that explains why `Copy` types are tiny (they live on the stack, copying is one machine instruction), why `String` and `Vec` are not `Copy` (their heap buffer cannot be safely duplicated by a `memcpy`), and why moves are usually free (you copy the small stack handle, not the heap data it points at).
+
+<div class="ferris-says">
+<p>Mental picture: stack = the desk you're working at, fixed-size drawers, automatic tidy-up when you leave. Heap = a warehouse — bigger, slower, but reusable. Rust hands out warehouse passes (<code>Box</code>, <code>String</code>, …) and tracks who has which pass.</p>
+</div>
 
 ## Readiness Check - Memory Model Reasoning
 

@@ -1,5 +1,9 @@
 # Chapter 24: Closures, Functions That Capture
 
+<div class="ferris-says" data-variant="insight">
+<p>Closures capture variables from their environment — by reference, by unique mutable reference, or by move. Which one happens is not random — the compiler picks the <em>minimum</em> required. Today you learn the three traits <code>Fn</code>, <code>FnMut</code>, <code>FnOnce</code> and why they exist.</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-10-ownership-first-contact.md">Ch 10: Ownership</a><a href="../part-04/chapter-25-traits-rusts-core-abstraction.md">Ch 25: Traits</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Closures as code + captured environment</li><li><code>Fn</code>, <code>FnMut</code>, <code>FnOnce</code> — the callable trait family</li><li>Why <code>move</code> is needed at thread/async boundaries</li></ul></div>
@@ -256,6 +260,22 @@ Closures are little bundles of behavior and remembered context. Rust cares about
 ## What Invariant Is Rust Protecting Here?
 
 Closure calls must respect how captured data is borrowed, mutated, or consumed, so callable reuse stays consistent with ownership rules.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Closure traits</span></div>
+  <p class="quiz__q">A closure that <em>moves</em> a captured <code>String</code> out of its environment when called implements which trait(s)?</p>
+  <ul class="quiz__options">
+    <li><code>Fn</code> only.</li>
+    <li><code>FnMut</code> only.</li>
+    <li><code>FnOnce</code> only — the closure consumes the captured value, so it can be called at most once.</li>
+    <li>All three: <code>Fn</code>, <code>FnMut</code>, and <code>FnOnce</code>.</li>
+  </ul>
+  <div class="quiz__explain">Correct. The trait hierarchy is <em>callability</em>: <code>Fn: FnMut: FnOnce</code>. A closure that moves a captured non-<code>Copy</code> value can only be called once before the captured value is gone — so it implements <code>FnOnce</code> only. The compiler picks the <em>most permissive</em> trait the closure body satisfies.</div>
+  <div class="quiz__explain quiz__explain--wrong">If the closure consumes its captures, can it be called twice?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

@@ -1,4 +1,8 @@
 # Chapter 2: Rust's Design Philosophy
+
+<div class="ferris-says" data-variant="insight">
+<p>Rust's designers made a list of non-negotiables: zero-cost abstractions, memory safety without GC, fearless concurrency, and errors as values. Every feature in the language exists to serve one of those four. When a feature looks strange, ask which of the four it is protecting. You will almost always find the answer.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-01/chapter-01-the-systems-programming-problem.md">Ch 1: Systems Problem</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Zero-cost abstractions as a design principle</li><li>Correctness, performance, and productivity tradeoffs</li><li>Why Rust chose ownership over GC</li></ul></div>

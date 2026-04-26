@@ -1,5 +1,9 @@
 # The Shape of Data
 
+<div class="ferris-says">
+<p>Two ideas. <strong>Struct</strong> = "<em>and</em>" — a record that has all of its fields at once. <strong>Enum</strong> = "<em>or</em>" — a value that is one of several possibilities. Hold onto that pair; Rust's whole type system is built on it.</p>
+</div>
+
 <div class="one-sentence">
   If you only remember one thing: <strong>Rust has two ways to hold data together — a <code>struct</code> when you need "all of these at once", and an <code>enum</code> when you need "exactly one of these".</strong>
 </div>
@@ -177,6 +181,29 @@ fn main() {
 
 `&self` is the method's way of saying "I will *look* at the struct but not take it over." You will see `&self` on almost every method you ever write. Its meaning will be the subject of the next two chapters.
 
+## wordc, step 3
+
+Our through-line gains a shape. The program needs to carry two numbers: the total word count and the total line count. That is an "and" situation — a `struct`.
+
+```rust
+struct Stats {
+    words: u32,
+    lines: u32,
+}
+
+fn main() {
+    let path = "sample.txt";
+    let stats = Stats { words: 0, lines: 0 };
+    println!("wordc — {}: {} words, {} lines", path, stats.words, stats.lines);
+}
+```
+
+The numbers are fake for now — we will compute them for real in chapter 7. What matters: the `Stats` struct is now the shape we will carry through the rest of Part 0.
+
+<div class="ferris-says" data-variant="insight">
+<p>You will see many people describe Rust as "enum-heavy". This is the reason. Once you have <code>enum</code> <em>plus</em> exhaustive <code>match</code>, you stop needing half of the patterns other languages use — no more "magic string" statuses, no more <code>if value == "pending" ... elif value == "shipped"</code>, no more null checks scattered through the code. Just <code>enum Status { Pending, Shipped, Cancelled }</code> and the compiler making sure you handled each case.</p>
+</div>
+
 ## Try this
 
 <div class="try-this">
@@ -186,6 +213,22 @@ fn main() {
     <li>Define an <code>enum Shape</code> with variants <code>Circle(f64)</code> and <code>Square(f64)</code>. Write a function <code>area(s: Shape) -&gt; f64</code> using <code>match</code>.</li>
     <li>Delete one of the <code>match</code> branches in that function. Read the error.</li>
   </ol>
+</div>
+
+## Check yourself
+
+<div class="quiz" data-answer="1">
+  <div class="quiz__head"><span>Quiz — 1 of 1</span><span>Shape of data</span></div>
+  <p class="quiz__q">You are modelling a payment. A payment is always <em>one</em> of: cash, card, or a gift voucher with an amount. Which shape fits best?</p>
+  <ul class="quiz__options">
+    <li>A <code>struct Payment { cash: bool, card: bool, voucher: Option&lt;f64&gt; }</code></li>
+    <li>An <code>enum Payment { Cash, Card, Voucher(f64) }</code></li>
+    <li>A tuple <code>(bool, bool, f64)</code></li>
+    <li>Three separate functions, one per payment type</li>
+  </ul>
+  <div class="quiz__explain">Correct. "Always one of" is the exact case <code>enum</code> was made for. The struct in option A lets invalid states exist (what if both <code>cash</code> and <code>card</code> are true?). With an enum, invalid states are <em>unrepresentable</em> — the compiler enforces the constraint for you. This idea has a name: "make illegal states unrepresentable". It is the mindset shift of Rust type design.</div>
+  <div class="quiz__explain quiz__explain--wrong">Think about invalid states. Which of the options makes <em>impossible</em> combinations <em>unrepresentable</em>?</div>
+  <button type="button" class="quiz__reset">Try again</button>
 </div>
 
 Next, the idea that makes Rust Rust.

@@ -1,4 +1,8 @@
 # Chapter 11A: Slices, Borrowed Views into Contiguous Data
+
+<div class="ferris-says" data-variant="insight">
+<p>Borrowing rules, but with all the tricky cases: re-borrows, two-phase borrows, borrows through methods, borrows across control flow. If Part 0 Chapter 5 gave you the <em>aliasing rule</em>, this chapter shows you how the compiler actually enforces it.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-11-borrowing-and-references-first-contact.md">Ch 11: Borrowing</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Slices as borrowed views: <code>&amp;[T]</code> and <code>&amp;str</code></li><li>Why slices carry both pointer and length</li><li>Relationship between owned data and slice views</li></ul></div>

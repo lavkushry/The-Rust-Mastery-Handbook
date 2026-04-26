@@ -1,5 +1,10 @@
 # PART 4 - Idiomatic Rust Engineering
 
+<div class="ferris-says" data-variant="insight">
+<p>Traits are how Rust says 'this type behaves like that' without inheritance. Generics are how one piece of code serves many types without duplication. Error handling is where you see Rust's design philosophy applied to the messy real world. Three apparently separate topics, one underlying design sensibility: <em>encode the contract in the types.</em></p>
+</div>
+
+
 <section class="part-spread" style="--chapter-accent: var(--trait);">
   <div class="part-spread__grid">
     <div>

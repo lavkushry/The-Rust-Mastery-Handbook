@@ -1,4 +1,8 @@
 # Chapter 40: PhantomData, Atomics, and Profiling
+
+<div class="ferris-says" data-variant="insight">
+<p>Embedded Rust, <code>embassy</code>, <code>RTIC</code>, the HAL ecosystem. Rust on microcontrollers is a first-class story now. If "systems programming" brought you to Rust, this chapter is where it pays off.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-06/chapter-36-memory-layout-and-zero-cost-abstractions.md">Ch 36: Memory Layout</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>PhantomData</code> for unused type/lifetime parameters</li><li>Atomic types and memory ordering</li><li>Profiling with <code>perf</code>, <code>flamegraph</code>, <code>criterion</code></li></ul></div>
@@ -277,6 +281,22 @@ Some of the most important facts about a system do not show up as ordinary field
 ## What Invariant Is Rust Protecting Here?
 
 Type-level relationships, cross-thread visibility, and performance claims must all reflect reality rather than assumption: phantom markers must describe real semantics, atomics must establish real ordering, and optimizations must be measured rather than imagined.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>PhantomData</span></div>
+  <p class="quiz__q">When do you need <code>PhantomData&lt;T&gt;</code> in a struct?</p>
+  <ul class="quiz__options">
+    <li>Whenever you have a generic parameter you don't use.</li>
+    <li>When a generic parameter or lifetime is mentioned in your struct's logical contract but not in any field — so the compiler knows the struct is "as if" it owned/borrowed a <code>T</code> for variance, drop check, and <code>Send</code>/<code>Sync</code> inference.</li>
+    <li>To make the struct zero-sized.</li>
+    <li>To avoid writing <code>impl Drop</code>.</li>
+  </ul>
+  <div class="quiz__explain">Correct. <code>PhantomData</code> is a zero-sized marker that tells the compiler "treat this struct as if it owned/borrowed a <code>T</code>". Without it, raw-pointer-based wrappers like <code>Vec</code>'s internals would have wrong variance and wrong drop check. <em>Mention</em> a parameter; <code>PhantomData</code> makes that mention semantically meaningful.</div>
+  <div class="quiz__explain quiz__explain--wrong">Look at how <code>Vec&lt;T&gt;</code>'s internal raw pointer wrapper uses <code>PhantomData</code>. Why?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

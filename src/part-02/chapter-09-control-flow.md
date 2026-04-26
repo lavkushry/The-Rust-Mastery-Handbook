@@ -1,4 +1,8 @@
 # Chapter 9: Control Flow
+
+<div class="ferris-says" data-variant="insight">
+<p><code>if</code>, <code>loop</code>, <code>while</code>, <code>for</code>, <code>match</code>, and the new favourites: <code>break</code> with a value and <code>loop { ... break value; }</code>. All of them are expressions. All of them can be assigned. If you are coming from Python or JS, this chapter is where you stop writing <code>mut state = None; ...</code> patterns and start writing <code>let state = match ... { ... };</code>.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-02/chapter-08-functions-and-expressions.md">Ch 8: Functions</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>if</code>/<code>else</code> as expressions that return values</li><li><code>loop</code>, <code>while</code>, <code>for</code> — loop flavors</li><li>Pattern matching preview with <code>match</code></li></ul></div>
@@ -241,6 +245,86 @@ Branching and iteration should make all reachable cases and exit conditions expl
 - Use `if` for booleans, `match` for value shape.
 - `match` exhaustiveness is a safety feature.
 - `while let` and `loop` encode meaningful control-flow patterns, not just shorter syntax.
+
+## wordc, step 9 — real argument parsing with `clap`
+
+<div class="ferris-says" data-variant="insight">
+<p>The hand-rolled <code>std::env::args</code> loop from Part 0 Ch 7 is fine for one positional argument. But the moment you want <code>--help</code>, <code>--version</code>, a <code>--stdin</code> flag, or a <code>-n / --min-len</code> option, you will write a tangled nest of <code>match</code> arms that still won't do it as well as <code>clap</code> already does. <code>clap</code> is the Rust community's de-facto CLI parser, and the derive-macro style below is shockingly terse.</p>
+</div>
+
+Add `clap` to the `wordc` project:
+
+```bash
+cargo add clap --features derive
+```
+
+That writes this into `Cargo.toml`:
+
+```toml
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+```
+
+Now replace the manual arg-handling section of `src/main.rs`:
+
+```rust
+use clap::Parser;
+use std::fs;
+use std::process;
+
+/// Count the words in a text file.
+#[derive(Parser)]
+#[command(version, about)]
+struct Cli {
+    /// Path to the file to count
+    path: String,
+
+    /// Ignore words shorter than this length
+    #[arg(short = 'n', long, default_value_t = 1)]
+    min_len: usize,
+}
+
+fn count_words(text: &str, min_len: usize) -> usize {
+    text.split_whitespace().filter(|w| w.chars().count() >= min_len).count()
+}
+
+fn main() {
+    let cli = Cli::parse();
+
+    let text = fs::read_to_string(&cli.path).unwrap_or_else(|e| {
+        eprintln!("could not read {}: {e}", cli.path);
+        process::exit(1);
+    });
+
+    println!("{} has {} words.", cli.path, count_words(&text, cli.min_len));
+}
+```
+
+Seven lines of derive-driven `Cli` struct replaced the entire manual argument-parsing block. In exchange, you now get, for free:
+
+```bash
+wordc --help
+```
+
+```text
+Count the words in a text file.
+
+Usage: wordc [OPTIONS] <PATH>
+
+Arguments:
+  <PATH>  Path to the file to count
+
+Options:
+  -n, --min-len <MIN_LEN>  Ignore words shorter than this length [default: 1]
+  -h, --help               Print help
+  -V, --version            Print version
+```
+
+Typos get caught (`wordc --ptah foo.txt` produces an actual error, not a silent misread). `--help` is generated, not maintained. And because `Cli` is just a struct, `main` reads as: "parse args → read file → count → print".
+
+<div class="ferris-says" data-variant="insight">
+<p>Every major Rust CLI you will meet in the wild — <code>ripgrep</code>, <code>bat</code>, <code>fd</code>, <code>tokei</code>, <code>cargo</code> itself — uses <code>clap</code>. Learn the derive API once and every subsequent CLI you write starts with a 10-line struct and a working <code>--help</code>.</p>
+</div>
 
 ## Memory Hook
 

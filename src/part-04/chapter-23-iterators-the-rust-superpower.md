@@ -1,4 +1,8 @@
 # Chapter 23: Iterators, the Rust Superpower
+
+<div class="ferris-says" data-variant="insight">
+<p>Iterators in Rust are lazy, composable, zero-cost, and the source of a shocking amount of Rust's elegance. By the end of this chapter you will read <code>.iter().filter(...).map(...).collect()</code> as easily as a <code>for</code> loop — often more easily.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-04/chapter-22-collections-vec-string-and-hashmap.md">Ch 22: Collections</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li>Lazy evaluation — nothing runs until a consumer pulls</li><li>Zero-cost: iterator chains compile to the same code as hand-written loops</li><li>Key adapters: <code>filter</code>, <code>map</code>, <code>collect</code>, <code>fold</code></li></ul></div>
@@ -86,5 +90,78 @@ Target Level 2+ before trait-heavy iterator implementation work.
 | E0382      | Value moved unexpectedly by ownership-taking iteration | Borrow with `iter()` or clone intentionally if ownership must be retained           |
 
 Debug chain failures by splitting the pipeline into named intermediate variables and checking each type.
+
+## wordc, step 14 — replacing the manual loop with iterator chains
+
+<div class="ferris-says" data-variant="insight">
+<p>By Part 3 step 13, <code>WordIter&lt;'a&gt;</code> already implemented the <code>Iterator</code> trait. That single decision unlocks the entire iterator ecosystem — adapters, combinators, parallel scans, all of it. Step 14 swaps every hand-written loop in <code>wordc</code> for an iterator chain and you can feel the difference.</p>
+</div>
+
+```rust,ignore
+use std::collections::HashMap;
+
+pub fn count_words<'a>(words: impl Iterator<Item = &'a str>) -> usize {
+    words.count()
+}
+
+pub fn longest_word<'a>(words: impl Iterator<Item = &'a str>) -> Option<&'a str> {
+    words.max_by_key(|w| w.chars().count())
+}
+
+pub fn frequency_top_k<'a>(
+    words: impl Iterator<Item = &'a str>,
+    k: usize,
+) -> Vec<(&'a str, usize)> {
+    let mut freq: HashMap<&'a str, usize> = HashMap::new();
+    for w in words {
+        *freq.entry(w).or_insert(0) += 1;
+    }
+    let mut sorted: Vec<_> = freq.into_iter().collect();
+    sorted.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(b.0)));
+    sorted.truncate(k);
+    sorted
+}
+
+fn run(session: &WordcSession, min_len: usize, top_k: usize) {
+    let text = std::str::from_utf8(&session.bytes).unwrap_or("");
+
+    let total = count_words(WordIter::new(text, min_len));
+    let longest = longest_word(WordIter::new(text, min_len)).unwrap_or("");
+    let top = frequency_top_k(WordIter::new(text, min_len), top_k);
+
+    println!("words:   {total}");
+    println!("longest: {longest:?}");
+    println!("top {top_k}:");
+    for (w, n) in top {
+        println!("  {n:>6}  {w}");
+    }
+}
+```
+
+Three things to notice. First, every helper takes `impl Iterator<Item = &'a str>` — they don't care whether the words came from `WordIter`, a `Vec`, a channel, or a test fixture. **Iterator polymorphism is generic dispatch:** the compiler monomorphises each call to the exact concrete iterator and inlines the chain.
+
+Second, the chain is **lazy**. `count_words(WordIter::new(text, min_len))` does not allocate an intermediate `Vec<&str>` — the words flow through the chain one at a time, and only the final `count()` consumes them. `frequency_top_k` does allocate, but only because building a histogram intrinsically needs to remember every key.
+
+Third, the `'a` lifetime threads through the whole pipeline: every `&str` returned by `WordIter` borrows from the `&[u8]` inside `WordcSession`. The compiler enforces that no key in the `HashMap` outlives the session — drop the session and the `HashMap` is dropped first (or it would be a compile error to keep it).
+
+<div class="ferris-says">
+<p>The "iterator chain" is not a stylistic preference. It's the same machine code as the hand-written loop, with all the borrow-checking pre-paid. <code>cargo asm</code> on the chain version and the loop version produces near-identical assembly — that's what "zero-cost abstraction" buys you.</p>
+</div>
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>Iterator laziness</span></div>
+  <p class="quiz__q">What does this line do at runtime? <code>let it = (0..1_000_000).map(|x| x * 2).filter(|x| x % 3 == 0);</code></p>
+  <ul class="quiz__options">
+    <li>Allocates a million-entry vector, doubles each, then filters into a second vector.</li>
+    <li>Nothing observable. It builds a small struct describing the pipeline. No work runs until something <em>consumes</em> the iterator.</li>
+    <li>Spawns a background thread that pre-computes the multiples of 6.</li>
+    <li>Consumes the range eagerly but defers the filter.</li>
+  </ul>
+  <div class="quiz__explain">Correct. Iterators are lazy in Rust. <code>.map</code> and <code>.filter</code> just wrap the previous iterator in a new struct (<code>Map&lt;Filter&lt;Range&gt;, F&gt;</code>). Work happens only when you call <code>.collect()</code>, <code>.sum()</code>, <code>.for_each()</code>, or use a <code>for</code> loop. This is why long iterator chains are zero-cost — the optimiser sees through the chain to a single tight loop.</div>
+  <div class="quiz__explain quiz__explain--wrong">Re-read the chapter on lazy evaluation. When does a chain of adapters actually <em>run</em>?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## Step 1 - The Problem

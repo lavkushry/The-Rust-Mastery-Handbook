@@ -1,4 +1,8 @@
 # Chapter 31: Threads and Message Passing
+
+<div class="ferris-says" data-variant="insight">
+<p>Threads in Rust come with a compile-time guarantee that you cannot have a data race. That is not a boast — it is enforced by <code>Send</code> and <code>Sync</code>. This chapter shows how ownership and borrowing extend into concurrency, without surprise.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

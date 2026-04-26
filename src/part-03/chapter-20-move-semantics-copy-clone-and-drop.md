@@ -1,5 +1,9 @@
 # Chapter 20: Move Semantics, `Copy`, `Clone`, and `Drop`
 
+<div class="ferris-says" data-variant="insight">
+<p>Move, copy, clone, drop. Four traits. The entire cost model of Rust lives in how these interact. This chapter pays for itself in every performance-sensitive function you will ever write.</p>
+</div>
+
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>
@@ -130,6 +134,26 @@ t := s           // both valid (GC manages)
 **Deep Dive:** At the MIR level, a move is a `memcpy` of the stack representation followed by marking the source as *uninitialized*. The compiler inserts drop flags (`bool`) to track whether a binding is live. `Copy` is a marker trait with no methods — it simply tells the compiler "bitwise copy is semantically correct for this type." `Clone` is a regular trait with `fn clone(&self) -> Self`. Types can be `Clone` without being `Copy` when they need custom duplication logic (e.g., allocating new heap memory).
 
 </div>
+</div>
+
+## In plain English first
+
+<div class="ferris-says" data-variant="insight">
+<p>The four words in the title look bigger than they are. Read this section and then the rest of the chapter is a refinement.</p>
+</div>
+
+When you write `let b = a;` Rust has to decide: should `b` get its own copy of the value, or should it *take over* `a`'s value entirely?
+
+For tiny stack-only types (`u8`, `bool`, `char`, `f64`, references) it duplicates: this is **`Copy`**, and it costs one machine instruction. The original variable stays usable. This is what you'd expect from C or Go.
+
+For everything else (`String`, `Vec`, `Box`, your structs by default), Rust **moves**: the new variable takes over the value, and the old variable is treated as uninitialised by the compiler. Why? Because heap-owning values like `String` would be unsafe to bitwise-duplicate without coordinating who frees the heap buffer. Moving sidesteps the problem: there's still exactly one owner.
+
+If you actually want a deep duplicate of a non-`Copy` value, you call `.clone()` explicitly. The explicit-ness is the point — `clone()` can be expensive (heap allocation, deep copy), so Rust forces you to write it.
+
+When the owner of any value goes out of scope, **`Drop`** runs — the value's destructor. For `String` it frees the heap buffer; for `File` it closes the file descriptor; for your custom type it calls whatever `Drop` impl you wrote, automatically.
+
+<div class="ferris-says">
+<p>Rule of thumb: read <code>let b = a;</code> as "<code>a</code> is no longer usable" by default. If <code>a</code> is a primitive, Rust quietly upgrades the move to a copy. If you needed both <code>a</code> and <code>b</code> for a non-primitive, you should be writing <code>let b = a.clone();</code>.</p>
 </div>
 
 ## Readiness Check - Transfer Semantics Mastery

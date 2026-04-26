@@ -1,4 +1,8 @@
 # Chapter 38: FFI, Talking to C Without Lying
+
+<div class="ferris-says" data-variant="insight">
+<p>Systems Rust: <code>no_std</code>, allocators, FFI, ABI stability, inline assembly. The parts of Rust that let it replace C and C++ entirely. Niche for most readers — essential for those who need it.</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell"><h4>Prerequisites</h4><div class="snapshot-prereq"><a href="../part-06/chapter-37-unsafe-rust-power-and-responsibility.md">Ch 37: Unsafe</a></div></div>
   <div class="snapshot-cell"><h4>You will understand</h4><ul><li><code>extern "C"</code> and calling conventions</li><li>Safe wrappers over C libraries</li><li>Ownership boundaries at FFI edges</li></ul></div>
@@ -291,6 +295,22 @@ When Rust talks to C, neither side automatically understands the other's safety 
 ## What Invariant Is Rust Protecting Here?
 
 Foreign data must be translated into Rust only when ABI, layout, lifetime, validity, and ownership assumptions are all satisfied simultaneously.
+
+## Quick check
+
+<div class="quiz" data-answer="2">
+  <div class="quiz__head"><span>Quick check</span><span>extern "C"</span></div>
+  <p class="quiz__q">You write <code>extern "C" { fn libc_strlen(s: *const c_char) -&gt; usize; }</code> and call it from Rust. Whose responsibility is it that <code>s</code> is a valid, null-terminated C string?</p>
+  <ul class="quiz__options">
+    <li>The compiler's — it inserts a runtime check.</li>
+    <li>The OS's — it traps on invalid pointers.</li>
+    <li><em>Yours</em>. <code>extern "C"</code> declares the C ABI and signature, but Rust cannot validate the C function's preconditions. Calling it is <code>unsafe</code> and you uphold the contract.</li>
+    <li>The C library's — modern libc validates inputs.</li>
+  </ul>
+  <div class="quiz__explain">Correct. FFI is the canonical place where Rust hands you the steering wheel. The compiler matches the ABI but cannot peek inside the C function's spec. Wrap unsafe FFI in a small, hand-audited safe Rust API that enforces the preconditions; the rest of your crate then uses the safe wrapper.</div>
+  <div class="quiz__explain quiz__explain--wrong">Rust cannot read the C function's body. Who must ensure preconditions hold?</div>
+  <button type="button" class="quiz__reset">Try again</button>
+</div>
 
 ## If You Remember Only 3 Things
 

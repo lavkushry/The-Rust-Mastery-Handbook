@@ -1,4 +1,8 @@
 # Chapter 1: The Systems Programming Problem
+
+<div class="ferris-says" data-variant="insight">
+<p>Before we learn syntax, a quick story. Languages like C and C++ let you touch memory directly — fast, but one slip and you spend your Friday night debugging a segfault. Garbage-collected languages spare you the pain, but pay rent in latency and memory. Rust is the first mainstream language that said: <em>what if we had both?</em> This chapter is the "why".</p>
+</div>
 <div class="chapter-snapshot">
   <div class="snapshot-cell">
     <h4>Prerequisites</h4>

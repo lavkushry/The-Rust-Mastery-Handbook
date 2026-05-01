@@ -762,6 +762,7 @@
       const btn = document.createElement('button');
       btn.className = 'progress-btn';
       btn.textContent = 'Mark chapter complete ✓';
+      btn.setAttribute('aria-label', 'Mark chapter complete');
       btn.addEventListener('click', () => {
         const p = getProgress();
         p[chapterPath] = true;
@@ -838,11 +839,13 @@
       const prevBtn = document.createElement('button');
       prevBtn.className = 'stepper-btn';
       prevBtn.textContent = '← Prev';
+      prevBtn.setAttribute('aria-label', 'Previous step');
       prevBtn.disabled = true;
 
       const nextBtn = document.createElement('button');
       nextBtn.className = 'stepper-btn';
       nextBtn.textContent = 'Next →';
+      nextBtn.setAttribute('aria-label', 'Next step');
 
       function update() {
         steps.forEach((s, i) => { s.style.display = i === current ? 'block' : 'none'; });
@@ -981,8 +984,10 @@
 
         if (timeoutId) clearTimeout(timeoutId);
         btn.textContent = 'Exported! ✓';
+        btn.setAttribute('aria-label', 'Successfully exported');
         timeoutId = setTimeout(() => {
           btn.textContent = originalText;
+          btn.removeAttribute('aria-label');
         }, 2000);
       });
       deck.appendChild(btn);

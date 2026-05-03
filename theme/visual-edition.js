@@ -838,11 +838,13 @@
       const prevBtn = document.createElement('button');
       prevBtn.className = 'stepper-btn';
       prevBtn.textContent = '← Prev';
+      prevBtn.setAttribute('aria-label', 'Previous step');
       prevBtn.disabled = true;
 
       const nextBtn = document.createElement('button');
       nextBtn.className = 'stepper-btn';
       nextBtn.textContent = 'Next →';
+      nextBtn.setAttribute('aria-label', 'Next step');
 
       function update() {
         steps.forEach((s, i) => { s.style.display = i === current ? 'block' : 'none'; });
@@ -981,8 +983,10 @@
 
         if (timeoutId) clearTimeout(timeoutId);
         btn.textContent = 'Exported! ✓';
+        btn.setAttribute('aria-label', 'Exported successfully');
         timeoutId = setTimeout(() => {
           btn.textContent = originalText;
+          btn.removeAttribute('aria-label');
         }, 2000);
       });
       deck.appendChild(btn);

@@ -5,3 +5,7 @@
 ## 2024-05-25 - Dynamic Counters and Screen Reader Announcements
 **Learning:** When building custom interactive components like step indicators or flashcard counters, screen readers will not naturally announce text content updates if they happen without focus changes.
 **Action:** Always wrap dynamic counter text in `aria-live="polite"` and `aria-atomic="true"` attributes to ensure updates are announced to screen reader users seamlessly as they interact with the component.
+
+## 2024-05-18 - Literal Reading of Unicode Symbols by Screen Readers
+**Learning:** Unicode symbols like `←`, `→`, and `✓` are read literally by screen readers (e.g., "Left Arrow", "Check mark"). This creates confusing announcements, especially when used within UI buttons where context implies the action, not the symbol.
+**Action:** When creating or modifying interactive elements containing Unicode symbols or decorative icons, always set a clear, human-readable `aria-label` to override the literal reading. For purely decorative symbols (like list checkmarks), use `aria-hidden="true"`. Additionally, when temporary text/symbol states appear (like "Exported! ✓"), dynamically update the `aria-label` and cleanly remove it when reverting state.

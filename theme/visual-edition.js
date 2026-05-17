@@ -746,6 +746,8 @@
       const span = document.createElement('span');
       span.className = 'progress-done';
       span.textContent = '✓ Chapter complete — well done!';
+      span.setAttribute('aria-label', 'Chapter complete — well done!');
+      span.setAttribute('role', 'text');
       cta.appendChild(span);
 
       const unBtn = document.createElement('button');
@@ -762,6 +764,7 @@
       const btn = document.createElement('button');
       btn.className = 'progress-btn';
       btn.textContent = 'Mark chapter complete ✓';
+      btn.setAttribute('aria-label', 'Mark chapter complete');
       btn.addEventListener('click', () => {
         const p = getProgress();
         p[chapterPath] = true;
@@ -790,6 +793,7 @@
             const dot = document.createElement('span');
             dot.className = 'sidebar-check';
             dot.textContent = '✓';
+            dot.setAttribute('aria-hidden', 'true');
             link.appendChild(dot);
           }
         } catch { /* ignore bad URLs */ }
@@ -838,11 +842,13 @@
       const prevBtn = document.createElement('button');
       prevBtn.className = 'stepper-btn';
       prevBtn.textContent = '← Prev';
+      prevBtn.setAttribute('aria-label', 'Previous step');
       prevBtn.disabled = true;
 
       const nextBtn = document.createElement('button');
       nextBtn.className = 'stepper-btn';
       nextBtn.textContent = 'Next →';
+      nextBtn.setAttribute('aria-label', 'Next step');
 
       function update() {
         steps.forEach((s, i) => { s.style.display = i === current ? 'block' : 'none'; });
@@ -981,8 +987,10 @@
 
         if (timeoutId) clearTimeout(timeoutId);
         btn.textContent = 'Exported! ✓';
+        btn.setAttribute('aria-label', 'Successfully exported flashcards for Anki');
         timeoutId = setTimeout(() => {
           btn.textContent = originalText;
+          btn.removeAttribute('aria-label');
         }, 2000);
       });
       deck.appendChild(btn);

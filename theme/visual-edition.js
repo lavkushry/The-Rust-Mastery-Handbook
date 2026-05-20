@@ -745,7 +745,11 @@
     if (isDone) {
       const span = document.createElement('span');
       span.className = 'progress-done';
-      span.textContent = '✓ Chapter complete — well done!';
+      const checkSpan = document.createElement('span');
+      checkSpan.setAttribute('aria-hidden', 'true');
+      checkSpan.textContent = '✓ ';
+      span.appendChild(checkSpan);
+      span.appendChild(document.createTextNode('Chapter complete — well done!'));
       cta.appendChild(span);
 
       const unBtn = document.createElement('button');
@@ -761,6 +765,7 @@
     } else {
       const btn = document.createElement('button');
       btn.className = 'progress-btn';
+      btn.setAttribute('aria-label', 'Mark chapter complete');
       btn.textContent = 'Mark chapter complete ✓';
       btn.addEventListener('click', () => {
         const p = getProgress();
@@ -789,6 +794,7 @@
             link.style.paddingRight = '1.25rem';
             const dot = document.createElement('span');
             dot.className = 'sidebar-check';
+            dot.setAttribute('aria-hidden', 'true');
             dot.textContent = '✓';
             link.appendChild(dot);
           }
@@ -837,11 +843,13 @@
 
       const prevBtn = document.createElement('button');
       prevBtn.className = 'stepper-btn';
+      prevBtn.setAttribute('aria-label', 'Previous step');
       prevBtn.textContent = '← Prev';
       prevBtn.disabled = true;
 
       const nextBtn = document.createElement('button');
       nextBtn.className = 'stepper-btn';
+      nextBtn.setAttribute('aria-label', 'Next step');
       nextBtn.textContent = 'Next →';
 
       function update() {
@@ -980,8 +988,10 @@
         URL.revokeObjectURL(url);
 
         if (timeoutId) clearTimeout(timeoutId);
+        btn.setAttribute('aria-label', 'Exported successfully');
         btn.textContent = 'Exported! ✓';
         timeoutId = setTimeout(() => {
+          btn.removeAttribute('aria-label');
           btn.textContent = originalText;
         }, 2000);
       });

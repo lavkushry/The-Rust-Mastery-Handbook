@@ -596,6 +596,9 @@
   function enhanceScrollableRegionA11y(main) {
     main.querySelectorAll(".visual-figure__body").forEach((region) => {
       region.tabIndex = 0;
+      if (!region.hasAttribute("role")) {
+        region.setAttribute("role", "region");
+      }
       if (!region.hasAttribute("aria-label")) {
         region.setAttribute("aria-label", "Scrollable diagram region");
       }
@@ -605,6 +608,9 @@
       .querySelectorAll(".annotated-code > .playground > .language-rust.hide-boring, #mdbook-content main pre")
       .forEach((region) => {
         region.tabIndex = 0;
+        if (!region.hasAttribute("role")) {
+          region.setAttribute("role", "region");
+        }
         if (!region.hasAttribute("aria-label")) {
           region.setAttribute("aria-label", "Scrollable Rust code sample");
         }

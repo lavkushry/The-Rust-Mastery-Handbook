@@ -170,6 +170,30 @@ test("visual-edition.js - enhanceFlashcardDecks", () => {
   assert.strictEqual(flashcards[0].querySelector(".flashcard__answer").textContent, "Answer 1");
 });
 
+test("visual-edition.js - flashcard keyboard hints", () => {
+  const doc = renderWithVisualEdition(`
+    <h2>Flashcard Deck</h2>
+    <table>
+      <tbody>
+        <tr><td>Q</td><td>A</td></tr>
+      </tbody>
+    </table>
+  `);
+
+  const deck = doc.querySelector(".flashcard-grid");
+  assert.ok(deck, "Flashcard deck should be created");
+
+  // Find the keyboard hint (it has class fc-counter and aria-hidden true)
+  const hints = Array.from(deck.querySelectorAll(".fc-counter")).filter(el =>
+    el.getAttribute("aria-hidden") === "true"
+  );
+
+  assert.strictEqual(hints.length, 1, "There should be exactly one hidden fc-counter used as a hint");
+  const hint = hints[0];
+  assert.ok(hint.textContent.includes("← / →"), "Hint should mention navigation keys");
+  assert.ok(hint.textContent.includes("Space/Enter"), "Hint should mention flip keys");
+});
+
 test("visual-edition.js - enhanceCheatSheets", () => {
   const doc = renderWithVisualEdition(`
     <h2>Chapter Cheat Sheet</h2>

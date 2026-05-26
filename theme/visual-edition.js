@@ -664,6 +664,13 @@
       counter.textContent = `0 / ${cards.length} reviewed`;
       deck.insertBefore(counter, deck.firstChild);
 
+      // Add keyboard shortcut hint
+      const kbdHint = document.createElement('div');
+      kbdHint.className = 'fc-counter';
+      kbdHint.setAttribute('aria-hidden', 'true');
+      kbdHint.textContent = 'Keyboard: ← / → to navigate, Space/Enter to flip';
+      deck.insertBefore(kbdHint, deck.children[1]);
+
       cards.forEach((card, i) => {
         // Wrap existing front/back in an inner container for 3D flip
         const front = card.querySelector('.flashcard__front');

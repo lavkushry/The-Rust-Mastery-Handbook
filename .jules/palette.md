@@ -9,3 +9,7 @@
 ## 2024-05-20 - Unicode Symbols and Screen Readers
 **Learning:** Unicode symbols like arrows (`←`, `→`) and checkmarks (`✓`) are read literally by screen readers (e.g. "Check mark" or "North East Arrow"), which can make UI controls confusing when they repeat visible text or add noise. Adding `aria-label` to interactive elements containing these symbols overrides the inner text and fixes the issue. If the symbols are purely decorative, they should be wrapped in an element with `aria-hidden="true"`.
 **Action:** When adding or reviewing text containing Unicode symbols or emojis, always provide a clear `aria-label` for interactive elements containing them, and ensure purely decorative symbols have `aria-hidden="true"`.
+
+## 2024-05-29 - Role Requirements for aria-label on Generic Elements
+**Learning:** Applying `aria-label` to generic, non-interactive elements (like `<div>` or `<pre>`) without providing an appropriate ARIA role (e.g., `role="region"` for scrollable areas) is an accessibility anti-pattern. Screen readers will generally ignore the `aria-label` entirely if the element lacks a semantic role.
+**Action:** Always add the appropriate semantic role (such as `role="region"`, `role="text"`, or `role="img"`) when applying `aria-label` to generic non-interactive HTML elements to ensure the label is successfully announced.

@@ -1022,16 +1022,6 @@ html.ayu .visual-table td {
   transform: rotateY(180deg);
 }
 
-.flashcard-grid .flashcard .flashcard__front::after {
-  content: "tap to flip →";
-  display: block;
-  font-size: 0.68rem;
-  font-family: var(--font-display);
-  opacity: 0.35;
-  margin-top: 0.5rem;
-  text-align: right;
-}
-
 .flashcard-grid .flashcard.seen .flashcard__front::before {
   content: "✓";
   position: absolute;

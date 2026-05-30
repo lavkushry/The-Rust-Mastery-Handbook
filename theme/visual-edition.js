@@ -672,6 +672,13 @@
 
         // Only wrap if not already wrapped
         if (!card.querySelector('.flashcard__inner')) {
+          const hint = document.createElement('div');
+          hint.className = 'flashcard-hint';
+          hint.setAttribute('aria-hidden', 'true');
+          hint.style.cssText = 'display: block; font-size: 0.68rem; opacity: 0.35; margin-top: 0.5rem; text-align: right; font-family: var(--font-display);';
+          hint.innerHTML = 'tap or <kbd>Space</kbd> to flip &rarr;';
+          front.appendChild(hint);
+
           const inner = document.createElement('div');
           inner.className = 'flashcard__inner';
           inner.appendChild(front);

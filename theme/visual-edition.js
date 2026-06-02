@@ -477,8 +477,20 @@
         questionP.className = "flashcard__question";
         questionP.innerHTML = cells[0].innerHTML; // Safe because it's sourced from Markdown rendering
 
+        const checkDiv = document.createElement("div");
+        checkDiv.className = "flashcard__check";
+        checkDiv.setAttribute("aria-hidden", "true");
+        checkDiv.textContent = "✓";
+
+        const tapHintDiv = document.createElement("div");
+        tapHintDiv.className = "flashcard__tap-hint";
+        tapHintDiv.setAttribute("aria-hidden", "true");
+        tapHintDiv.textContent = "tap to flip →";
+
         frontDiv.appendChild(indexDiv);
+        frontDiv.appendChild(checkDiv);
         frontDiv.appendChild(questionP);
+        frontDiv.appendChild(tapHintDiv);
 
         const backDiv = document.createElement("div");
         backDiv.className = "flashcard__back";

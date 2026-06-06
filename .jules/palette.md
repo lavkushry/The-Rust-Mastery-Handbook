@@ -9,3 +9,7 @@
 ## 2024-05-20 - Unicode Symbols and Screen Readers
 **Learning:** Unicode symbols like arrows (`←`, `→`) and checkmarks (`✓`) are read literally by screen readers (e.g. "Check mark" or "North East Arrow"), which can make UI controls confusing when they repeat visible text or add noise. Adding `aria-label` to interactive elements containing these symbols overrides the inner text and fixes the issue. If the symbols are purely decorative, they should be wrapped in an element with `aria-hidden="true"`.
 **Action:** When adding or reviewing text containing Unicode symbols or emojis, always provide a clear `aria-label` for interactive elements containing them, and ensure purely decorative symbols have `aria-hidden="true"`.
+
+## 2024-05-26 - Pseudo-elements and Interactive Components
+**Learning:** Avoid using CSS pseudo-elements (like `::after` or `::before`) to inject textual hints or keyboard shortcuts into interactive UI components. Pseudo-elements cannot be individually hidden from screen readers using `aria-hidden`, leading to redundant and potentially confusing screen reader announcements when focus changes.
+**Action:** Inject actual DOM elements with `aria-hidden="true"` into the markup for hints and status indicators instead of using pseudo-elements on interactive components.

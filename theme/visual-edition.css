@@ -1022,8 +1022,7 @@ html.ayu .visual-table td {
   transform: rotateY(180deg);
 }
 
-.flashcard-grid .flashcard .flashcard__front::after {
-  content: "tap to flip →";
+.flashcard-grid .flashcard .flashcard__tap-hint {
   display: block;
   font-size: 0.68rem;
   font-family: var(--font-display);
@@ -1032,14 +1031,18 @@ html.ayu .visual-table td {
   text-align: right;
 }
 
-.flashcard-grid .flashcard.seen .flashcard__front::before {
-  content: "✓";
+.flashcard-grid .flashcard .flashcard__seen-mark {
+  display: none;
   position: absolute;
   top: 0.6rem;
   right: 0.75rem;
   font-size: 0.72rem;
   opacity: 0.45;
   color: var(--valid);
+}
+
+.flashcard-grid .flashcard.seen .flashcard__seen-mark {
+  display: block;
 }
 
 /* ─── Chapter Snapshot Card ───────────────────────────────────────────────── */

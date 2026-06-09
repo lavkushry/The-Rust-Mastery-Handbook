@@ -480,6 +480,18 @@
         frontDiv.appendChild(indexDiv);
         frontDiv.appendChild(questionP);
 
+        const tapHint = document.createElement("div");
+        tapHint.className = "flashcard__tap-hint";
+        tapHint.textContent = "tap to flip →";
+        tapHint.setAttribute("aria-hidden", "true");
+        frontDiv.appendChild(tapHint);
+
+        const seenMark = document.createElement("div");
+        seenMark.className = "flashcard__seen-mark";
+        seenMark.textContent = "✓";
+        seenMark.setAttribute("aria-hidden", "true");
+        frontDiv.appendChild(seenMark);
+
         const backDiv = document.createElement("div");
         backDiv.className = "flashcard__back";
 

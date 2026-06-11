@@ -599,6 +599,9 @@
       if (!region.hasAttribute("aria-label")) {
         region.setAttribute("aria-label", "Scrollable diagram region");
       }
+      if (!region.hasAttribute("role")) {
+        region.setAttribute("role", "region");
+      }
     });
 
     main
@@ -607,6 +610,9 @@
         region.tabIndex = 0;
         if (!region.hasAttribute("aria-label")) {
           region.setAttribute("aria-label", "Scrollable Rust code sample");
+        }
+        if (!region.hasAttribute("role")) {
+          region.setAttribute("role", "region");
         }
       });
   }

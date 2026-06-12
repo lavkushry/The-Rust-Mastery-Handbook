@@ -149,10 +149,15 @@ foundation, not a detour:
    (code + per-step state + captions), fully renderer-agnostic. A Three.js/React Three
    Fiber front-end consumes the same scenarios the 2D engine renders today — Ownership
    Planet is the Ch 16/20 scenarios with energy-core models instead of DOM rows.
-2. **Stage 1 (WebGL within mdBook):** an opt-in `data-renderer="3d"` flag on a
-   `rust-viz` block lazy-loads a Three.js renderer for that scenario; the 2D engine
-   remains the default and the no-JS/PDF fallback. Pilot on the three flagship
-   scenarios (Ch 20 move, Ch 17 borrow conflict, Ch 49 pipeline).
+2. ✅ **Stage 1 (WebGL within mdBook) — shipped.** Every simulation in the book — all
+   61 chapters — now carries a "◆ 3D" toggle. `theme/rust-viz-3d.js` lazy-loads
+   Three.js from a CDN on first use and renders the live scenario as a 3D scene:
+   stack frames as floating platforms, variables as glowing state-colored containers,
+   heap allocations as bobbing energy cores (wireframed when freed), pointers as
+   animated energy flows along bezier curves, starfield + fog + multi-light staging,
+   pointer-parallax camera, and smooth per-step transitions. The 2D engine remains
+   the default and the offline/no-JS/PDF fallback; the preference persists per
+   browser; `prefers-reduced-motion` disables ambient animation.
 3. **Stage 2 (dedicated experience):** a separate R3F app — the actual Universe with
    galaxy navigation, cinematic cameras, GPU particles, post-processing — importing the
    scenario corpus as its content layer and deep-linking back into the handbook for

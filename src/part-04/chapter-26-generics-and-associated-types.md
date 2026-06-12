@@ -63,6 +63,44 @@ trait Iterator {
 
 If `Iterator` instead used a trait parameter like `Iterator<Item>`, then one type could in principle implement the trait multiple times with different items. That is usually not what iteration means. The associated type expresses the natural one-to-one relationship more clearly.
 
+
+Watch the compiler stamp out concrete functions from one generic template.
+
+<div class="rust-viz" data-eyebrow="Monomorphization Engine" data-title="One Generic, Two Functions in the Binary" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "fn largest<T: PartialOrd>(a: T, b: T) -> T {",
+    "    if a > b { a } else { b }",
+    "}",
+    "largest(3, 7);",
+    "largest(2.5, 1.0);"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "A generic function is a template, not code. Until someone calls it with a concrete type, it produces zero machine code — T is a placeholder constrained to types that can be compared.",
+      "stack": [{"frame": "(compile time)", "vars": [{"name": "largest<T>", "value": "template — no machine code yet", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "Called with integers, the compiler generates a dedicated copy: largest::<i32>, with T replaced by i32 everywhere and the comparison compiled to a direct integer instruction. The call is statically dispatched and can be inlined.",
+      "stack": [{"frame": "(compile time)", "vars": [{"name": "largest::<i32>", "value": "generated: fn(i32, i32) -> i32", "state": "owner"}]}, {"frame": "largest::<i32> at runtime", "vars": [{"name": "a", "value": "3", "state": "copy"}, {"name": "b", "value": "7", "state": "copy"}]}],
+      "heap": []
+    },
+    {
+      "line": 5,
+      "caption": "Called with floats, a second, completely separate copy is generated — largest::<f64> with float comparison instructions. This is monomorphization: generics cost nothing at runtime, paid for instead with compile time and binary size (one copy per instantiated type).",
+      "note": {"kind": "info", "text": "zero-cost at runtime: each copy is as fast as hand-written code · the cost is compile time + binary size"},
+      "stack": [{"frame": "(compile time)", "vars": [{"name": "largest::<i32>", "value": "generated: fn(i32, i32) -> i32", "state": "owner"}, {"name": "largest::<f64>", "value": "generated: fn(f64, f64) -> f64", "state": "owner"}]}, {"frame": "largest::<f64> at runtime", "vars": [{"name": "a", "value": "2.5", "state": "copy"}, {"name": "b", "value": "1.0", "state": "copy"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a generic function produces no code until called; each concrete type it is called with causes the compiler to generate a dedicated, statically-dispatched copy — zero runtime cost, paid in compile time and binary size.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

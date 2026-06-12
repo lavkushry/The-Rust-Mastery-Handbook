@@ -142,6 +142,44 @@ They are not fine in production code for things that can fail in the real world 
   <p>If it can fail because of something outside your program, <em>handle it</em>. If it can only fail because you wrote a bug, <code>unwrap</code> is fine.</p>
 </div>
 
+Here is what an Option actually looks like in memory: a value, not a null pointer waiting to explode.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="Option Is a Value, Not a Landmine" data-accent="var(--trait)">
+<script type="application/json">
+{
+  "code": [
+    "let some_word = first_word(\"hello rust\");",
+    "let no_word = first_word(\"\");",
+    "match no_word {",
+    "    Some(w) => println!(\"first word is {w}\"),",
+    "    None    => println!(\"no words\"),",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "first_word found a word, so it returns Some(\"hello\") — a tag saying \"present\" plus the payload. The &str payload points at the string literal, which lives in the program binary itself: no heap, no allocation.",
+      "stack": [{"frame": "main", "vars": [{"name": "some_word", "value": "Some(\"hello\")", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "The empty string has no first word, so this call returns None. Notice: None is an ordinary stack value with a \"absent\" tag — not a null pointer. There is nothing here that can be accidentally dereferenced.",
+      "stack": [{"frame": "main", "vars": [{"name": "some_word", "value": "Some(\"hello\")", "state": "owner"}, {"name": "no_word", "value": "None", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 5,
+      "caption": "match inspects the tag and takes the None arm. The compiler checked at build time that both arms exist — forgetting the \"absent\" case is a compile error, not a 3 a.m. production crash.",
+      "note": {"kind": "ok", "text": "exhaustiveness checked: every Option must handle both Some and None"},
+      "stack": [{"frame": "main", "vars": [{"name": "some_word", "value": "Some(\"hello\")", "state": "owner"}, {"name": "no_word", "value": "None", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): Option values are ordinary stack values carrying a present/absent tag plus payload; match must handle both Some and None, checked at compile time.</p>
+</div>
 ## Try this
 
 <div class="try-this">

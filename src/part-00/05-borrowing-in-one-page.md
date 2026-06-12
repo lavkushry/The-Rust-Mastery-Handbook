@@ -171,6 +171,45 @@ fn main() {
   <p><strong>Default habit:</strong> your functions take <code>&amp;str</code>, not <code>String</code>. Callers can pass either — Rust will do the coercion for you. You keep the flexibility, they keep ownership of their data.</p>
 </div>
 
+Step through the lending version and watch the reference point back at the owner — and the owner survive the call.
+
+<div class="rust-viz" data-eyebrow="Borrow Checker Simulator" data-title="Lending Instead of Giving" data-accent="var(--borrow-shared)">
+<script type="application/json">
+{
+  "code": [
+    "let name = String::from(\"Ada\");",
+    "print_name(&name);",
+    "println!(\"{name}\");",
+    "",
+    "fn print_name(n: &String) {",
+    "    println!(\"hello, {n}\");",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "name owns the String. The heap buffer holding the text belongs to it.",
+      "stack": [{"frame": "main", "vars": [{"name": "name", "id": "v-name", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"Ada\"", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "&name lends the value. print_name gets its own stack frame, and n is a reference pointing back at name — not a new owner. Ownership never changes hands.",
+      "stack": [{"frame": "main", "vars": [{"name": "name", "id": "v-name", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}]}, {"frame": "print_name", "vars": [{"name": "n", "value": "&name", "points": "v-name", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"Ada\"", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "print_name returned: its frame is gone and the loan is over. name still owns the String, so using it here is fine. Compare this with passing name by value, which would have moved it away for good.",
+      "note": {"kind": "ok", "text": "borrow ended when print_name returned — `name` is still the owner"},
+      "stack": [{"frame": "main", "vars": [{"name": "name", "id": "v-name", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"Ada\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): passing &name lends the String to print_name, whose parameter points back at the owner; when the function returns the loan ends and name is still valid.</p>
+</div>
 ## Try this
 
 <div class="try-this">

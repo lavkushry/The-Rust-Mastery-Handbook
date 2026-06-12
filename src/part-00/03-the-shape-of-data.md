@@ -177,6 +177,47 @@ fn main() {
 
 `&self` is the method's way of saying "I will *look* at the struct but not take it over." You will see `&self` on almost every method you ever write. Its meaning will be the subject of the next two chapters.
 
+Here is where a struct actually lives. Step through and watch the User value take shape in memory.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="Where a Struct Lives" data-accent="var(--stack)">
+<script type="application/json">
+{
+  "code": [
+    "struct User {",
+    "    name: String,",
+    "    age: u32,",
+    "    active: bool,",
+    "}",
+    "let u = User {",
+    "    name: String::from(\"Ada\"),",
+    "    age: 36,",
+    "    active: true,",
+    "};"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "A struct definition is just a blueprint. Defining User costs nothing at runtime — no memory is used until a value is created.",
+      "stack": [{"frame": "main", "vars": []}],
+      "heap": []
+    },
+    {
+      "line": 7,
+      "caption": "Building the value starts with the name field: String::from allocates a 3-byte buffer on the heap for \"Ada\".",
+      "stack": [{"frame": "main", "vars": [{"name": "(name field)", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"Ada\"", "state": "alive"}]
+    },
+    {
+      "line": 10,
+      "caption": "The finished User sits in one contiguous block on the stack: the String triple, the u32, and the bool, side by side. Only the text bytes live on the heap — and u owns them through its name field.",
+      "stack": [{"frame": "main", "vars": [{"name": "u", "value": "name: ptr·len 3·cap 3 | age: 36 | active: true", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"Ada\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a struct definition uses no memory; constructing a User places its three fields contiguously on the stack, with the String field pointing at a heap buffer that the struct owns.</p>
+</div>
 ## Try this
 
 <div class="try-this">

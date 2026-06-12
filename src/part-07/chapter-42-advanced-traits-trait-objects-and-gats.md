@@ -159,6 +159,46 @@ This only works if the trait's method set can be represented uniformly for every
 
 You will often see error E0038 when you try to turn a non-object-safe trait into `dyn Trait`.
 
+
+One call site, two implementations. Watch the vtable choose at runtime — the thing monomorphization can never do.
+
+<div class="rust-viz" data-eyebrow="Trait System Visualizer" data-title="Heterogeneous Dispatch: One Loop, Many VTables" data-accent="var(--trait)">
+<script type="application/json">
+{
+  "code": [
+    "let widgets: Vec<Box<dyn Render>> = vec![",
+    "    Box::new(Html),",
+    "    Box::new(Json),",
+    "];",
+    "for w in &widgets {",
+    "    w.render();",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 4,
+      "caption": "A Vec needs one element type — and Html and Json are different types with different sizes. Type erasure solves it: each element is a fat pointer (data + vtable), and fat pointers are all the same size. The concrete types vanish; the vtables remember them.",
+      "stack": [{"frame": "main", "vars": [{"name": "widgets", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer — two fat pointers", "value": "[ data→Html · vt→vtable(Html) ] [ data→Json · vt→vtable(Json) ]", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "First iteration: w is the Html element. The call site cannot know that — it compiles to: load the vtable pointer, fetch the render slot, jump. The slot holds Html::render, so \"<html>\" comes back.",
+      "stack": [{"frame": "main", "vars": [{"name": "w", "value": "&Box<dyn Render> → Html", "points": "h1", "state": "borrow"}, {"name": "(dispatch)", "value": "vtable(Html).render → Html::render ✓", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[ ▸Html ] [ Json ]", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "Second iteration: the very same machine instructions run again, but w's vtable pointer now leads to vtable(Json) — and the jump lands in Json::render. One compiled call site, behavior chosen per element at runtime. Generics would have monomorphized one loop per type and still couldn't mix them in one Vec; dyn trades an indirection for that flexibility.",
+      "note": {"kind": "info", "text": "static dispatch: N specialized copies, no mixing · dynamic dispatch: 1 call site, any implementor, one vtable hop"},
+      "stack": [{"frame": "main", "vars": [{"name": "w", "value": "&Box<dyn Render> → Json", "points": "h1", "state": "borrow"}, {"name": "(dispatch)", "value": "vtable(Json).render → Json::render ✓", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[ Html ] [ ▸Json ]", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a Vec&lt;Box&lt;dyn Render&gt;&gt; stores uniform fat pointers whose vtable halves remember the erased concrete types; the same compiled call site jumps to Html::render on one iteration and Json::render on the next.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

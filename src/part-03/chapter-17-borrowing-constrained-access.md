@@ -177,6 +177,50 @@ The borrow checker sees that <code>first</code> holds <code>&v</code> (shared bo
 </div>
 </div>
 
+Now run that exact program through the simulator below. Watch the shared borrow point straight into the heap buffer, then watch the compiler refuse the mutation while that borrow is still alive.
+
+<div class="rust-viz" data-eyebrow="Borrow Checker Simulator" data-title="Aliasing XOR Mutation, Enforced Live" data-accent="var(--borrow-shared)">
+<script type="application/json">
+{
+  "code": [
+    "let mut v = vec![1, 2, 3];",
+    "let first = &v[0];",
+    "v.push(4);",
+    "println!(\"{first}\");"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "v owns a heap buffer holding three elements. The stack stores only the owner triple: pointer, length, and capacity.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 3 · cap 3", "points": "buf", "state": "owner"}]}],
+      "heap": [{"id": "buf", "label": "Vec buffer", "value": "[1, 2, 3]", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "first is a shared borrow pointing directly into the heap buffer. Its validity depends on that buffer staying exactly where it is. While this borrow is alive, v is frozen: read-only.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 3 · cap 3", "points": "buf", "state": "owner"}, {"name": "first", "value": "&v[0]", "points": "buf", "state": "borrow"}]}],
+      "heap": [{"id": "buf", "label": "Vec buffer", "value": "[1, 2, 3]", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "push needs an exclusive borrow (&mut v) because the buffer is full — pushing would allocate a new buffer, copy the elements, and free this one. first would then dangle. The compiler rejects the program instead.",
+      "note": {"kind": "error", "text": "error[E0502]: cannot borrow `v` as mutable because it is also borrowed as immutable"},
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 3 · cap 3", "points": "buf", "state": "error"}, {"name": "first", "value": "&v[0]", "points": "buf", "state": "borrow"}]}],
+      "heap": [{"id": "buf", "label": "Vec buffer (cap full — push would reallocate)", "value": "[1, 2, 3]", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "Why was the borrow still alive on line 3? Because first is used here, on line 4. Under non-lexical lifetimes, a borrow lasts until its last use — delete this println! and the borrow ends at line 2, and the push compiles.",
+      "note": {"kind": "info", "text": "NLL: borrow regions end at last use, not at end of scope"},
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 3 · cap 3", "state": "owner"}, {"name": "first", "value": "&v[0]", "points": "buf", "state": "borrow"}]}],
+      "heap": [{"id": "buf", "label": "Vec buffer", "value": "[1, 2, 3]", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a shared borrow into a Vec's heap buffer freezes the Vec; calling push while the borrow is alive fails with E0502 because reallocation would leave the reference dangling. Under non-lexical lifetimes the borrow ends at its last use, so removing the final use makes the mutation legal.</p>
+</div>
+
 ## Readiness Check - Borrowing Confidence
 
 Before proceeding, self-check your ability to reason about aliasing and mutation.

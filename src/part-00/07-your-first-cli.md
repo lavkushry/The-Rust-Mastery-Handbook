@@ -165,6 +165,49 @@ That file — `target/release/wordc` — is a native, statically-compiled binary
   <p>You just wrote a real program, using every idea in Part 0: variables, bindings, borrowing, <code>Option</code>, <code>Result</code>, <code>match</code>. You compiled it to a native binary. If you stopped reading here, you could already use Rust at work for small tools.</p>
 </div>
 
+
+Here is your CLI's memory while it runs — everything in this picture is something you learned in the last six chapters.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="Your CLI, In Memory" data-accent="var(--stack)">
+<script type="application/json">
+{
+  "code": [
+    "let args: Vec<String> = env::args().collect();",
+    "let path = &args[1];",
+    "let text = fs::read_to_string(path)?;",
+    "println!(\"{} lines\", text.lines().count());"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "The OS hands the program its arguments; collect() gathers them into a Vec of Strings on the heap. args owns the lot — Chapter 4's ownership, already working for you.",
+      "stack": [{"frame": "main", "vars": [{"name": "args", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec<String> buffer", "value": "[\"mycli\", \"notes.txt\"]", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "path borrows the second argument — Chapter 5's lending. No copy: just a reference into data args still owns.",
+      "stack": [{"frame": "main", "vars": [{"name": "args", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}, {"name": "path", "value": "&args[1]", "points": "h1", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "Vec<String> buffer", "value": "[\"mycli\", ▸\"notes.txt\"]", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "read_to_string returns a Result — Chapter 6's honesty about failure. The ? propagates an error (file missing, no permission) to the caller; on success, text owns the file's contents in a fresh heap buffer.",
+      "stack": [{"frame": "main", "vars": [{"name": "args", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}, {"name": "text", "value": "ptr · len 58 · cap 58", "points": "h2", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec<String> buffer", "value": "[\"mycli\", \"notes.txt\"]", "state": "alive"}, {"id": "h2", "label": "file contents", "value": "\"buy milk\\nlearn rust\\n…\"", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "lines() walks the buffer without copying it, count() tallies, println! reports. When main ends, args and text drop and both buffers are freed — your first program already manages memory perfectly, because the language did the bookkeeping.",
+      "note": {"kind": "ok", "text": "ownership, borrowing, Result, and ? — the whole of Part 0, in four lines of real program"},
+      "stack": [{"frame": "main", "vars": [{"name": "args", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}, {"name": "text", "value": "ptr · len 58 · cap 58", "points": "h2", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec<String> buffer", "value": "[\"mycli\", \"notes.txt\"]", "state": "alive"}, {"id": "h2", "label": "file contents", "value": "\"buy milk\\nlearn rust\\n…\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): the CLI collects its arguments into a heap-backed Vec, borrows the path argument, reads the file into an owned String via a Result and ?, and counts lines through a zero-copy iterator — every Part 0 concept in one running program.</p>
+</div>
 ## Try this
 
 <div class="try-this">

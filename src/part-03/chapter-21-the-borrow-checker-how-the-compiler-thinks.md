@@ -197,6 +197,50 @@ println!("{r}");             // borrow extends to here
 </div>
 </div>
 
+
+Run the borrow checker's actual reasoning on a two-borrow conflict. The key concept is liveness: how far does each borrow's region extend?
+
+<div class="rust-viz" data-eyebrow="Borrow Checker Simulator" data-title="How the Compiler Thinks: Regions and Liveness" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "let mut v = vec![1, 2];",
+    "let a = &mut v;",
+    "let b = &mut v;",
+    "a.push(3);"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "v owns a heap buffer. Nothing borrowed yet — the compiler's borrow map for v is empty.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "id": "v-v", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[1, 2]", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "a takes an exclusive borrow. The compiler computes its region by liveness on MIR: a is used at line 4, so the region spans from here through line 4. Within that region, v is untouchable except through a.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "id": "v-v", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}, {"name": "a", "value": "&mut v (live through line 4)", "points": "v-v", "state": "borrow-mut"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[1, 2]", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "A second exclusive borrow is requested while a's region is still active. Two &mut borrows would mean two writers with no coordination — exactly the aliasing the exclusivity rule exists to prevent. Rejected.",
+      "note": {"kind": "error", "text": "error[E0499]: cannot borrow `v` as mutable more than once at a time — first borrow later used here (line 4)"},
+      "stack": [{"frame": "main", "vars": [{"name": "v", "id": "v-v", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "error"}, {"name": "a", "value": "&mut v (still live)", "points": "v-v", "state": "borrow-mut"}, {"name": "b", "value": "&mut v (denied)", "state": "error"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[1, 2]", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "This line is the evidence the compiler cited: a is used here, which is what stretched its region across line 3. Reorder the program — use a before creating b — and both borrows get disjoint regions and it compiles. The borrow checker is not counting braces; it is computing where each borrow is actually live on the control-flow graph.",
+      "note": {"kind": "info", "text": "NLL: borrow regions come from liveness analysis on MIR, not from lexical scopes"},
+      "stack": [{"frame": "main", "vars": [{"name": "v", "id": "v-v", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}, {"name": "a", "value": "&mut v", "points": "v-v", "state": "borrow-mut"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[1, 2]", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): an exclusive borrow's region is computed by liveness — because a is used on the final line, a second &mut v in between fails with E0499; reordering the uses gives the borrows disjoint regions and the program compiles.</p>
+</div>
 ## Readiness Check - Borrow Checker Mental Simulation
 
 | Skill                        | Level 0                    | Level 1                             | Level 2                                        | Level 3                                                      |

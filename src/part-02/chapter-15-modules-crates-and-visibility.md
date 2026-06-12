@@ -81,6 +81,49 @@ Here:
 
 This default-private rule is one of the main ways Rust nudges code toward intentional APIs.
 
+
+Watch the compiler walk the module tree to resolve two paths — one public, one private.
+
+<div class="rust-viz" data-eyebrow="Cargo Universe" data-title="Path Resolution and the Privacy Boundary" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "mod parser {",
+    "    pub fn parse() {}",
+    "    fn helper() {}",
+    "}",
+    "fn main() {",
+    "    parser::parse();",
+    "    parser::helper();",
+    "}"
+  ],
+  "columns": ["Module tree", "Resolution"],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "Before any code runs — before it even type-checks — the compiler builds the module tree. The crate root contains main and the parser module; parser contains parse (marked pub) and helper (private by default). Modules are about visibility, not files: this whole tree could live in one file or three.",
+      "stack": [{"frame": "crate (root)", "vars": [{"name": "fn main", "value": "item", "state": "plain"}, {"name": "mod parser", "value": "child module", "state": "plain"}]}, {"frame": "crate::parser", "vars": [{"name": "pub fn parse", "value": "visible to parent", "state": "plain"}, {"name": "fn helper", "value": "private — this module only", "state": "plain"}]}],
+      "heap": []
+    },
+    {
+      "line": 6,
+      "caption": "Resolving parser::parse from main: step into child module parser — allowed, parents always see their children exist — then access parse. It is pub, so the privacy check passes. The call compiles.",
+      "note": {"kind": "ok", "text": "path found: crate → parser → parse (pub) ✓"},
+      "stack": [{"frame": "crate (root)", "vars": [{"name": "fn main", "value": "resolving…", "state": "plain"}]}, {"frame": "crate::parser", "vars": [{"name": "pub fn parse", "value": "✓ accessible", "state": "plain"}]}],
+      "heap": [{"id": "r1", "label": "parser::parse()", "value": "resolved — compiles", "state": "alive"}]
+    },
+    {
+      "line": 7,
+      "caption": "Same walk for parser::helper — the path exists, but helper is private: visible inside parser and its descendants, and nowhere else. The compiler even tells you so. Privacy is the module system's whole point: parse is the contract, helper is the implementation, and the boundary is enforced, not suggested.",
+      "note": {"kind": "error", "text": "error[E0603]: function `helper` is private — private items are an API boundary, not a hint"},
+      "stack": [{"frame": "crate (root)", "vars": [{"name": "fn main", "value": "resolving…", "state": "plain"}]}, {"frame": "crate::parser", "vars": [{"name": "fn helper", "value": "✗ private", "state": "error"}]}],
+      "heap": [{"id": "r1", "label": "parser::parse()", "value": "resolved — compiles", "state": "alive"}, {"id": "r2", "label": "parser::helper()", "value": "rejected at the privacy boundary", "state": "freed"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): the compiler builds the module tree, resolves parser::parse successfully because it is pub, and rejects parser::helper with E0603 because private items are visible only within their own module — the enforced API boundary.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

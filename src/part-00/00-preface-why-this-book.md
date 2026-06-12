@@ -49,6 +49,52 @@ The same four bugs have eaten more engineering time than every other category co
   </div>
 </div>
 
+
+Before you read a single chapter, watch the pitch in action: here are the four bugs, and here is the compiler deleting each one.
+
+<div class="rust-viz" data-eyebrow="Why Rust Exists" data-title="The Four Bugs, Deleted Live" data-accent="var(--ownership)">
+<script type="application/json">
+{
+  "code": [
+    "// 1. use-after-free",
+    "// 2. double free",
+    "// 3. dangling pointer",
+    "// 4. data race"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "Using a value after its memory was handed away: in C this compiles and crashes later. In Rust, a moved-from variable is dead to the compiler — using it is a compile error, not a production incident.",
+      "note": {"kind": "error", "text": "error[E0382]: borrow of moved value: `s` — caught before the program exists"},
+      "stack": [{"frame": "your code", "vars": [{"name": "s", "value": "moved away", "state": "moved"}, {"name": "use of s", "value": "rejected", "state": "error"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "Freeing the same memory twice corrupts the allocator. Rust's rule — every value has exactly one owner — means cleanup runs exactly once, automatically, when that one owner goes out of scope. There is no second free to write.",
+      "note": {"kind": "ok", "text": "one owner → one drop. The bug is not caught; it is unrepresentable."},
+      "stack": [{"frame": "your code", "vars": [{"name": "owner", "value": "drops its value once, at scope end", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "A pointer to memory that no longer exists. Rust tracks how long every reference may live and refuses any program where a reference could outlive the thing it points at.",
+      "note": {"kind": "error", "text": "error[E0597]: borrowed value does not live long enough"},
+      "stack": [{"frame": "your code", "vars": [{"name": "r", "value": "&x — but x is already gone", "state": "error"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "Two threads touching the same data, at least one writing, no coordination — the bug that corrupts data on Tuesdays only. Rust checks thread-safety in the type system: data that is not safe to share simply cannot be sent across threads.",
+      "note": {"kind": "error", "text": "error[E0277]: `Rc<String>` cannot be sent between threads safely"},
+      "stack": [{"frame": "thread A", "vars": [{"name": "shared data", "value": "unsynchronized write", "state": "error"}]}, {"frame": "thread B", "vars": [{"name": "shared data", "value": "unsynchronized read", "state": "error"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): the four memory and concurrency bugs — use-after-free, double free, dangling pointers, and data races — each shown with the compile-time error or ownership rule that deletes it in Rust.</p>
+</div>
 ## "But is it not famously hard?"
 
 Rust has a reputation for being hard. The reputation is half deserved. The half that is deserved is real: **Rust asks you to think about one thing most languages let you ignore — who is allowed to touch a piece of data, and when.** That is the idea behind ownership. It is not complicated, it is just *new*, and like anything new it feels awkward for about a week.

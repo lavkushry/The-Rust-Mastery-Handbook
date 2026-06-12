@@ -131,6 +131,45 @@ When you expose items from `lib.rs`, you are shaping the crate's stable face. Re
 
 That is why "just make it `pub` for now" is such a dangerous habit in library code.
 
+
+Touch one crate in a workspace and watch exactly how far the rebuild ripples.
+
+<div class="rust-viz" data-eyebrow="Cargo Universe" data-title="Workspaces: The Dependency Graph Decides What Rebuilds" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "[workspace]",
+    "members = [\"core\", \"api\", \"cli\"]",
+    "$ cargo build",
+    "# edit core/src/lib.rs",
+    "$ cargo build"
+  ],
+  "columns": ["Workspace crates", "target/ (shared)"],
+  "steps": [
+    {
+      "line": 2,
+      "caption": "One workspace, three crates: cli depends on api, api depends on core. They share a single Cargo.lock — every member sees identical dependency versions — and a single target/ directory, so nothing is compiled twice.",
+      "stack": [{"frame": "dependency graph", "vars": [{"name": "core", "value": "the foundation", "state": "plain"}, {"name": "api", "value": "depends on core", "state": "plain"}, {"name": "cli", "value": "depends on api", "state": "plain"}]}],
+      "heap": [{"id": "lock", "label": "Cargo.lock (one for all)", "value": "shared, consistent versions", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "The first build compiles in dependency order — core, then api, then cli — and caches each artifact in the shared target/. The graph dictates the order; Cargo just walks it.",
+      "stack": [{"frame": "build order", "vars": [{"name": "1. core", "value": "compiled ✓", "state": "plain"}, {"name": "2. api", "value": "compiled ✓", "state": "plain"}, {"name": "3. cli", "value": "compiled ✓", "state": "plain"}]}],
+      "heap": [{"id": "lock", "label": "Cargo.lock", "value": "shared", "state": "alive"}, {"id": "t", "label": "target/debug", "value": "core ✓ · api ✓ · cli ✓ (all cached)", "state": "alive"}]
+    },
+    {
+      "line": 5,
+      "caption": "Edit core and rebuild: core recompiles, and so must api and cli — they sit downstream and may see changed types. Had you edited cli instead, core and api would not be touched at all. The rebuild boundary IS the dependency graph: this is why workspaces split big projects into small crates, and why a breaking change in a foundation crate is a semver event — every dependent feels it.",
+      "note": {"kind": "ok", "text": "rebuild scope = the edited crate plus everything downstream — crate boundaries are compilation firewalls and semver boundaries at once"},
+      "stack": [{"frame": "incremental rebuild", "vars": [{"name": "core (edited)", "value": "recompiled", "state": "plain"}, {"name": "api ← core", "value": "recompiled (downstream)", "state": "plain"}, {"name": "cli ← api", "value": "recompiled (downstream)", "state": "plain"}]}],
+      "heap": [{"id": "t", "label": "target/debug", "value": "3 rebuilt this time — edit cli next time and only 1 rebuilds", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a three-crate workspace shares one lockfile and target directory, builds in dependency order, and after an edit recompiles only the changed crate plus its downstream dependents — the dependency graph is both the rebuild boundary and the semver boundary.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

@@ -74,6 +74,43 @@ This manifest says:
 
 That is enough for Cargo to build a dependency graph and fetch compatible crate versions.
 
+
+Add one line to Cargo.toml and watch everything it sets in motion.
+
+<div class="rust-viz" data-eyebrow="Cargo Universe" data-title="One Dependency Line, Whole Build Pipeline" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "[dependencies]",
+    "serde = \"1\"",
+    "$ cargo build"
+  ],
+  "columns": ["Build pipeline", "Artifacts"],
+  "steps": [
+    {
+      "line": 2,
+      "caption": "The manifest states intent: \"any serde compatible with version 1\". Resolution turns intent into certainty — Cargo picks exact versions for serde and everything serde needs, and writes them to Cargo.lock. Commit that file: it is what makes your teammate's build identical to yours.",
+      "stack": [{"frame": "resolve", "vars": [{"name": "semver solver", "value": "serde \"1\" → 1.0.219, + its dependencies", "state": "plain"}]}],
+      "heap": [{"id": "lock", "label": "Cargo.lock", "value": "exact pinned versions — reproducible builds", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Fetch: the pinned crates are downloaded from crates.io into a shared local cache (~/.cargo). Each crate arrives as source code — Rust dependencies are compiled by you, not shipped as opaque binaries.",
+      "stack": [{"frame": "fetch", "vars": [{"name": "crates.io", "value": "downloads pinned sources", "state": "plain"}]}],
+      "heap": [{"id": "lock", "label": "Cargo.lock", "value": "pinned versions", "state": "alive"}, {"id": "cache", "label": "~/.cargo/registry", "value": "serde-1.0.219 source (shared across projects)", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Compile, in dependency order: serde first, then your crate against it. Each finished dependency is cached in target/ — tomorrow's build recompiles only what changed. Finally the linker stitches every compiled crate into one self-contained binary.",
+      "note": {"kind": "ok", "text": "manifest → lockfile → fetch → compile in dependency order → link. Every cargo build, forever."},
+      "stack": [{"frame": "compile", "vars": [{"name": "1. serde", "value": "compiled → cached", "state": "plain"}, {"name": "2. your crate", "value": "compiled against serde", "state": "plain"}]}, {"frame": "link", "vars": [{"name": "linker", "value": "one binary out", "state": "plain"}]}],
+      "heap": [{"id": "lock", "label": "Cargo.lock", "value": "pinned versions", "state": "alive"}, {"id": "bin", "label": "target/debug/app", "value": "your code + serde, statically linked", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): one dependency line triggers version resolution into a committed Cargo.lock, source download into the shared registry cache, compilation in dependency order with caching in target/, and linking into a single self-contained binary.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

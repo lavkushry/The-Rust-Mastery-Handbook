@@ -80,4 +80,41 @@
   </figure>
 </div>
 
+
+Here is dynamic dispatch with nothing hidden: the fat pointer, the vtable, and the indirect jump.
+
+<div class="rust-viz" data-eyebrow="Trait System Visualizer" data-title="Box&lt;dyn Trait&gt;: The Fat Pointer and the VTable" data-accent="var(--trait)">
+<script type="application/json">
+{
+  "code": [
+    "trait Speak { fn speak(&self) -> String; }",
+    "struct Dog;",
+    "let d: Box<dyn Speak> = Box::new(Dog);",
+    "d.speak();"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "A trait is a contract — it generates no code and occupies no memory by itself. The interesting part happens when a concrete type is erased behind it.",
+      "stack": [{"frame": "main", "vars": []}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "Boxing Dog as dyn Speak erases its concrete type. d becomes a fat pointer with two halves: a data pointer to the Dog value on the heap, and a vtable pointer to a function table the compiler built once, at compile time, in static memory.",
+      "stack": [{"frame": "main", "vars": [{"name": "d.data", "value": "→ Dog", "points": "h1", "state": "owner"}, {"name": "d.vtable", "value": "→ vtable", "points": "h2", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "heap: Dog value", "value": "(zero-sized here, but could carry fields)", "state": "alive"}, {"id": "h2", "label": "static memory: vtable for Dog as Speak", "value": "speak → Dog::speak | drop | size | align", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "d.speak() cannot be resolved at compile time — the concrete type is erased. So the call follows the vtable pointer, looks up the speak slot, and jumps to Dog::speak with the data pointer as &self. One extra indirection, and no inlining across it: that is the entire runtime cost of dyn.",
+      "note": {"kind": "info", "text": "dynamic dispatch: call → vtable lookup → Dog::speak. Generics (impl Speak) would instead monomorphize and inline — zero indirection, bigger binary."},
+      "stack": [{"frame": "main", "vars": [{"name": "d.data", "value": "→ Dog (passed as &self)", "points": "h1", "state": "owner"}, {"name": "d.vtable", "value": "→ vtable (consulted)", "points": "h2", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "heap: Dog value", "value": "&self for the call", "state": "alive"}, {"id": "h2", "label": "static memory: vtable for Dog as Speak", "value": "speak → Dog::speak ◀ jump", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): Box&lt;dyn Speak&gt; is a fat pointer — a data pointer to the heap value plus a vtable pointer into static memory; calling speak() looks up the function in the vtable and jumps, costing one indirection versus the inlined static dispatch of generics.</p>
+</div>
 ## Step 1 - The Problem

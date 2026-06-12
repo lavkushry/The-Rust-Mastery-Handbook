@@ -19,6 +19,46 @@ Look at everything Part 0 just covered:
 
 That is roughly eighty percent of the Rust you will use in the first year on the job. The remaining twenty percent — iterators, traits, generics, async, smart pointers, concurrency, unsafe — are refinements and power features. You do not need them to be useful.
 
+
+Proof, before you pick a path: step through this snippet. A week ago it was hieroglyphics; now you can narrate every line.
+
+<div class="rust-viz" data-eyebrow="Part 0 Capstone" data-title="Read This Like You Built It" data-accent="var(--valid)">
+<script type="application/json">
+{
+  "code": [
+    "struct Note { text: String }",
+    "let note = Note { text: String::from(\"learn Rust\") };",
+    "let view = &note.text;",
+    "match view.is_empty() {",
+    "    true => println!(\"empty note\"),",
+    "    false => println!(\"{view}\"),",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 2,
+      "caption": "A struct with an owned String field: note sits on the stack, its text bytes on the heap, and note owns them. You know this picture from Chapter 3 and Chapter 4.",
+      "stack": [{"frame": "main", "vars": [{"name": "note", "value": "text: ptr · len 10 · cap 10", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "note.text buffer", "value": "\"learn Rust\"", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "A borrow of the field — reading without taking. note remains the owner; view is a temporary lens. Chapter 5, working exactly as promised.",
+      "stack": [{"frame": "main", "vars": [{"name": "note", "value": "text: ptr · len 10 · cap 10", "points": "h1", "state": "owner"}, {"name": "view", "value": "&note.text", "points": "h1", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "note.text buffer", "value": "\"learn Rust\"", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "A match with both cases handled — the Chapter 6 discipline, applied to a plain bool. The text is not empty, so this arm prints it. That is the whole of Part 0 in one breath: data has a shape, one owner, borrowed views, and every case handled. Now pick your path below.",
+      "note": {"kind": "ok", "text": "you can now read the vast majority of Rust code in the wild — the rest of this book is depth, not difficulty"},
+      "stack": [{"frame": "main", "vars": [{"name": "note", "value": "text: ptr · len 10 · cap 10", "points": "h1", "state": "owner"}, {"name": "view", "value": "&note.text", "points": "h1", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "note.text buffer", "value": "\"learn Rust\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a capstone walkthrough of a struct with an owned String field, a borrowed view of it, and an exhaustive match — every concept from Part 0 in one short program.</p>
+</div>
 ## Pick your path
 
 <div class="analogy-card">

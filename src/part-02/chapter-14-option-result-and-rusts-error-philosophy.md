@@ -148,4 +148,56 @@
   <figcaption class="visual-figure__caption">Reach for <code>?</code> first in production code — it keeps the happy path linear and makes errors the caller's problem. Use <code>match</code> when you need local recovery. Use <code>.unwrap()</code> only when you can prove the value is always present, or in tests.</figcaption>
 </figure>
 
+
+Watch `?` do its job twice: once on the happy path, once on the early return.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="Errors Are Values: ? on Both Paths" data-accent="var(--valid)">
+<script type="application/json">
+{
+  "code": [
+    "fn read_port(s: &str) -> Result<u16, ParseIntError> {",
+    "    let port = s.parse()?;",
+    "    Ok(port)",
+    "}",
+    "let good = read_port(\"8080\");",
+    "let bad = read_port(\"nope\");"
+  ],
+  "steps": [
+    {
+      "line": 5,
+      "caption": "First call: read_port gets its own frame with s = \"8080\".",
+      "stack": [{"frame": "main", "vars": []}, {"frame": "read_port", "vars": [{"name": "s", "value": "&str \"8080\"", "state": "borrow"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "parse returns Ok(8080). The ? operator unwraps it: the inner value flows into port and execution simply continues. On the happy path, ? is nearly invisible.",
+      "stack": [{"frame": "main", "vars": []}, {"frame": "read_port", "vars": [{"name": "s", "value": "&str \"8080\"", "state": "borrow"}, {"name": "port", "value": "8080", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 5,
+      "caption": "The function returns Ok(8080); its frame pops and the Result lands in good as a plain stack value. No exception machinery, no stack unwinding tables — just a value moving between frames.",
+      "stack": [{"frame": "main", "vars": [{"name": "good", "value": "Ok(8080)", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "Second call: parse(\"nope\") returns Err. Now ? takes its other path — it returns the error from read_port immediately. The rest of the function body never runs.",
+      "note": {"kind": "info", "text": "`?` on Err(e) = early `return Err(e.into())` — propagation, not a crash"},
+      "stack": [{"frame": "main", "vars": [{"name": "good", "value": "Ok(8080)", "state": "owner"}]}, {"frame": "read_port", "state": "closing", "vars": [{"name": "s", "value": "&str \"nope\"", "state": "borrow"}, {"name": "(early return)", "value": "Err(ParseIntError)", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 6,
+      "caption": "The error arrives in bad as ordinary data. The caller must inspect the Result before using the number inside — the type system makes ignoring failure a compile error, not a 3 a.m. surprise.",
+      "note": {"kind": "ok", "text": "failure is in the return type — visible in the signature, impossible to overlook"},
+      "stack": [{"frame": "main", "vars": [{"name": "good", "value": "Ok(8080)", "state": "owner"}, {"name": "bad", "value": "Err(ParseIntError)", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): on the happy path the ? operator unwraps Ok(8080) and execution continues; on the failure path it early-returns the Err from the function, which arrives in the caller as an ordinary value that the type system forces the caller to handle.</p>
+</div>
 ## Step 1 - The Problem

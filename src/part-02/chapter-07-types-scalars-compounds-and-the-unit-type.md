@@ -68,6 +68,42 @@ These types say:
 
 That explicitness matters because Rust wants both humans and compiler to know what operations and layouts are involved.
 
+
+Step through three declarations and watch how many bytes each one actually occupies.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="Every Type Has a Known Size" data-accent="var(--stack)">
+<script type="application/json">
+{
+  "code": [
+    "let x: i32 = 42;",
+    "let arr: [u8; 4] = [1, 2, 3, 4];",
+    "let nothing: () = ();"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "i32 is exactly 4 bytes, known at compile time. The compiler can reserve its stack slot before the program ever runs — that is why stack allocation is effectively free.",
+      "stack": [{"frame": "main", "vars": [{"name": "x", "value": "42 (4 bytes)", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "[u8; 4] stores its four elements inline, contiguously, right in the stack frame — no pointer, no heap. An array's length is part of its type, so its size is also known at compile time.",
+      "stack": [{"frame": "main", "vars": [{"name": "x", "value": "42 (4 bytes)", "state": "owner"}, {"name": "arr", "value": "[1│2│3│4] (4 bytes inline)", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "The unit type () is zero bytes. It exists in the type system — every expression must have a type — but occupies no memory and compiles to nothing. A zero-cost abstraction in its purest form.",
+      "note": {"kind": "ok", "text": "size_of::<i32>() = 4, size_of::<[u8; 4]>() = 4, size_of::<()>() = 0"},
+      "stack": [{"frame": "main", "vars": [{"name": "x", "value": "42 (4 bytes)", "state": "owner"}, {"name": "arr", "value": "[1│2│3│4] (4 bytes inline)", "state": "owner"}, {"name": "nothing", "value": "() (0 bytes)", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): an i32 occupies 4 stack bytes, a [u8; 4] stores its elements inline with no heap involvement, and the unit type occupies zero bytes — it exists only in the type system.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

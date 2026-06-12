@@ -137,6 +137,62 @@ The invariant is:
 
 ownership, typing, and dispatch semantics must become explicit enough before the compiler can check or optimize them soundly.
 
+
+The flagship tour: follow three lines of code through every representation the compiler builds on the way to machine code.
+
+<div class="rust-viz" data-eyebrow="Compiler Visualization Engine" data-title="One Loop, Six Representations" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "for x in values {",
+    "    println!(\"{x}\");",
+    "}"
+  ],
+  "columns": ["Compiler stage", "Representation"],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "Lexing: the raw text becomes a token stream — keywords, identifiers, punctuation. No structure yet, no meaning: `for` is just a keyword token, not a loop. Errors here are the truly unreadable ones: stray characters, unterminated strings.",
+      "stack": [{"frame": "1 · lexer", "vars": [{"name": "input", "value": "source text", "state": "plain"}]}],
+      "heap": [{"id": "r", "label": "tokens", "value": "for · x · in · values · { · println! · ( · \"{x}\" · ) · ; · }", "state": "alive"}]
+    },
+    {
+      "line": 1,
+      "caption": "Parsing: tokens become an Abstract Syntax Tree mirroring exactly what you wrote. The for loop exists as a ForLoop node. Syntax errors live here — and macros like println! expand at this level, syntax rewriting syntax.",
+      "stack": [{"frame": "2 · parser", "vars": [{"name": "grammar", "value": "tokens → tree", "state": "plain"}]}],
+      "heap": [{"id": "r", "label": "AST", "value": "ForLoop { pat: x, iter: values, body: [ Macro(println, \"{x}\") ] }", "state": "alive"}]
+    },
+    {
+      "line": 1,
+      "caption": "HIR: the sugar dissolves. Your for loop is GONE — desugared into a match over IntoIterator::into_iter(values) with an inner loop calling iter.next(). Type checking and trait resolution run here, on this smaller, more honest language. This is why error messages sometimes mention code you never wrote.",
+      "note": {"kind": "info", "text": "HIR is where `for` becomes `match into_iter() { mut it => loop { match it.next() { Some(x) => …, None => break } } }`"},
+      "stack": [{"frame": "3 · HIR + type check", "vars": [{"name": "desugar", "value": "for → loop/match", "state": "plain"}, {"name": "typeck", "value": "x: i32 inferred · traits resolved", "state": "plain"}]}],
+      "heap": [{"id": "r", "label": "HIR", "value": "explicit iterator protocol, every type annotated", "state": "alive"}]
+    },
+    {
+      "line": 1,
+      "caption": "MIR: a control-flow graph of basic blocks — gotos, switches, explicit temporaries, explicit drops. THIS is where the borrow checker runs: liveness and borrow regions are computable here in a way they never were on pretty syntax. When Chapter 21 said the compiler reasons on a lowered model, this graph is that model.",
+      "stack": [{"frame": "4 · MIR + borrow check", "vars": [{"name": "CFG", "value": "bb0 → bb1(switch Option) → bb2 → back-edge", "state": "plain"}, {"name": "borrowck", "value": "regions verified on the graph ✓", "state": "plain"}]}],
+      "heap": [{"id": "r", "label": "MIR", "value": "bb0: it = into_iter(values) · bb1: match next() · bb2: body, goto bb1 · bb3: drops, return", "state": "alive"}]
+    },
+    {
+      "line": 1,
+      "caption": "Codegen: MIR is monomorphized (every generic gets its concrete copy) and handed to LLVM as IR — the language-neutral form shared with C and C++. LLVM runs hundreds of optimization passes: inlining the iterator away, unrolling, vectorizing. Zero-cost abstractions are cashed out right here.",
+      "stack": [{"frame": "5 · LLVM", "vars": [{"name": "monomorphize", "value": "generics → concrete copies", "state": "plain"}, {"name": "optimize", "value": "inline · unroll · vectorize", "state": "plain"}]}],
+      "heap": [{"id": "r", "label": "LLVM IR", "value": "%1 = load i32 … — the iterator no longer exists", "state": "alive"}]
+    },
+    {
+      "line": 1,
+      "caption": "Machine code, linked into a binary. Six representations, each existing to answer one question well: tokens for spelling, AST for syntax, HIR for types, MIR for ownership, LLVM IR for speed, machine code for the CPU. Every confusing rustc behavior makes sense once you know which stage produced it.",
+      "note": {"kind": "ok", "text": "source → tokens → AST → HIR (types) → MIR (borrows) → LLVM IR (speed) → binary"},
+      "stack": [{"frame": "6 · link", "vars": [{"name": "linker", "value": "objects + std → executable", "state": "plain"}]}],
+      "heap": [{"id": "r", "label": "target/release/app", "value": "native machine code — the loop survives as a few instructions", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a for loop traced through the full rustc pipeline — token stream, AST, HIR desugaring with type checking, MIR control-flow graph where the borrow checker runs, LLVM IR optimization, and the final linked binary.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

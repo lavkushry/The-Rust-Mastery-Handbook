@@ -111,6 +111,43 @@ The roadmap is built around three stages:
 
 Each stage has different goals and different failure modes.
 
+
+The whole plan at altitude: step through the three phases and what you can actually do at the end of each.
+
+<div class="rust-viz" data-eyebrow="Mastery Roadmap" data-title="Three Phases, Twelve Months, One Engineer" data-accent="var(--valid)">
+<script type="application/json">
+{
+  "code": [
+    "Months 1–3   foundations: Parts 0–3",
+    "Months 4–6   depth: Parts 4–6",
+    "Months 7–12  production: Parts 7–10 + real projects"
+  ],
+  "columns": ["Phase", "You can now…"],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "Foundations: syntax, ownership, borrowing, lifetimes — Parts 0 through 3, with the drills. The milestone is not finishing chapters; it is the day borrow checker errors stop feeling like fights and start feeling like the compiler narrating your own memory model back to you.",
+      "stack": [{"frame": "months 1–3", "vars": [{"name": "Parts 0–3", "value": "read + every drill", "state": "plain"}, {"name": "daily reps", "value": "small programs, no copy-paste", "state": "plain"}]}],
+      "heap": [{"id": "c1", "label": "checkpoint", "value": "build a real CLI tool · predict moves and drops before rustc tells you", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "Depth: traits, generics, collections, error design, then concurrency, async, and a first honest look at unsafe — Parts 4 through 6. The shift in this phase: you stop writing Rust that merely compiles and start designing APIs where the types make misuse impossible.",
+      "stack": [{"frame": "months 4–6", "vars": [{"name": "Parts 4–6", "value": "traits → async → unsafe", "state": "plain"}, {"name": "weekly project", "value": "one concurrent or async build", "state": "plain"}]}],
+      "heap": [{"id": "c1", "label": "checkpoint 1", "value": "CLI shipped ✓", "state": "alive"}, {"id": "c2", "label": "checkpoint", "value": "async web service with real error handling · read tokio-grade library code without fear", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Production: macros, API design, workspaces — then leave the book. Months 7–12 are open source and real systems: pick one crate you actually use, run the Chapter 46 recon, land PRs of increasing weight. The finish line of this book was never its last page; it is the day a maintainer merges your work without hesitating.",
+      "note": {"kind": "ok", "text": "12-month outcome: production services shipped, OSS contributions merged, senior-level interviews passable — a working Rust engineer"},
+      "stack": [{"frame": "months 7–12", "vars": [{"name": "Parts 7–10", "value": "architecture + contribution craft", "state": "plain"}, {"name": "open source", "value": "one crate, recurring PRs", "state": "plain"}]}],
+      "heap": [{"id": "c1", "label": "checkpoint 1", "value": "CLI ✓", "state": "alive"}, {"id": "c2", "label": "checkpoint 2", "value": "async service ✓", "state": "alive"}, {"id": "c3", "label": "checkpoint 3", "value": "merged PRs in a crate people actually use", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): the twelve-month plan in three phases — foundations (Parts 0–3, ship a CLI), depth (Parts 4–6, ship an async service), and production (Parts 7–10 plus sustained open-source contribution).</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

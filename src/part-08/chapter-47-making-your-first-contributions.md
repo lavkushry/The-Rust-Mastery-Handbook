@@ -120,6 +120,59 @@ Why this PR shape works:
 
 This is the contribution equivalent of good Rust typing: make the contract visible.
 
+
+A first contribution, end to end — step through where your work lives at each stage and what the maintainer sees.
+
+<div class="rust-viz" data-eyebrow="Contribution Flow" data-title="From Branch to Merged: Your First PR" data-accent="var(--valid)">
+<script type="application/json">
+{
+  "code": [
+    "$ git checkout -b fix-empty-input-panic",
+    "# 1. write the failing test  2. make it pass",
+    "$ cargo test && cargo fmt && cargo clippy",
+    "$ git push  →  open pull request",
+    "# review: \"use unwrap_or_default here\"",
+    "# CI green → squash-merged"
+  ],
+  "columns": ["Your fork", "Upstream repo"],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "Work happens on a branch in your fork — upstream is untouched and unaware. The branch name states the mission; small and specific beats broad and impressive for a first PR.",
+      "stack": [{"frame": "your fork", "vars": [{"name": "branch: fix-empty-input-panic", "value": "created from main", "state": "plain"}]}],
+      "heap": [{"id": "up", "label": "upstream", "value": "unchanged — knows nothing yet", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "Test first: reproduce the panic in a #[test], watch it fail, then fix until green. The failing-then-passing test is the strongest sentence in your whole PR — it proves the bug existed and proves it is gone.",
+      "stack": [{"frame": "your fork", "vars": [{"name": "test: empty_input_ok", "value": "red → green", "state": "plain"}, {"name": "fix in parse()", "value": "3 lines changed", "state": "plain"}]}],
+      "heap": [{"id": "up", "label": "upstream", "value": "unchanged", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Run the maintainer's gates locally before they have to: tests, rustfmt, clippy. Every nit a reviewer never needs to write is goodwill earned — you are optimizing for their five minutes, not your five.",
+      "note": {"kind": "ok", "text": "fmt + clippy + tests locally = the review starts at the substance, not the whitespace"},
+      "stack": [{"frame": "your fork", "vars": [{"name": "cargo test", "value": "✓", "state": "plain"}, {"name": "cargo fmt + clippy", "value": "✓ clean", "state": "plain"}]}],
+      "heap": [{"id": "up", "label": "upstream", "value": "unchanged", "state": "alive"}]
+    },
+    {
+      "line": 5,
+      "caption": "The PR opens the conversation: your branch is now visible upstream with a clear description (problem, cause, fix, test). A review asking for changes is the system working — push the revision to the same branch and the PR updates itself. Maintainers remember how people receive feedback far longer than they remember the diff.",
+      "stack": [{"frame": "your fork", "vars": [{"name": "revision pushed", "value": "unwrap_or_default, as requested", "state": "plain"}]}],
+      "heap": [{"id": "pr", "label": "upstream: PR #482", "value": "review ↔ revision — the actual collaboration", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "CI green, approval, squash-merge: your commits become one clean entry in upstream's history, and your fix ships to every user of the crate. The durable outcome is not the diff — it is that the maintainers now know your name as someone whose PRs are easy.",
+      "note": {"kind": "ok", "text": "merged. First contributions are judged on process — small scope, tested, responsive — not on size."},
+      "stack": [{"frame": "your fork", "vars": [{"name": "branch", "value": "deleted — mission complete", "state": "dropped"}]}],
+      "heap": [{"id": "pr", "label": "upstream: main", "value": "your fix, in the history, shipping in the next release", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): the full first-contribution loop — a focused branch on your fork, a failing-then-passing test, local fmt/clippy/test gates, the PR review-and-revise conversation, and the squash-merge that lands your fix in upstream's history.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

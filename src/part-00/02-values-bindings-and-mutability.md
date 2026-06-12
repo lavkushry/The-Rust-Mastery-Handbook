@@ -121,6 +121,49 @@ fn main() {
   </div>
 </div>
 
+Watch what the compiler does with each of these bindings — including the one it refuses.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="Bindings, Mutation, and the Compiler's Veto" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "let age = 30;",
+    "age = 31;",
+    "let mut score = 0;",
+    "score = 10;"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "age is bound to 30. The value sits in main's stack frame. By default the binding is immutable: the name and the value are locked together.",
+      "stack": [{"frame": "main", "vars": [{"name": "age", "value": "30", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "Trying to assign through an immutable binding is refused at compile time. The program never runs — Rust catches accidental change before it can become a bug.",
+      "note": {"kind": "error", "text": "error[E0384]: cannot assign twice to immutable variable `age`"},
+      "stack": [{"frame": "main", "vars": [{"name": "age", "value": "30", "state": "error"}]}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "Adding `mut` is you telling the compiler — and every future reader — that this value is meant to change.",
+      "stack": [{"frame": "main", "vars": [{"name": "age", "value": "30", "state": "owner"}, {"name": "score (mut)", "value": "0", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "Because score was declared mut, the same stack slot is updated in place. No new variable, no error — just an honest, declared mutation.",
+      "note": {"kind": "ok", "text": "mutation allowed: the binding was declared `mut`"},
+      "stack": [{"frame": "main", "vars": [{"name": "age", "value": "30", "state": "owner"}, {"name": "score (mut)", "value": "10", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): assigning to an immutable binding fails with E0384 before the program ever runs; declaring the binding with mut allows the stack slot to be updated in place.</p>
+</div>
 ## Try this
 
 <div class="try-this">

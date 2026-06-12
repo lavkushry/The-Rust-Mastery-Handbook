@@ -126,6 +126,50 @@ That same idea explains why:
 - `Option<Box<T>>` is typically the same size as `Box<T>`
 - `Option<NonZeroUsize>` is the same size as `usize`
 
+
+The chapter's one-line assertion, explained byte by byte: where did Option's tag go?
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="Niche Optimization: The Tag That Costs Nothing" data-accent="var(--perf)">
+<script type="application/json">
+{
+  "code": [
+    "assert_eq!(size_of::<&u8>(), 8);",
+    "assert_eq!(size_of::<Option<&u8>>(), 8);",
+    "let some: Option<&u8> = Some(&42);",
+    "let none: Option<&u8> = None;"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "A reference is one machine word — 8 bytes on a 64-bit target. And by Rust's rules it can never be null: the all-zeroes bit pattern is forbidden, unused, wasted. Remember that hole.",
+      "stack": [{"frame": "main", "vars": [{"name": "&u8", "value": "8 bytes · valid patterns: any address except 0", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "Option<&u8> should naively need 8 bytes of pointer plus a tag byte (plus padding) — 16 bytes. It is 8. The compiler found the forbidden pattern and moved the tag into it: this unused bit pattern is called a niche.",
+      "note": {"kind": "info", "text": "niche optimization: encode the enum tag inside bit patterns the payload type can never produce"},
+      "stack": [{"frame": "main", "vars": [{"name": "Option<&u8>", "value": "8 bytes — tag hidden in the niche", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "Some(&42) is stored as just the pointer bits. No wrapper, no indirection — Some of a reference is physically identical to the reference.",
+      "stack": [{"frame": "main", "vars": [{"name": "some", "value": "0x7ffc…a4 (the address itself)", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "None is stored as 0x0000000000000000 — the exact pattern a real reference can never be. The safety rule (no null references) became a space optimization (free Option). This is why returning Option<&T> instead of a nullable pointer costs literally nothing.",
+      "note": {"kind": "ok", "text": "safety guarantee and performance optimization are the same fact viewed twice — the zero-cost philosophy in one type"},
+      "stack": [{"frame": "main", "vars": [{"name": "some", "value": "0x7ffc…a4", "state": "owner"}, {"name": "none", "value": "0x0000000000000000", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): because a reference can never be all-zero bits, the compiler stores Option's None as that forbidden pattern — making Option&lt;&u8&gt; the same 8 bytes as &u8, a tag that costs nothing.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

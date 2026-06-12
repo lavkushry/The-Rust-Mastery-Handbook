@@ -93,6 +93,43 @@ If you fill in those six lines for a repo before editing code, you usually avoid
 - changing public surface accidentally
 - misunderstanding which modules own behavior
 
+
+Same skills, three very different doorways. Step through where a newcomer's first PRs actually land in each kind of project.
+
+<div class="rust-viz" data-eyebrow="Contribution Maps" data-title="Three Project Types, Three Entry Points" data-accent="var(--valid)">
+<script type="application/json">
+{
+  "code": [
+    "CLI tool        (clap, anyhow)",
+    "Library crate   (pub API, docs.rs)",
+    "Async service   (tokio, tracing)"
+  ],
+  "columns": ["Project anatomy", "Where first PRs land"],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "CLI tools live and die by their user experience, and UX work is wonderfully shallow to enter: error messages, help text, a new flag wired through clap. The blast radius is one command's output — reviewable in minutes, hard to break anything.",
+      "stack": [{"frame": "CLI tool", "vars": [{"name": "main.rs / cli.rs", "value": "arg parsing — readable in one sitting", "state": "plain"}, {"name": "error paths", "value": "where UX papercuts hide", "state": "plain"}]}],
+      "heap": [{"id": "e1", "label": "good first PRs", "value": "clearer error message · --json flag · shell completions · help text fixes", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "Library crates guard their pub API jealously — changing it is a semver event needing maintainer buy-in. But everything around the API is open territory: doc comments with runnable examples, edge-case tests, #[deprecated] cleanups. Doc examples are secretly tests (cargo test runs them), so doc PRs are real engineering.",
+      "stack": [{"frame": "library crate", "vars": [{"name": "pub API", "value": "guarded — propose, don't surprise", "state": "plain"}, {"name": "docs + tests", "value": "always under-loved", "state": "plain"}]}],
+      "heap": [{"id": "e2", "label": "good first PRs", "value": "doc example for an undocumented fn · edge-case test · clearer panic docs", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Async services are the deepest water — concurrency review is expensive, so core changes are a poor first move. Their soft underbelly is observability: a missing tracing span, a timeout with no context in its error, a metric nobody exported. Operators always want more visibility, and those PRs touch no scheduling logic.",
+      "note": {"kind": "ok", "text": "one rule across all three: first PRs go where review is cheap and intent is obvious — earn trust at the edges, then move inward"},
+      "stack": [{"frame": "async service", "vars": [{"name": "core scheduling", "value": "not yet — expensive to review", "state": "shadowed"}, {"name": "observability layer", "value": "the welcome mat", "state": "plain"}]}],
+      "heap": [{"id": "e3", "label": "good first PRs", "value": "tracing span on a handler · timeout error context · graceful-shutdown log line", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): where first contributions land in three project types — UX and flags in CLI tools, doc examples and edge-case tests in library crates, observability improvements in async services — always starting where review is cheap.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

@@ -67,6 +67,57 @@
   </div>
 </figure>
 
+
+Step an iterator by hand and watch its cursor crawl through the buffer until it politely runs out.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="An Iterator Is a Cursor, Stepped by next()" data-accent="var(--perf)">
+<script type="application/json">
+{
+  "code": [
+    "let v = vec![10, 20, 30];",
+    "let mut it = v.iter();",
+    "it.next();",
+    "it.next();",
+    "it.next();",
+    "it.next();"
+  ],
+  "steps": [
+    {
+      "line": 2,
+      "caption": "v.iter() builds a tiny stack struct: a cursor pointing at the first element and an end marker. Creating it does no work and visits nothing — iterators are lazy.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}, {"name": "it", "value": "cursor → [0] · end → [3]", "points": "h1", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[▸10, 20, 30 ]", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "next() returns Some(&10) and advances the cursor one slot. That is the whole protocol: hand out the current element, move forward.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}, {"name": "it", "value": "cursor → [1] · returned Some(&10)", "points": "h1", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[ 10,▸20, 30 ]", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "Some(&20), cursor advances again. Each call is a pointer comparison and a pointer bump — after optimization this compiles to the same machine code as a hand-written index loop.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}, {"name": "it", "value": "cursor → [2] · returned Some(&20)", "points": "h1", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[ 10, 20,▸30 ]", "state": "alive"}]
+    },
+    {
+      "line": 5,
+      "caption": "Some(&30) — the cursor now equals the end marker. The buffer is exhausted.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}, {"name": "it", "value": "cursor → end · returned Some(&30)", "points": "h1", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[ 10, 20, 30 ]▸", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "cursor == end, so next() returns None — a value, not an exception or a sentinel index. Every for loop, map, filter, and collect in Rust is built from exactly this Some/Some/None rhythm.",
+      "note": {"kind": "ok", "text": "for x in v.iter() desugars to: loop { match it.next() { Some(x) => …, None => break } }"},
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}, {"name": "it", "value": "cursor → end · returned None", "points": "h1", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[ 10, 20, 30 ]", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): v.iter() creates a cursor/end pair on the stack; each next() returns Some(&element) and advances the cursor until it meets the end marker and returns None — the protocol every for loop and adapter is built on.</p>
+</div>
 ## Readiness Check - Iterator Pipeline Reasoning
 
 | Skill                             | Level 0                                 | Level 1                                    | Level 2                                                | Level 3                                                       |

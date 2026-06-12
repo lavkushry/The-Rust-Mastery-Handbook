@@ -197,6 +197,52 @@ The compiler narrative is:
 
 The important insight is that the complaint is not at the move site alone or the print site alone. It is the relationship between them. Rust error messages often include both because the invariant spans time.
 
+
+A Rust diagnostic has anatomy: a verdict, a timeline, and a way out. Read one the way the compiler wrote it.
+
+<div class="rust-viz" data-eyebrow="Compiler Diagnostics" data-title="Anatomy of an Error Message" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "fn main() {",
+    "    let s = String::from(\"hello\");",
+    "    let t = s;",
+    "    println!(\"{s}\");",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 3,
+      "caption": "The program: s is moved into t, then used. Before reading any error text, fix the scene in your head — the compiler's message is going to narrate exactly this picture.",
+      "stack": [{"frame": "main", "vars": [{"name": "s", "value": "ptr · len 5 · cap 5", "state": "moved"}, {"name": "t", "value": "ptr · len 5 · cap 5", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"hello\"", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "Line one of the diagnostic is the verdict: the error code (E0382 — look it up with `rustc --explain E0382`), the category (borrow of moved value), and the subject (`s`). Read this line first and last; everything else is supporting evidence.",
+      "note": {"kind": "error", "text": "error[E0382]: borrow of moved value: `s`"},
+      "stack": [{"frame": "main", "vars": [{"name": "s", "value": "the subject of the error", "state": "error"}, {"name": "t", "value": "ptr · len 5 · cap 5", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"hello\"", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Then come the labeled spans — and they are a timeline, not a list: \"value moved here\" points at line 3, \"value borrowed here after move\" points at line 4. The compiler is showing you two moments and telling you their order is the problem. Most intimidating Rust errors become readable the instant you read the spans as a story.",
+      "note": {"kind": "info", "text": "note: `String` does not implement the `Copy` trait — the why, attached to the where"},
+      "stack": [{"frame": "main", "vars": [{"name": "s", "value": "── moved here (line 3)", "state": "moved"}, {"name": "s ", "value": "── used here after move (line 4)", "state": "error"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"hello\"", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Finally the help line proposes an exit: clone the value. Apply it — let t = s.clone() — and both bindings own independent buffers; the timeline conflict disappears. Verdict, timeline, exit: every rustc diagnostic has these three parts, and reading them in that order is the whole skill.",
+      "note": {"kind": "ok", "text": "help: consider cloning the value: `s.clone()` — applied, the program compiles"},
+      "stack": [{"frame": "main", "vars": [{"name": "s", "value": "ptr · len 5 · cap 5", "points": "h1", "state": "owner"}, {"name": "t", "value": "s.clone()", "points": "h2", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "s's buffer", "value": "\"hello\"", "state": "alive"}, {"id": "h2", "label": "t's buffer (cloned)", "value": "\"hello\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a rustc diagnostic decomposed into its three parts — the verdict line with error code and subject, the labeled spans that narrate a timeline of the conflict, and the help suggestion whose application makes the program compile.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

@@ -164,4 +164,41 @@
   <figcaption class="visual-figure__caption">This timeline matters because it shows Rust’s adoption curve as a response to operational pressure, not fashion. The language got traction when safety economics became impossible to ignore.</figcaption>
 </figure>
 
+
+This is how Rust actually enters production systems: not by rewrites, but one hot component at a time. Step through the seam.
+
+<div class="rust-viz" data-eyebrow="Ecosystem Map" data-title="How Rust Arrives: One Component at a Time" data-accent="var(--trait)">
+<script type="application/json">
+{
+  "code": [
+    "# app.py — existing Python service",
+    "import fast_tokenizer   # Rust inside",
+    "tokens = fast_tokenizer.tokenize(text)"
+  ],
+  "columns": ["Host process (Python)", "Native extension (Rust)"],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "A real production service: years of Python, one function eating 80% of the CPU time. Nobody is going to rewrite the whole thing — and nobody has to. This is the situation Rust was built to slot into.",
+      "stack": [{"frame": "python service", "vars": [{"name": "request handling", "value": "fine in Python", "state": "plain"}, {"name": "tokenize()", "value": "hot path — 80% of CPU", "state": "error"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "The hot function is reimplemented as a Rust crate compiled into a native extension (via PyO3/maturin — the same pattern pydantic and polars use). Python imports it like any module; the C ABI is the meeting point. No garbage collector inside, no runtime to embed.",
+      "stack": [{"frame": "python service", "vars": [{"name": "import fast_tokenizer", "value": "loads the native library", "state": "plain"}]}],
+      "heap": [{"id": "lib", "label": "fast_tokenizer.so", "value": "Rust crate compiled as a native extension — ownership-checked inside, C ABI outside", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "The call crosses into Rust, runs at native speed with compile-time memory safety, and returns plain data. The Python side never knows the difference — except the latency graph. This is Rust's place in the ecosystem: the systems layer under everyone's app layer, adopted seam by seam.",
+      "note": {"kind": "ok", "text": "the same pattern runs in Firefox (Rust inside C++), the Linux kernel, AWS Lambda's runtime, and your favorite Python data libraries"},
+      "stack": [{"frame": "python service", "vars": [{"name": "tokens", "value": "returned — 40× faster, zero crashes", "state": "plain"}]}],
+      "heap": [{"id": "lib", "label": "fast_tokenizer.so", "value": "did the work, no GC pauses, no segfaults", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a Python service replaces its hottest function with a Rust crate compiled as a native extension; the call crosses the C ABI seam into memory-safe native code and back — the component-by-component pattern by which Rust enters real systems.</p>
+</div>
 ## Step 1 - The Problem

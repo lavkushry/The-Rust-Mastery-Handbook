@@ -312,6 +312,42 @@ When the stack variable goes out of scope, who cleans up the heap data? That is 
 ### Real-World Pattern
 When you contribute to large Rust codebases (like Tokio or Serde), you will see very few calls to raw allocation or deallocation. Instead, you see types like `Box`, `Vec`, and `String` managing memory internally. Because ownership is strict, contributors do not need to guess if a function will free memory they pass to it. If the function takes a value (not a reference), it takes responsibility.
 
+
+Here is that exact handoff, animated. Step through your first move.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="Your First Move: Who Cleans Up the Heap?" data-accent="var(--ownership)">
+<script type="application/json">
+{
+  "code": [
+    "let s1 = String::from(\"hello\");",
+    "let s2 = s1;",
+    "println!(\"{s2}\");"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "The characters live on the heap because a String can grow. The stack holds s1's pointer, length, and capacity. s1 is the owner: when it goes out of scope, it is responsible for freeing the heap bytes.",
+      "stack": [{"frame": "main", "vars": [{"name": "s1", "value": "ptr · len 5 · cap 5", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"hello\"", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "Responsibility transfers: s2 is now the one-and-only owner, and s1 is invalidated. The heap bytes never moved or copied — only the cleanup duty changed hands. This is all a \"move\" is.",
+      "stack": [{"frame": "main", "vars": [{"name": "s1", "value": "ptr · len 5 · cap 5", "state": "moved"}, {"name": "s2", "value": "ptr · len 5 · cap 5", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"hello\"", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "At scope end, exactly one variable — s2 — will free the buffer. No garbage collector needed, no double free possible. One owner means cleanup happens exactly once, at a predictable moment.",
+      "note": {"kind": "ok", "text": "single owner → single, deterministic cleanup at scope end"},
+      "stack": [{"frame": "main", "vars": [{"name": "s1", "value": "ptr · len 5 · cap 5", "state": "moved"}, {"name": "s2", "value": "ptr · len 5 · cap 5", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"hello\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a String's characters live on the heap while its pointer/length/capacity sit on the stack; assigning s1 to s2 transfers cleanup responsibility to a single new owner without touching the heap.</p>
+</div>
 ## Step 3 - Practice
 
 ### Code Reading Drill

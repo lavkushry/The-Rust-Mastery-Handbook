@@ -140,6 +140,52 @@ The invariant being checked is subtle but strong:
 
 If you tried the same shape with `Rc<RefCell<i32>>`, `thread::spawn` would reject it because `Rc<T>` is not `Send`, and `RefCell<T>` is not `Sync`. That is not a missing convenience. It is the type system telling you those primitives were built for single-threaded aliasing, not cross-thread sharing.
 
+
+Now the threads genuinely share data. Watch the two layers do their jobs: Arc counts the owners, Mutex serializes the access.
+
+<div class="rust-viz" data-eyebrow="Concurrency Laboratory" data-title="Arc Counts Owners, Mutex Guards Access" data-accent="var(--async)">
+<script type="application/json">
+{
+  "code": [
+    "let counter = Arc::new(Mutex::new(0));",
+    "let c2 = Arc::clone(&counter);",
+    "thread::spawn(move || {",
+    "    *c2.lock().unwrap() += 1;",
+    "});",
+    "*counter.lock().unwrap() += 1;"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "One heap block, two layers: Arc's atomic reference count on the outside, Mutex's lock around the 0 on the inside. Arc answers \"who keeps this alive?\"; Mutex answers \"who may touch it right now?\".",
+      "stack": [{"frame": "thread: main", "vars": [{"name": "counter", "value": "Arc → heap", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Arc — strong: 1", "value": "Mutex { locked: no } · value: 0", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "Arc::clone increments the atomic count to 2 — no data copied. Two handles to one allocation, safe to send to different threads because the count itself is updated atomically.",
+      "stack": [{"frame": "thread: main", "vars": [{"name": "counter", "value": "Arc → heap", "points": "h1", "state": "owner"}, {"name": "c2", "value": "Arc → heap (same block)", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Arc — strong: 2", "value": "Mutex { locked: no } · value: 0", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "c2 moves into the worker, which acquires the lock. While the guard lives, the Mutex is held: if main tried to lock now it would block — wait, not race. The worker increments through the guard.",
+      "note": {"kind": "info", "text": "this line only compiles because Arc<Mutex<i32>> is Send + Sync — plain Rc<RefCell<i32>> would be rejected at compile time"},
+      "stack": [{"frame": "thread: main", "vars": [{"name": "counter", "value": "Arc → heap", "points": "h1", "state": "owner"}]}, {"frame": "thread: worker", "vars": [{"name": "c2 (captured)", "value": "Arc → heap", "points": "h1", "state": "owner"}, {"name": "guard", "value": "MutexGuard — holds the lock", "state": "borrow-mut"}]}],
+      "heap": [{"id": "h1", "label": "Arc — strong: 2", "value": "Mutex { locked: YES → worker } · value: 1", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "The worker's guard dropped at the end of its statement, releasing the lock — unlocking is automatic, tied to scope like every Drop. Main now acquires it and increments to 2. Every access went through the lock; no interleaving could corrupt the count.",
+      "note": {"kind": "ok", "text": "lock released by Drop, never forgotten · final value: 2, deterministically"},
+      "stack": [{"frame": "thread: main", "vars": [{"name": "counter", "value": "Arc → heap", "points": "h1", "state": "owner"}, {"name": "guard", "value": "MutexGuard — holds the lock", "state": "borrow-mut"}]}],
+      "heap": [{"id": "h1", "label": "Arc — strong: 2", "value": "Mutex { locked: YES → main } · value: 2", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): Arc::clone atomically bumps the owner count so both threads keep the allocation alive, while Mutex serializes access — each thread's increment happens under the lock, which is released automatically when the guard drops.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

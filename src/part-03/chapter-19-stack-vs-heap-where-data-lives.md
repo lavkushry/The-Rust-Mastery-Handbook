@@ -98,6 +98,41 @@
   <figcaption class="visual-figure__caption">Rust needs size information to lay out values. Fat pointers are how the language carries enough metadata to talk about dynamically sized or dynamically dispatched things without hiding the representation from you.</figcaption>
 </figure>
 
+Now build the picture one declaration at a time. The simulator below shows exactly where each value lands: a plain integer lives entirely on the stack, while `String` and `Vec` split into a stack-resident owner triple and a heap-resident buffer.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="Where Does Each Value Actually Live?" data-accent="var(--stack)">
+<script type="application/json">
+{
+  "code": [
+    "let answer: i32 = 42;",
+    "let name = String::from(\"Ferris\");",
+    "let nums = vec![1, 2, 3];"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "answer is an i32: four bytes, known size at compile time, no owned resources. The whole value sits in main's stack frame. The heap is untouched.",
+      "stack": [{"frame": "main", "vars": [{"name": "answer", "value": "42 (4 bytes)", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "\"A String lives on the heap\" is incomplete. The bytes live on the heap; the owner triple — pointer, length, capacity — is an ordinary 24-byte value in the stack frame. The arrow is the pointer.",
+      "stack": [{"frame": "main", "vars": [{"name": "answer", "value": "42 (4 bytes)", "state": "owner"}, {"name": "name", "value": "ptr · len 6 · cap 6", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer (6 bytes)", "value": "F e r r i s", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Vec has exactly the same shape: a stack triple pointing at a heap buffer. Every heap allocation in safe Rust has exactly one stack-reachable owner — that single fact is what makes automatic cleanup possible.",
+      "stack": [{"frame": "main", "vars": [{"name": "answer", "value": "42 (4 bytes)", "state": "owner"}, {"name": "name", "value": "ptr · len 6 · cap 6", "points": "h1", "state": "owner"}, {"name": "nums", "value": "ptr · len 3 · cap 3", "points": "h2", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer (6 bytes)", "value": "F e r r i s", "state": "alive"}, {"id": "h2", "label": "Vec buffer (12 bytes)", "value": "[1, 2, 3]", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): an i32 lives entirely on the stack; String and Vec each store a pointer/length/capacity triple on the stack that points at a heap buffer holding the actual data.</p>
+</div>
+
 ## Readiness Check - Memory Model Reasoning
 
 Use this checkpoint before moving on to move/copy/clone semantics.

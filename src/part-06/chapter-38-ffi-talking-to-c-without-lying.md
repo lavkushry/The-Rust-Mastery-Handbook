@@ -112,6 +112,44 @@ your Rust declaration must exactly match the foreign reality.
 
 If it does not, the program may still compile and link while remaining unsound at runtime.
 
+
+Watch a value cross the language border — and see exactly where Rust's guarantees stop and resume.
+
+<div class="rust-viz" data-eyebrow="Unsafe Rust Laboratory" data-title="An FFI Call: Crossing Into C and Back" data-accent="var(--unsafe)">
+<script type="application/json">
+{
+  "code": [
+    "unsafe extern \"C\" {",
+    "    fn abs(input: i32) -> i32;",
+    "}",
+    "let value = unsafe { abs(-7) };"
+  ],
+  "steps": [
+    {
+      "line": 2,
+      "caption": "This declaration is a promise, not a fact: you are telling rustc that somewhere in the linked C library lives a function with exactly this name, this argument type, and this calling convention. The compiler cannot see C code — it must take your word for it.",
+      "note": {"kind": "info", "text": "the signature is unchecked: if the real C function differs, every call is instant UB — that is why the block is `unsafe extern`"},
+      "stack": [{"frame": "(compile time)", "vars": [{"name": "abs", "value": "promised: extern \"C\" fn(i32) -> i32", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "The call crosses the boundary: -7 is passed using the C ABI's register conventions, and a C stack frame runs. Inside that frame, Rust's rules — ownership, borrows, panics, bounds checks — simply do not exist. i32 crosses safely because it means the same thing in both languages; a String would not.",
+      "stack": [{"frame": "Rust: main", "vars": [{"name": "value", "value": "(awaiting C)", "state": "owner"}]}, {"frame": "C: abs", "vars": [{"name": "input", "value": "-7", "state": "copy"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "C computes 7 and returns it through the same ABI contract. Back on the Rust side, guarantees resume. The unsafe block is the honest marker of responsibility: within it, you vouched for everything the compiler could not verify.",
+      "note": {"kind": "ok", "text": "FFI-safe types (i32, *const T, #[repr(C)] structs) cross cleanly — the unsafe block marks who vouched for the contract"},
+      "stack": [{"frame": "Rust: main", "vars": [{"name": "value", "value": "7", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): an extern "C" declaration is an unchecked promise about a C function's signature; the call passes an i32 across the ABI boundary into a C frame where Rust's guarantees pause, then resumes them when the result returns.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

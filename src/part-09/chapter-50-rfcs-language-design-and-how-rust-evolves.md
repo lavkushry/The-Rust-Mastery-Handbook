@@ -129,6 +129,65 @@ Read an RFC in this order:
 
 That turns RFCs from historical documents into engineering training.
 
+
+How a language change actually happens: follow one idea from forum post to stable Rust. (This exact path is how `?` replaced `try!`.)
+
+<div class="rust-viz" data-eyebrow="Language Evolution" data-title="The Life of an RFC" data-accent="var(--lifetime)">
+<script type="application/json">
+{
+  "code": [
+    "idea on internals.rust-lang.org",
+    "RFC PR opened on rust-lang/rfcs",
+    "FCP — final comment period",
+    "merged → tracking issue",
+    "implemented on nightly, feature-gated",
+    "stabilization → next stable release"
+  ],
+  "columns": ["Process stage", "Artifacts"],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "Changes start as conversations, not code. The internals forum is where an idea collects use cases, alternatives, and early objections — many proposals rightly die here, cheaply, before anyone writes a formal document.",
+      "stack": [{"frame": "community", "vars": [{"name": "pre-RFC thread", "value": "use cases gathered, objections surfaced", "state": "plain"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "A formal RFC is a design document as a pull request: motivation, detailed design, drawbacks, alternatives, unresolved questions. The PR's comment thread becomes the public, permanent record of the debate — years later you can still read exactly why each decision fell the way it did.",
+      "stack": [{"frame": "rust-lang/rfcs", "vars": [{"name": "RFC PR", "value": "design + drawbacks + alternatives", "state": "plain"}]}],
+      "heap": [{"id": "rfc", "label": "the RFC document", "value": "the argument, written down and versioned", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "When discussion converges, the responsible team proposes FCP: a ten-day final window where every team member signs off or files a concern. It is consensus with a deadline — designed so decisions get made without being steamrolled.",
+      "note": {"kind": "info", "text": "disposition: merge · 10 days · all boxes checked or concerns resolved"},
+      "stack": [{"frame": "lang team", "vars": [{"name": "FCP", "value": "sign-offs collecting…", "state": "plain"}]}],
+      "heap": [{"id": "rfc", "label": "the RFC document", "value": "frozen for final review", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "Merged — which approves the design, not the code. A tracking issue opens on rust-lang/rust to follow the implementation, and this is a genuinely good place to contribute: accepted RFCs regularly wait for someone willing to build them.",
+      "stack": [{"frame": "rust-lang/rust", "vars": [{"name": "tracking issue", "value": "design ✓ — implementation wanted", "state": "plain"}]}],
+      "heap": [{"id": "rfc", "label": "accepted RFC", "value": "design is policy now", "state": "alive"}, {"id": "tr", "label": "tracking issue", "value": "checklist: impl · docs · tests · edge cases", "state": "alive"}]
+    },
+    {
+      "line": 5,
+      "caption": "The feature lands on nightly behind #![feature(...)] — real users opt in, sharp edges surface, the design gets revised against reality. Some features live here for years; a few die here. Nightly is the proving ground, not a preview.",
+      "stack": [{"frame": "nightly", "vars": [{"name": "#![feature(new_thing)]", "value": "opt-in, gathering real-world miles", "state": "plain"}]}],
+      "heap": [{"id": "tr", "label": "tracking issue", "value": "bugs found → design refined", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "A stabilization report triggers one more FCP; the gate is removed; six weeks later the feature rides the release train into stable — covered by Rust's backward-compatibility promise, effectively forever. Async/await took three years on this road. Slow is the feature: stable Rust is a set of decisions the community argued all the way through.",
+      "note": {"kind": "ok", "text": "forum → RFC → FCP → nightly → stable: every ergonomic feature you use survived this whole gauntlet"},
+      "stack": [{"frame": "stable", "vars": [{"name": "release train", "value": "shipped — compatibility promised", "state": "plain"}]}],
+      "heap": [{"id": "st", "label": "stable Rust", "value": "the feature is now just… Rust", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): the full RFC lifecycle — internals forum discussion, the RFC pull request, the team's final comment period, the tracking issue, feature-gated nightly implementation, and stabilization onto the release train.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

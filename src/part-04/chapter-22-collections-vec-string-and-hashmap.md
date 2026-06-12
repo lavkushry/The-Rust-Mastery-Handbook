@@ -114,6 +114,49 @@ This example already shows several idiomatic collection ideas:
 - mutation is localized
 - borrowed lookup avoids needless temporary allocation
 
+
+Watch a Vec hit its capacity and relocate — this single animation explains half the borrow errors you will ever see with collections.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="Vec Growth: The Reallocation Nobody Sees" data-accent="var(--heap)">
+<script type="application/json">
+{
+  "code": [
+    "let mut v = Vec::with_capacity(2);",
+    "v.push(1);",
+    "v.push(2);",
+    "v.push(3);"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "with_capacity(2) allocates room for two elements up front. Length is 0 — capacity is how much room exists, length is how much is used.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 0 · cap 2", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer (cap 2)", "value": "[ _, _ ]", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "push writes into the existing buffer and bumps the length. No allocation — this is the cheap, common case.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 1 · cap 2", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer (cap 2)", "value": "[ 1, _ ]", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Second push fills the buffer. len == cap: the Vec is now completely full.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer (cap 2 — FULL)", "value": "[ 1, 2 ]", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "No room: Vec allocates a new buffer (capacity doubles to 4), copies both elements across, frees the old buffer, and updates its pointer. Every element changed address. This is exactly why the borrow checker forbids holding a reference into a Vec across a push — that reference would point into the freed buffer.",
+      "note": {"kind": "info", "text": "amortized O(1): doubling makes the copy cost average out — but any borrow into the old buffer would now dangle"},
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr′ · len 3 · cap 4", "points": "h2", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "old buffer", "value": "[ 1, 2 ]", "state": "freed"}, {"id": "h2", "label": "new buffer (cap 4)", "value": "[ 1, 2, 3, _ ]", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): pushing into a full Vec allocates a doubled buffer, copies the elements, frees the old buffer, and updates the pointer — which is why references into a Vec cannot be held across a push.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

@@ -224,6 +224,57 @@ int n = len(owned); // works — GC manages lifetime
 </div>
 </div>
 
+
+Watch the two borrow rules play out — including the part most explanations skip: where a borrow *ends*.
+
+<div class="rust-viz" data-eyebrow="Borrow Checker Simulator" data-title="Many Readers, Then One Writer" data-accent="var(--borrow-shared)">
+<script type="application/json">
+{
+  "code": [
+    "let mut s = String::from(\"hi\");",
+    "let r1 = &s;",
+    "let r2 = &s;",
+    "println!(\"{r1} {r2}\");",
+    "let m = &mut s;",
+    "m.push('!');"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "s owns the String. It is declared mut, so mutation will be possible — when the borrow rules allow it.",
+      "stack": [{"frame": "main", "vars": [{"name": "s", "id": "v-s", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"hi\"", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "r1 is a shared borrow: a pointer back to s, with read-only access. Sharing is safe because nobody can write.",
+      "stack": [{"frame": "main", "vars": [{"name": "s", "id": "v-s", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}, {"name": "r1", "value": "&s", "points": "v-s", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"hi\"", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "A second shared borrow is fine — any number of readers may coexist. What is forbidden is a writer joining the readers.",
+      "stack": [{"frame": "main", "vars": [{"name": "s", "id": "v-s", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}, {"name": "r1", "value": "&s", "points": "v-s", "state": "borrow"}, {"name": "r2", "value": "&s", "points": "v-s", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"hi\"", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "This println! is the last use of r1 and r2 — so both borrows end right here. A borrow lasts until its final use, not until the closing brace.",
+      "stack": [{"frame": "main", "vars": [{"name": "s", "id": "v-s", "value": "ptr · len 2 · cap 2", "points": "h1", "state": "owner"}, {"name": "r1", "value": "&s (loan ends here)", "state": "dropped"}, {"name": "r2", "value": "&s (loan ends here)", "state": "dropped"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"hi\"", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "Because the shared borrows are over, the exclusive borrow is granted: m is now the only way to touch s, and through it the String is mutated. Readers and the writer never overlapped — that is the entire contract.",
+      "note": {"kind": "ok", "text": "compiles: shared borrows ended at their last use, so &mut s does not overlap them"},
+      "stack": [{"frame": "main", "vars": [{"name": "s", "id": "v-s", "value": "ptr · len 3 · cap 4", "points": "h1", "state": "owner"}, {"name": "m", "value": "&mut s", "points": "v-s", "state": "borrow-mut"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"hi!\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): two shared borrows of a String coexist as readers, end at their last use in println!, and only then is an exclusive &mut borrow granted to mutate the value — readers and writers never overlap.</p>
+</div>
 ## Compiler Error Decoder - Borrowing Basics
 
 These are the top errors learners hit in early borrowing code.

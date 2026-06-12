@@ -110,6 +110,52 @@ Why this matters for async:
 
 polling a future may cause it to store references between its internal states. The next poll assumes those references still point to the same memory. Pinning is the mechanism that makes that assumption legal.
 
+
+Here is the problem Pin exists for, made visible: after its first poll, a future can point into itself.
+
+<div class="rust-viz" data-eyebrow="Async Runtime Simulator" data-title="Pin: Why a Started Future Must Never Move" data-accent="var(--unsafe)">
+<script type="application/json">
+{
+  "code": [
+    "let fut = async {",
+    "    let s = String::from(\"hi\");",
+    "    consume(&s).await;",
+    "};",
+    "let pinned = Box::pin(fut);",
+    "pinned.as_mut().poll(cx);"
+  ],
+  "steps": [
+    {
+      "line": 4,
+      "caption": "fut is a freshly built state machine in its Start state. Nothing inside points anywhere yet — moving it around is perfectly fine, which is why this line compiles like any other let.",
+      "stack": [{"frame": "main", "vars": [{"name": "fut", "value": "state machine { state: Start }", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 5,
+      "caption": "Box::pin moves the state machine to the heap — one last legal move, made while it is still inert — and wraps the pointer in Pin. Pin's promise from here on: this value will never be moved again. Its heap address is permanent.",
+      "stack": [{"frame": "main", "vars": [{"name": "fut", "value": "moved into the box", "state": "moved"}, {"name": "pinned", "value": "Pin<Box<…>> → heap", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "pinned state machine (address fixed)", "value": "state: Start", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "First poll runs the body up to the await and suspends. Look at what got saved: the local s — AND the reference &s that the await is holding. The state machine now points into itself. If it were moved now, that internal pointer would still aim at the old address: instant dangling reference.",
+      "note": {"kind": "info", "text": "self-reference is born at the first suspension — this is the moment moving becomes unsound"},
+      "stack": [{"frame": "main", "vars": [{"name": "pinned", "value": "Pin<Box<…>> → heap", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "pinned state machine (address fixed)", "value": "state: AwaitingConsume · s: \"hi\" · saved arg: &s ⟲ points into this very block", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "And this is the whole resolution: because the machine is pinned, its address cannot change, so the self-pointer stays valid across every subsequent poll. Pin does not freeze the data — the state inside mutates on every poll. It forbids exactly one thing: relocation. That is why poll's signature takes Pin<&mut Self> and not &mut Self.",
+      "note": {"kind": "ok", "text": "Pin = a type-level promise of a stable address — the unsafe contract that makes self-referential futures sound"},
+      "stack": [{"frame": "main", "vars": [{"name": "pinned", "value": "Pin<Box<…>> → heap", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "pinned state machine (address fixed)", "value": "safe to poll again: internal &s still valid", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a future may be moved freely before its first poll; Box::pin relocates it to a permanent heap address, and after the first poll suspends at an await the machine stores a reference into its own state — sound only because Pin guarantees the address never changes.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

@@ -113,6 +113,47 @@ This is the essence of sound unsafe Rust:
 - prove it in a smaller local context
 - expose only the safe result
 
+
+Step through the chapter's function twice: once with the invariant holding, once with it violated. The second run is the one the compiler cannot save you from.
+
+<div class="rust-viz" data-eyebrow="Unsafe Rust Laboratory" data-title="unsafe Makes You the Borrow Checker" data-accent="var(--unsafe)">
+<script type="application/json">
+{
+  "code": [
+    "fn get_unchecked_safe<T>(slice: &[T], index: usize) -> Option<&T> {",
+    "    if index < slice.len() {",
+    "        unsafe { Some(slice.get_unchecked(index)) }",
+    "    } else {",
+    "        None",
+    "    }",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 2,
+      "caption": "Call with index = 1, len = 3. This safe, ordinary comparison is the load-bearing wall of the whole function: it establishes the invariant index < len that the unsafe block below will rely on.",
+      "stack": [{"frame": "get_unchecked_safe", "vars": [{"name": "slice", "value": "ptr · len 3", "points": "h1", "state": "borrow"}, {"name": "index", "value": "1 ✓ (< 3)", "state": "copy"}]}],
+      "heap": [{"id": "h1", "label": "borrowed buffer", "value": "[ 10, 20, 30 ]", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "get_unchecked skips the bounds check the compiler would normally insert — a raw pointer offset and dereference. It is sound here for exactly one reason: line 2 already proved the index is in range. The unsafe keyword did not disable the rules; it transferred the job of enforcing them from rustc to you.",
+      "note": {"kind": "ok", "text": "sound: invariant proven in safe code, relied on in unsafe code, invisible to the caller — the encapsulation pattern"},
+      "stack": [{"frame": "get_unchecked_safe", "vars": [{"name": "slice", "value": "ptr · len 3", "points": "h1", "state": "borrow"}, {"name": "result", "value": "Some(&20) — ptr + 1", "points": "h1", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "borrowed buffer", "value": "[ 10, ▸20, 30 ]", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Now imagine line 2 deleted and index = 7. The same unsafe line compiles identically — and reads 4 elements past the buffer. No panic, no error message: just whatever bytes happen to live there, returned as a confident &T. This is undefined behavior, and it may even appear to work in tests.",
+      "note": {"kind": "error", "text": "runtime UB: out-of-bounds read — the compiler accepted it, the hardware did what it was told, and the bug ships"},
+      "stack": [{"frame": "get_unchecked_safe (invariant violated)", "vars": [{"name": "slice", "value": "ptr · len 3", "points": "h1", "state": "borrow"}, {"name": "result", "value": "Some(&???) — ptr + 7, past the end", "state": "error"}]}],
+      "heap": [{"id": "h1", "label": "borrowed buffer", "value": "[ 10, 20, 30 ] ▸▸▸▸ garbage", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): the safe bounds check on line 2 is what makes the unsafe get_unchecked on line 3 sound; remove the check and the identical unsafe line silently reads past the buffer — undefined behavior the compiler cannot detect.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

@@ -112,6 +112,43 @@ Read the picture. That is the whole program. The only piece that will surprise a
   </div>
 </div>
 
+
+What actually happened when you typed those commands? Step through the journey from source file to text on your screen.
+
+<div class="rust-viz" data-eyebrow="Cargo Universe" data-title="From cargo run to Hello, World" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "fn main() {",
+    "    println!(\"Hello, world!\");",
+    "}"
+  ],
+  "columns": ["Pipeline", "Artifacts"],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "cargo run first builds: Cargo reads Cargo.toml, then hands your source to rustc, which compiles and links it into a real native executable — the same kind of binary a C compiler produces. No interpreter, no virtual machine.",
+      "stack": [{"frame": "cargo build", "vars": [{"name": "rustc", "value": "compiles src/main.rs", "state": "plain"}, {"name": "linker", "value": "produces the executable", "state": "plain"}]}],
+      "heap": [{"id": "bin", "label": "target/debug/hello", "value": "native machine code, self-contained", "state": "alive"}]
+    },
+    {
+      "line": 1,
+      "caption": "Then it runs: the operating system loads the binary into memory and jumps to main. Your program is now just a process, with a stack frame for main like any other function.",
+      "stack": [{"frame": "your program (process)", "vars": [{"name": "main", "value": "stack frame created", "state": "plain"}]}],
+      "heap": [{"id": "bin", "label": "target/debug/hello", "value": "loaded & executing", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "println! formats the text and writes it to standard output. The string \"Hello, world!\" lives inside the binary itself — no allocation needed. main returns, the process exits with code 0, and Cargo's job is done.",
+      "note": {"kind": "ok", "text": "source → rustc → native binary → process → stdout. Every Rust program you ever build follows this path."},
+      "stack": [{"frame": "your program (process)", "vars": [{"name": "main", "value": "returned — exit code 0", "state": "plain"}]}],
+      "heap": [{"id": "out", "label": "stdout", "value": "Hello, world!", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): cargo run compiles your source with rustc into a self-contained native binary, the OS loads it and calls main, and println! writes the literal (stored in the binary itself) to standard output.</p>
+</div>
 ## Try this
 
 <div class="try-this">

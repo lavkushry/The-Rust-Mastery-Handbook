@@ -51,6 +51,42 @@ fn first_two(nums: &[i32]) -> &[i32] {
 
 The function does not own any numbers. It borrows an existing slice and returns a narrower borrowed view into the same data.
 
+
+Watch a slice come into existence: no copy, no allocation — just a fat pointer into someone else's buffer.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="A Slice Is a Borrowed Window" data-accent="var(--borrow-shared)">
+<script type="application/json">
+{
+  "code": [
+    "let v = vec![10, 20, 30, 40];",
+    "let mid = &v[1..3];",
+    "println!(\"{mid:?}\");"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "v owns a heap buffer of four i32s. Stack: the usual pointer · length · capacity triple.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 4 · cap 4", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[10, 20, 30, 40]", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "mid is a &[i32] — a fat pointer: an address (pointing at element 1, inside v's buffer) plus a length (2). Nothing was copied and nothing was allocated. It is a borrowed window onto data v still owns.",
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 4 · cap 4", "points": "h1", "state": "owner"}, {"name": "mid", "value": "ptr(+1) · len 2", "points": "h1", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[10, │20, 30,│ 40]", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Printing mid reads [20, 30] straight out of v's buffer. Because mid is a shared borrow, v is frozen while mid is alive — anything that could move the buffer (like push) would be a compile error until this borrow ends.",
+      "note": {"kind": "ok", "text": "prints [20, 30] — zero-copy view; v is read-only while the slice lives"},
+      "stack": [{"frame": "main", "vars": [{"name": "v", "value": "ptr · len 4 · cap 4", "points": "h1", "state": "owner"}, {"name": "mid", "value": "ptr(+1) · len 2", "points": "h1", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[10, │20, 30,│ 40]", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): &v[1..3] creates a fat pointer (address into v's buffer plus a length of 2) with no copying or allocation; while the slice is alive, the Vec it borrows from is frozen read-only.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

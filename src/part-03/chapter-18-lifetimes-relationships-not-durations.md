@@ -208,6 +208,58 @@ func longest(x, y string) string {
 </div>
 </div>
 
+
+Step through the most famous lifetime error in Rust and watch the relationship — not the duration — break.
+
+<div class="rust-viz" data-eyebrow="Lifetime Explorer" data-title="A Reference Cannot Outlive What It Points At" data-accent="var(--lifetime)">
+<script type="application/json">
+{
+  "code": [
+    "let r;",
+    "{",
+    "    let x = 5;",
+    "    r = &x;",
+    "}",
+    "println!(\"{r}\");"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "r is declared in the outer scope but not yet initialized. Rust will not let it be read until it holds a value — there is no null lurking here.",
+      "stack": [{"frame": "main", "vars": [{"name": "r", "value": "(uninitialized)", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "An inner scope opens and x is born inside it. x's lifetime is bounded by this block: it will die at the closing brace, no negotiation.",
+      "stack": [{"frame": "main", "vars": [{"name": "r", "value": "(uninitialized)", "state": "owner"}]}, {"frame": "inner block", "vars": [{"name": "x", "id": "v-x", "value": "5", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "r now borrows x. This creates a relationship the compiler must verify: r's borrow region must fit inside x's lifetime. The borrow region runs from here to r's last use — line 6.",
+      "stack": [{"frame": "main", "vars": [{"name": "r", "value": "&x", "points": "v-x", "state": "borrow"}]}, {"frame": "inner block", "vars": [{"name": "x", "id": "v-x", "value": "5", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 5,
+      "caption": "The inner scope closes and x is destroyed — but r's borrow region extends past this point, because r is used on line 6. The relationship is violated: the reference would outlive its referent. The compiler rejects the program here, at the brace.",
+      "note": {"kind": "error", "text": "error[E0597]: `x` does not live long enough — borrowed value dropped while still borrowed"},
+      "stack": [{"frame": "main", "vars": [{"name": "r", "value": "&x (would dangle)", "state": "error"}]}, {"frame": "inner block", "state": "closing", "vars": [{"name": "x", "value": "5", "state": "dropped"}]}],
+      "heap": []
+    },
+    {
+      "line": 6,
+      "caption": "This use is the reason the borrow had to live so long. Delete this line and r's borrow region shrinks to line 4, x outlives it, and the program compiles. Lifetimes are relationships between regions of code — the compiler just checks that they nest.",
+      "note": {"kind": "info", "text": "lifetime checking = verifying that every borrow region fits inside its referent's lifetime"},
+      "stack": [{"frame": "main", "vars": [{"name": "r", "value": "&x (would dangle)", "state": "error"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): r borrows x inside an inner scope; when the scope closes, x dies while r's borrow region still extends to a later use, so the compiler rejects the program with E0597 — a reference may never outlive its referent.</p>
+</div>
 ## Readiness Check - Lifetime Reasoning
 
 Use this checkpoint to confirm you can reason about reference relationships, not just syntax.

@@ -105,6 +105,42 @@ let consume = move || name;
 
 This closure moves `name` out when called, so it is only `FnOnce`.
 
+
+A closure is not magic — it is a struct you never had to write. Watch one get built and called.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="A Closure Is a Struct That Captures" data-accent="var(--trait)">
+<script type="application/json">
+{
+  "code": [
+    "let threshold = 10;",
+    "let is_large = |value: &i32| *value > threshold;",
+    "assert!(is_large(&12));"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "threshold is an ordinary i32 in main's frame.",
+      "stack": [{"frame": "main", "vars": [{"name": "threshold", "id": "v-t", "value": "10", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "The closure compiles to an invisible struct holding its captures — here, a shared borrow of threshold, because the body only reads it. The compiler picks the lightest capture that works: by reference if reading, by &mut if mutating, by move if consuming (or if you write `move`).",
+      "stack": [{"frame": "main", "vars": [{"name": "threshold", "id": "v-t", "value": "10", "state": "owner"}, {"name": "is_large", "value": "{ threshold: &i32 }", "points": "v-t", "state": "borrow"}]}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "Calling is_large(&12) runs the body with the captured reference: *value > threshold reads 10 through the borrow and returns true. Because it only reads its captures, this closure implements Fn and can be called any number of times.",
+      "note": {"kind": "ok", "text": "reads captures → Fn · mutates captures → FnMut · consumes captures → FnOnce"},
+      "stack": [{"frame": "main", "vars": [{"name": "threshold", "id": "v-t", "value": "10", "state": "owner"}, {"name": "is_large", "value": "{ threshold: &i32 }", "points": "v-t", "state": "borrow"}, {"name": "(result)", "value": "true", "state": "copy"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a closure compiles to an anonymous struct holding its captures — here a shared borrow of threshold — and calling it reads the captured value through that reference; read-only captures make it Fn.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 <div class="level-tabs">

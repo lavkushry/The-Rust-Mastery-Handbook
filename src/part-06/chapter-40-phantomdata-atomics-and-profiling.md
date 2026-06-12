@@ -120,6 +120,52 @@ struct Id<T> {
 
 This is why `PhantomData` is not "just to silence the compiler." It carries semantic information for the type system.
 
+
+Two values, identical bits, incompatible types. Watch PhantomData buy type safety for zero bytes.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="PhantomData: 8 Bytes of Data, a Type's Worth of Safety" data-accent="var(--perf)">
+<script type="application/json">
+{
+  "code": [
+    "struct Id<T> {",
+    "    raw: u64,",
+    "    _marker: PhantomData<T>,",
+    "}",
+    "let user: Id<User> = Id::new(7);",
+    "let order: Id<Order> = Id::new(7);",
+    "delete_user(order);"
+  ],
+  "steps": [
+    {
+      "line": 3,
+      "caption": "PhantomData<T> is a zero-sized type: it occupies no memory and generates no code. Its entire job is to make the unused parameter T matter to the type checker, so Id<User> and Id<Order> become distinct types.",
+      "stack": [{"frame": "(compile time)", "vars": [{"name": "size_of::<Id<T>>()", "value": "8 bytes — the u64, nothing more", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 5,
+      "caption": "user is just the integer 7 in memory. The <User> part exists only in the compiler's head — it costs nothing at runtime.",
+      "stack": [{"frame": "main", "vars": [{"name": "user: Id<User>", "value": "raw: 7", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 6,
+      "caption": "order is also the integer 7 — bit-for-bit identical to user. With plain u64 IDs, these two would be freely interchangeable, and mixing them up is a classic production bug.",
+      "stack": [{"frame": "main", "vars": [{"name": "user: Id<User>", "value": "raw: 7", "state": "owner"}, {"name": "order: Id<Order>", "value": "raw: 7 (same bits!)", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 7,
+      "caption": "Passing an order ID where a user ID belongs: rejected. The bits are identical; the types are not, and the types are what the compiler checks. A whole class of \"deleted the wrong record\" incidents becomes unrepresentable — for zero bytes and zero instructions.",
+      "note": {"kind": "error", "text": "error[E0308]: mismatched types — expected `Id<User>`, found `Id<Order>`"},
+      "stack": [{"frame": "main", "vars": [{"name": "user: Id<User>", "value": "raw: 7", "state": "owner"}, {"name": "order: Id<Order>", "value": "raw: 7", "state": "error"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): PhantomData makes Id&lt;User&gt; and Id&lt;Order&gt; distinct types while both compile to a bare u64 — so passing the wrong kind of ID fails with E0308 even though the runtime bits are identical.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

@@ -75,6 +75,49 @@ The field names and types become part of the serialization contract unless furth
 
 That means this derive is not just convenience. It is a statement about how data crosses process or persistence boundaries.
 
+
+Step through a builder chain and notice it is just ownership: every method consumes the builder and hands back the next one.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="The Builder Pattern Is a Chain of Moves" data-accent="var(--move)">
+<script type="application/json">
+{
+  "code": [
+    "let client = ClientBuilder::new()",
+    "    .timeout(30)",
+    "    .retries(3)",
+    "    .build();"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "new() produces a builder with default settings — a plain stack value, temporary and unnamed.",
+      "stack": [{"frame": "main", "vars": [{"name": "(builder)", "value": "timeout: None · retries: None", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "timeout(30) takes self by value: the old builder is moved in, updated, and a new one is moved out. The half-configured intermediate cannot be kept or reused — it no longer exists.",
+      "stack": [{"frame": "main", "vars": [{"name": "(builder #1)", "value": "timeout: None · retries: None", "state": "moved"}, {"name": "(builder #2)", "value": "timeout: 30 · retries: None", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "Same again for retries(3). Each link in the chain is a move — which is why this compiles to nothing: the optimizer collapses the chain into in-place field writes.",
+      "stack": [{"frame": "main", "vars": [{"name": "(builder #2)", "value": "timeout: 30 · retries: None", "state": "moved"}, {"name": "(builder #3)", "value": "timeout: 30 · retries: 3", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "build() consumes the final builder and produces the finished Client. After this line no builder exists at all — the type system guarantees nobody can call .build() twice or tweak a client that is already constructed.",
+      "note": {"kind": "ok", "text": "consuming self makes invalid states unrepresentable: no reusable half-built builder survives"},
+      "stack": [{"frame": "main", "vars": [{"name": "(builder #3)", "value": "consumed by build()", "state": "moved"}, {"name": "client", "value": "Client { timeout: 30, retries: 3 }", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): each builder method consumes the previous builder by value and returns an updated one, so no half-configured state survives; build() consumes the last builder to produce the Client.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

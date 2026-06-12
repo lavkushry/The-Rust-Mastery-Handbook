@@ -138,6 +138,49 @@ fn main() {
   <p>Rust does not have a garbage collector. It does not need one. The compiler already knows exactly when to free every value — at the end of the scope that owns it.</p>
 </div>
 
+Now watch the library card change wallets. This is the whole chapter in one animation.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="One Owner: The Move, Live" data-accent="var(--ownership)">
+<script type="application/json">
+{
+  "code": [
+    "let ada = String::from(\"book\");",
+    "let ben = ada;",
+    "println!(\"{ben}\");",
+    "println!(\"{ada}\");"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "ada owns the book: a String whose text lives in a heap buffer. One value, one owner.",
+      "stack": [{"frame": "main", "vars": [{"name": "ada", "value": "ptr · len 4 · cap 4", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"book\"", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "The library card moves to ben's wallet. The heap buffer does not move or get copied — only the ownership record changes. ada's binding is now invalid.",
+      "stack": [{"frame": "main", "vars": [{"name": "ada", "value": "ptr · len 4 · cap 4", "state": "moved"}, {"name": "ben", "value": "ptr · len 4 · cap 4", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"book\"", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "ben is the owner, so using ben is fine.",
+      "note": {"kind": "ok", "text": "ben owns the String — this line compiles and prints \"book\""},
+      "stack": [{"frame": "main", "vars": [{"name": "ada", "value": "ptr · len 4 · cap 4", "state": "moved"}, {"name": "ben", "value": "ptr · len 4 · cap 4", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"book\"", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "ada's card is gone. If Rust allowed this line, ada and ben would both try to return the same book at scope end — a double free. The compiler stops it before the program exists.",
+      "note": {"kind": "error", "text": "error[E0382]: borrow of moved value: `ada`"},
+      "stack": [{"frame": "main", "vars": [{"name": "ada", "value": "ptr · len 4 · cap 4", "state": "error"}, {"name": "ben", "value": "ptr · len 4 · cap 4", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"book\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): assigning ada to ben moves ownership of the heap buffer without copying it; using ada afterwards fails with E0382 because two owners would free the same memory twice.</p>
+</div>
 ## Try this
 
 <div class="try-this">

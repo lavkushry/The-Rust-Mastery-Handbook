@@ -129,6 +129,48 @@ This explains an important fact: macros do not replace the type system. They gen
 
 Hygiene matters here too. Identifiers introduced by the macro are tracked so they do not accidentally capture or get captured by names in the caller's scope in surprising ways.
 
+
+Watch the chapter's macro expand — syntax in, syntax out, all before the type checker ever wakes up.
+
+<div class="rust-viz" data-eyebrow="Macro Expansion Engine" data-title="macro_rules!: Pattern In, Code Out" data-accent="var(--trait)">
+<script type="application/json">
+{
+  "code": [
+    "macro_rules! hashmap_lite {",
+    "    ($( $key:expr => $value:expr ),* $(,)?) => {{",
+    "        let mut map = HashMap::new();",
+    "        $( map.insert($key, $value); )*",
+    "        map",
+    "    }};",
+    "}",
+    "let m = hashmap_lite!{ \"a\" => 1, \"b\" => 2 };"
+  ],
+  "columns": ["Matcher", "Expanded code"],
+  "steps": [
+    {
+      "line": 8,
+      "caption": "Expansion happens at compile time, before type checking. The invocation's tokens are matched against the macro's pattern: $key:expr => $value:expr, repeated with commas. Two repetitions match, capturing two (key, value) pairs as fragments of syntax.",
+      "stack": [{"frame": "pattern match", "vars": [{"name": "repetition 1", "value": "$key = \"a\" · $value = 1", "state": "plain"}, {"name": "repetition 2", "value": "$key = \"b\" · $value = 2", "state": "plain"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "The template is stamped out: the $( … )* in the body emits one map.insert per captured repetition. The macro manipulated syntax — it never saw types, values, or memory. That comes later, when the expanded code is compiled like anything handwritten.",
+      "stack": [{"frame": "template expansion", "vars": [{"name": "$( map.insert($key, $value); )*", "value": "stamped twice", "state": "plain"}]}],
+      "heap": [{"id": "exp", "label": "generated at the call site", "value": "{ let mut map = HashMap::new(); map.insert(\"a\", 1); map.insert(\"b\", 2); map }", "state": "alive"}]
+    },
+    {
+      "line": 8,
+      "caption": "The call site now contains the expanded block, which type-checks and compiles normally — m is an ordinary HashMap, with zero trace that a macro existed. This is the entire trick behind println!, vec!, and #[derive]: code that writes code, fully resolved before runtime. (cargo expand shows you this output for real.)",
+      "note": {"kind": "ok", "text": "macros run at compile time: syntax → syntax. No runtime cost, no reflection — the expansion IS the program."},
+      "stack": [{"frame": "after expansion", "vars": [{"name": "m", "value": "HashMap with 2 entries — ordinary value", "state": "owner"}]}],
+      "heap": [{"id": "exp", "label": "compiled like handwritten code", "value": "type-checked, borrow-checked, optimized", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): the hashmap_lite! invocation is matched against its pattern at compile time, the repetition template stamps out one insert per captured pair, and the expanded block replaces the call site before type checking — syntax to syntax, zero runtime cost.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

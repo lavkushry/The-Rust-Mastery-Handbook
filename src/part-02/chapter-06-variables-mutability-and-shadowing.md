@@ -82,4 +82,47 @@
   </div>
 </figure>
 
+
+Watch the difference between shadowing and mutation directly in the stack frame.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="Shadowing Creates New Bindings — Mutation Reuses One" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "let port = \"8080\";",
+    "let port: u16 = port.parse().unwrap();",
+    "let mut retries = 0;",
+    "retries += 1;"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "The first port binding holds a &str — a borrowed view of the literal \"8080\" stored in the program binary.",
+      "stack": [{"frame": "main", "vars": [{"name": "port", "value": "&str \"8080\"", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "Shadowing: this is a brand-new binding that happens to reuse the name. The old &str binding still exists underneath but is no longer reachable by name. Crucially, the new port can have a different type — u16 — which mutation could never do.",
+      "stack": [{"frame": "main", "vars": [{"name": "port", "value": "&str \"8080\"", "state": "shadowed"}, {"name": "port", "value": "u16 8080", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "Mutation is the other mechanism: one binding, declared mut, whose slot will be overwritten in place. Same name, same type, same memory.",
+      "stack": [{"frame": "main", "vars": [{"name": "port", "value": "&str \"8080\"", "state": "shadowed"}, {"name": "port", "value": "u16 8080", "state": "owner"}, {"name": "retries (mut)", "value": "0", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "retries is updated in its existing slot — no new binding appears. Shadowing = new binding, possibly new type, for refining a value. Mutation = same binding, same type, for values that genuinely change over time.",
+      "note": {"kind": "ok", "text": "two different mechanisms: shadowing re-declares, mutation re-assigns"},
+      "stack": [{"frame": "main", "vars": [{"name": "port", "value": "&str \"8080\"", "state": "shadowed"}, {"name": "port", "value": "u16 8080", "state": "owner"}, {"name": "retries (mut)", "value": "1", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): shadowing creates a brand-new binding (allowing a type change from &str to u16) while the old one becomes unreachable; mutation with mut overwrites the same stack slot in place.</p>
+</div>
 ## Step 1 - The Problem

@@ -183,6 +183,51 @@ If you remove `move`, the closure tries to borrow `values` from `main`. Now the 
 
 You will typically see an error in the E0373 family for "closure may outlive the current function, but it borrows..." The exact wording varies slightly across compiler versions, but the design reason does not.
 
+
+Two stacks, one heap. Watch ownership cross a thread boundary — and notice what the `move` keyword actually moves.
+
+<div class="rust-viz" data-eyebrow="Concurrency Laboratory" data-title="Sending Ownership Into a Thread" data-accent="var(--async)">
+<script type="application/json">
+{
+  "code": [
+    "let values = vec![1, 2, 3];",
+    "let handle = thread::spawn(move || {",
+    "    println!(\"{values:?}\");",
+    "});",
+    "handle.join().unwrap();"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "values lives in the main thread's stack and owns a heap buffer. The heap is shared between all threads — the stacks are not.",
+      "stack": [{"frame": "thread: main", "vars": [{"name": "values", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[1, 2, 3]", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "The move closure takes ownership of values and the whole package is handed to the new thread. Main's binding is dead. This is mandatory: the spawned thread might outlive main's stack frame, so borrowing from it would be unsound.",
+      "note": {"kind": "info", "text": "without `move`: error[E0373]: closure may outlive the current function, but it borrows `values`"},
+      "stack": [{"frame": "thread: main", "vars": [{"name": "values", "value": "ptr · len 3 · cap 3", "state": "moved"}, {"name": "handle", "value": "JoinHandle", "state": "owner"}]}, {"frame": "thread: worker", "vars": [{"name": "values (captured)", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[1, 2, 3]", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Both threads are now running concurrently — but only the worker can touch the Vec, because only the worker owns it. The data race that haunts shared-memory threading is structurally impossible here: there is nothing shared.",
+      "stack": [{"frame": "thread: main", "vars": [{"name": "handle", "value": "JoinHandle", "state": "owner"}]}, {"frame": "thread: worker", "vars": [{"name": "values (captured)", "value": "ptr · len 3 · cap 3", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[1, 2, 3]", "state": "alive"}]
+    },
+    {
+      "line": 5,
+      "caption": "join() blocks main until the worker finishes. The worker's scope ends, values is dropped there, and the heap buffer is freed — by its one owner, in the thread that owned it. Ownership rules did not bend for concurrency; they are what made it safe.",
+      "note": {"kind": "ok", "text": "exactly one owner at every moment → no race, no double free, no leak"},
+      "stack": [{"frame": "thread: main", "vars": [{"name": "handle", "value": "joined ✓", "state": "owner"}]}, {"frame": "thread: worker", "state": "closing", "vars": [{"name": "values (captured)", "value": "ptr · len 3 · cap 3", "state": "dropped"}]}],
+      "heap": [{"id": "h1", "label": "Vec buffer", "value": "[1, 2, 3]", "state": "freed"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): the move closure transfers ownership of the Vec into the spawned thread (required because the thread may outlive the spawning frame), so only the worker can touch it; when the worker finishes, it drops and frees the buffer.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

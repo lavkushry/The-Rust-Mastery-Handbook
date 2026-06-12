@@ -77,6 +77,50 @@ What each tool does:
 
 The invariant being protected is workflow consistency. If every contributor uses the same basic build and lint pipeline, "it works on my machine" shrinks dramatically.
 
+
+Step through what each tool in the chain actually does — rustup, cargo, and rustc are three different jobs, not three names for one thing.
+
+<div class="rust-viz" data-eyebrow="Cargo Universe" data-title="rustup, cargo, rustc: Who Does What" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "$ rustup default stable",
+    "$ cargo new hello",
+    "$ cargo build",
+    "$ cargo run"
+  ],
+  "columns": ["Toolchain", "Artifacts"],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "rustup is the toolchain manager — it installs and selects entire toolchains. \"stable\" is a matched set: the rustc compiler, cargo, the standard library, clippy, rustfmt. Nightly and beta are parallel sets you can switch to per project.",
+      "stack": [{"frame": "rustup", "vars": [{"name": "stable (selected)", "value": "rustc · cargo · std · clippy · rustfmt", "state": "plain"}, {"name": "nightly", "value": "installed, idle", "state": "shadowed"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "cargo is the build system and project manager. cargo new lays down the standard skeleton: a manifest describing the package, and src/main.rs as the crate root. Every Rust project you will ever open has this same shape.",
+      "stack": [{"frame": "cargo", "vars": [{"name": "new", "value": "scaffolds the project", "state": "plain"}]}],
+      "heap": [{"id": "proj", "label": "hello/", "value": "Cargo.toml · src/main.rs", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "cargo build orchestrates; rustc compiles. Cargo resolves dependencies, decides what needs rebuilding, and invokes rustc with the right flags. rustc does the actual lexing-to-machine-code work and drops the binary in target/debug.",
+      "stack": [{"frame": "cargo", "vars": [{"name": "build", "value": "plans the build", "state": "plain"}]}, {"frame": "rustc (invoked by cargo)", "vars": [{"name": "compile", "value": "src/main.rs → machine code", "state": "plain"}]}],
+      "heap": [{"id": "proj", "label": "hello/", "value": "Cargo.toml · src/main.rs", "state": "alive"}, {"id": "bin", "label": "target/debug/hello", "value": "the executable", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "cargo run is build-if-needed, then execute. Nothing recompiles if nothing changed — Cargo tracks freshness. Day to day you will touch cargo constantly, rustup occasionally, and rustc almost never directly.",
+      "note": {"kind": "ok", "text": "rustup manages toolchains · cargo manages projects and builds · rustc compiles — one job each"},
+      "stack": [{"frame": "your program", "vars": [{"name": "main()", "value": "running", "state": "plain"}]}],
+      "heap": [{"id": "bin", "label": "target/debug/hello", "value": "executing → \"Hello, world!\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): rustup selects a complete toolchain, cargo scaffolds the project and orchestrates builds, and rustc — invoked by cargo — does the actual compilation into target/debug.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

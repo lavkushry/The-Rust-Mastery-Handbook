@@ -70,6 +70,52 @@ fn broken() -> i32 {
 
 The semicolon discards `5` and produces `()`, so the function body has the wrong type.
 
+
+Watch a function call happen: a frame is born, the expression produces the return value, and the frame dies.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="A Function Call, Frame by Frame" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "fn main() {",
+    "    let sum = add(2, 3);",
+    "    println!(\"{sum}\");",
+    "}",
+    "fn add(a: i32, b: i32) -> i32 {",
+    "    a + b",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 2,
+      "caption": "Calling add pushes a fresh stack frame. The argument values 2 and 3 are copied into the new frame's parameters — i32 is Copy, so main's values are unaffected.",
+      "stack": [{"frame": "main", "vars": [{"name": "sum", "value": "(waiting for add)", "state": "owner"}]}, {"frame": "add", "vars": [{"name": "a", "value": "2", "state": "copy"}, {"name": "b", "value": "3", "state": "copy"}]}],
+      "heap": []
+    },
+    {
+      "line": 6,
+      "caption": "a + b has no semicolon, so it is the block's tail expression — its value is the function's return value. No `return` keyword needed: in Rust, blocks are expressions that evaluate to something.",
+      "stack": [{"frame": "main", "vars": [{"name": "sum", "value": "(waiting for add)", "state": "owner"}]}, {"frame": "add", "vars": [{"name": "a", "value": "2", "state": "copy"}, {"name": "b", "value": "3", "state": "copy"}, {"name": "(return value)", "value": "5", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "add returns: its frame is popped instantly — a, b, and everything else in it cease to exist — and the return value 5 lands in sum. Stack cleanup is just moving one pointer.",
+      "stack": [{"frame": "main", "vars": [{"name": "sum", "value": "5", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "main continues with its own frame intact. Every function call in every Rust program follows exactly this push-execute-pop rhythm.",
+      "note": {"kind": "ok", "text": "frame pushed → tail expression evaluated → frame popped, value returned"},
+      "stack": [{"frame": "main", "vars": [{"name": "sum", "value": "5", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): calling add(2, 3) pushes a stack frame with copied arguments, the tail expression a + b becomes the return value without a return keyword, and popping the frame delivers 5 into sum.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

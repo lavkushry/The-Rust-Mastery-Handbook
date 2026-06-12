@@ -145,6 +145,43 @@ a draft cannot accidentally be used as if publication already happened.
 
 This is the essential typestate move. State transitions become type transitions.
 
+
+The typestate pattern, animated: each transition is a move, and the invalid transition is a method that does not exist.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="Typestate: The State Machine Lives in the Types" data-accent="var(--trait)">
+<script type="application/json">
+{
+  "code": [
+    "let draft = Post::<Draft>::new(\"Rust\".into());",
+    "let post = draft.publish();",
+    "post.publish();"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "draft is a Post<Draft>. The Draft parameter is pure PhantomData — zero bytes. In memory this is just the title String; the state exists only in the type system, where the compiler can see it.",
+      "stack": [{"frame": "main", "vars": [{"name": "draft: Post<Draft>", "value": "title: ptr·4·4 │ _state: 0 bytes", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "title buffer", "value": "\"Rust\"", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "publish() is defined only on Post<Draft>, takes self by value, and returns Post<Published>. The draft is consumed — moved, gone, unusable — and a published post takes its place. Same bytes, same heap buffer, new type. The transition is a move, so the old state cannot linger anywhere.",
+      "note": {"kind": "ok", "text": "consuming self = the old state is destroyed by the transition — no stale Draft handle survives"},
+      "stack": [{"frame": "main", "vars": [{"name": "draft: Post<Draft>", "value": "consumed by publish()", "state": "moved"}, {"name": "post: Post<Published>", "value": "title: ptr·4·4 │ _state: 0 bytes", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "title buffer", "value": "\"Rust\"", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "Publishing twice? There is no publish method on Post<Published> — the transition is not forbidden by a runtime check that could be forgotten; it is unrepresentable. The compiler error lists what Published posts can do, and re-publishing is not on the menu. State diagrams enforced by the type checker, at zero runtime cost.",
+      "note": {"kind": "error", "text": "error[E0599]: no method named `publish` found for struct `Post<Published>`"},
+      "stack": [{"frame": "main", "vars": [{"name": "post: Post<Published>", "value": "title: ptr·4·4", "points": "h1", "state": "error"}]}],
+      "heap": [{"id": "h1", "label": "title buffer", "value": "\"Rust\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): publish() consumes a Post&lt;Draft&gt; by value and returns a Post&lt;Published&gt; with identical memory layout; calling publish() again fails with E0599 because the method simply does not exist on the new state's type.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

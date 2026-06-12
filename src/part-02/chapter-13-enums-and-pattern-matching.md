@@ -125,4 +125,46 @@
   <figcaption class="visual-figure__caption">The compiler stores an enum as a discriminant tag followed by data sized to the largest variant. Small variants waste some space, but the fixed layout makes pattern matching a constant-time tag check, not a search.</figcaption>
 </figure>
 
+
+Here is what a sum type looks like in memory: one tag, one payload slot, and a match that reads the tag.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="An Enum in Memory: Tag + Payload" data-accent="var(--trait)">
+<script type="application/json">
+{
+  "code": [
+    "enum Shape {",
+    "    Circle(f64),",
+    "    Rect { w: f64, h: f64 },",
+    "}",
+    "let s = Shape::Circle(1.5);",
+    "match s {",
+    "    Shape::Circle(r) => 3.14 * r * r,",
+    "    Shape::Rect { w, h } => w * h,",
+    "};"
+  ],
+  "steps": [
+    {
+      "line": 5,
+      "caption": "s is one stack value holding two things: a discriminant tag saying \"this is the Circle variant\", and the payload 1.5. The slot is sized for the largest variant (Rect needs two f64s), so every Shape is the same size — 24 bytes with the tag.",
+      "stack": [{"frame": "main", "vars": [{"name": "s", "value": "tag: Circle │ payload: 1.5", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 6,
+      "caption": "match reads the tag. It is not a chain of string comparisons — the compiler turns this into a direct jump based on the discriminant value.",
+      "stack": [{"frame": "main", "vars": [{"name": "s", "value": "tag: Circle │ payload: 1.5", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 7,
+      "caption": "The tag says Circle, so this arm runs and the payload is bound to r. The Rect arm's fields are never touched — the payload bytes are only ever interpreted according to the tag. And if you forget an arm, the compiler rejects the match: exhaustiveness is checked at compile time.",
+      "note": {"kind": "ok", "text": "exhaustive: every Shape variant has an arm — adding a variant later breaks this match loudly"},
+      "stack": [{"frame": "main", "vars": [{"name": "s", "value": "tag: Circle │ payload: 1.5", "state": "owner"}, {"name": "r", "value": "1.5", "state": "copy"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): an enum value is a discriminant tag plus a payload slot sized for the largest variant; match reads the tag, jumps to the right arm, and binds the payload — with exhaustiveness checked at compile time.</p>
+</div>
 ## Step 1 - The Problem

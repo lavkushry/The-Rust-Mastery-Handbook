@@ -82,6 +82,50 @@ The invariant here is not "mutability is free now." It is:
 
 the aliasing rule still exists, but enforcement moved from compile time to runtime.
 
+
+Watch shared ownership and runtime borrow checking work together — the reference count and the borrow flag are both visible.
+
+<div class="rust-viz" data-eyebrow="Std Library Explorer" data-title="Rc + RefCell: Counted Owners, Runtime Borrows" data-accent="var(--heap)">
+<script type="application/json">
+{
+  "code": [
+    "let shared = Rc::new(RefCell::new(vec![1, 2, 3]));",
+    "let other = Rc::clone(&shared);",
+    "shared.borrow_mut().push(4);",
+    "drop(other);"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "Rc::new puts the value on the heap alongside a strong reference count, starting at 1. shared is a pointer to that block — ownership is now counted rather than unique.",
+      "stack": [{"frame": "main", "vars": [{"name": "shared", "value": "Rc → heap", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Rc block — strong: 1", "value": "RefCell { borrows: none } · Vec [1, 2, 3]", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "Rc::clone copies the pointer and increments the counter to 2. The Vec itself is not touched — this is a cheap, shallow clone. Two owners now share one allocation.",
+      "stack": [{"frame": "main", "vars": [{"name": "shared", "value": "Rc → heap", "points": "h1", "state": "owner"}, {"name": "other", "value": "Rc → heap (same block)", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Rc block — strong: 2", "value": "RefCell { borrows: none } · Vec [1, 2, 3]", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "With shared owners, compile-time exclusive borrows are impossible — so RefCell moves the aliasing-XOR-mutation check to runtime. borrow_mut() sets an exclusive flag, push runs, the flag clears when the guard drops at the end of the statement. A second overlapping borrow_mut would panic, not corrupt.",
+      "note": {"kind": "info", "text": "same rule, different enforcer: borrow checker at compile time → RefCell flag at runtime (violation = panic)"},
+      "stack": [{"frame": "main", "vars": [{"name": "shared", "value": "Rc → heap (borrow_mut active)", "points": "h1", "state": "borrow-mut"}, {"name": "other", "value": "Rc → heap", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "Rc block — strong: 2", "value": "RefCell { borrows: 1 mut } · Vec [1, 2, 3, 4]", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "Dropping other decrements the count to 1. The allocation survives — it is freed only when the last Rc goes away. Shared ownership with deterministic cleanup, no garbage collector: the count is the bookkeeping.",
+      "note": {"kind": "ok", "text": "strong count 2 → 1 · heap freed only at count 0"},
+      "stack": [{"frame": "main", "vars": [{"name": "shared", "value": "Rc → heap", "points": "h1", "state": "owner"}, {"name": "other", "value": "dropped — count decremented", "state": "dropped"}]}],
+      "heap": [{"id": "h1", "label": "Rc block — strong: 1", "value": "RefCell { borrows: none } · Vec [1, 2, 3, 4]", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): Rc::clone bumps a visible strong count instead of copying data, RefCell enforces the borrow rules at runtime with a borrow flag (panicking on violation), and the heap block is freed only when the count reaches zero.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

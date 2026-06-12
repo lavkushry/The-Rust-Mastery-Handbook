@@ -79,6 +79,57 @@ match code {
 
 The compiler checks every possible pattern path is handled.
 
+
+Step through this and watch two things most languages don't do: `if` producing a value, and a loop mutating one slot in place.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="Control Flow Produces Values" data-accent="var(--compiler)">
+<script type="application/json">
+{
+  "code": [
+    "let condition = true;",
+    "let number = if condition { 5 } else { 6 };",
+    "let mut count = 0;",
+    "while count < 2 {",
+    "    count += 1;",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "condition is an ordinary bool on the stack.",
+      "stack": [{"frame": "main", "vars": [{"name": "condition", "value": "true", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "if is an expression: the taken branch's value becomes the value of the whole if. number is initialized directly to 5 — there is never a moment where it exists uninitialized. Both branches must have the same type, checked at compile time.",
+      "note": {"kind": "ok", "text": "both arms are i32 — the if expression has one consistent type"},
+      "stack": [{"frame": "main", "vars": [{"name": "condition", "value": "true", "state": "owner"}, {"name": "number", "value": "5", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 5,
+      "caption": "First iteration: count < 2 is true, so the body runs and mutates count's slot in place: 0 becomes 1. No new variable is created per iteration.",
+      "stack": [{"frame": "main", "vars": [{"name": "condition", "value": "true", "state": "owner"}, {"name": "number", "value": "5", "state": "owner"}, {"name": "count (mut)", "value": "1", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 5,
+      "caption": "Second iteration: count becomes 2. Same slot, new value.",
+      "stack": [{"frame": "main", "vars": [{"name": "condition", "value": "true", "state": "owner"}, {"name": "number", "value": "5", "state": "owner"}, {"name": "count (mut)", "value": "2", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "count < 2 is now false; the loop exits. The entire program used three stack slots and zero heap allocations — control flow itself costs nothing in memory.",
+      "stack": [{"frame": "main", "vars": [{"name": "condition", "value": "true", "state": "owner"}, {"name": "number", "value": "5", "state": "owner"}, {"name": "count (mut)", "value": "2", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): an if expression initializes number directly with the taken branch's value, and a while loop mutates the same count slot in place each iteration until its condition fails.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

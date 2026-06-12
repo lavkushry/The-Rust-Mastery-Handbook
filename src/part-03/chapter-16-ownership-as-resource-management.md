@@ -112,6 +112,59 @@
 - [Rust Book: The Drop Trait](https://doc.rust-lang.org/book/ch15-03-drop.html)
 - Codebase study: Look at how `std::fs::File` implements `Drop` to automatically close file handles.
 
+Before the readiness check, watch RAII happen. Step through the simulation below and observe the lifecycle: every scope exit deterministically frees exactly the resources that scope owns — no garbage collector, no manual `free`.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="Scope Exit Is Cleanup: Drop in Action" data-accent="var(--ownership)">
+<script type="application/json">
+{
+  "code": [
+    "fn main() {",
+    "    let outer = String::from(\"outer\");",
+    "    {",
+    "        let inner = String::from(\"inner\");",
+    "    }",
+    "    println!(\"{outer}\");",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 2,
+      "caption": "Acquisition: outer is created in main's frame and owns a freshly allocated heap buffer. Ownership and the resource lifecycle begin together.",
+      "stack": [{"frame": "main", "vars": [{"name": "outer", "value": "ptr · len 5 · cap 5", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"outer\"", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "An inner block opens its own scope. inner owns a second heap allocation. Two owners, two resources, two distinct lifecycles.",
+      "stack": [{"frame": "main", "vars": [{"name": "outer", "value": "ptr · len 5 · cap 5", "points": "h1", "state": "owner"}]}, {"frame": "inner block", "vars": [{"name": "inner", "value": "ptr · len 5 · cap 5", "points": "h2", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"outer\"", "state": "alive"}, {"id": "h2", "label": "String buffer", "value": "\"inner\"", "state": "alive"}]
+    },
+    {
+      "line": 5,
+      "caption": "The inner scope ends. Rust calls Drop on inner right here — deterministically, at the closing brace — and the buffer is freed. This is RAII: cleanup is tied to scope, not to programmer memory.",
+      "note": {"kind": "ok", "text": "Drop::drop(&mut inner) runs automatically — buffer freed exactly once"},
+      "stack": [{"frame": "main", "vars": [{"name": "outer", "value": "ptr · len 5 · cap 5", "points": "h1", "state": "owner"}]}, {"frame": "inner block", "state": "closing", "vars": [{"name": "inner", "value": "ptr · len 5 · cap 5", "state": "dropped"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"outer\"", "state": "alive"}, {"id": "h2", "label": "String buffer", "value": "\"inner\"", "state": "freed"}]
+    },
+    {
+      "line": 6,
+      "caption": "outer is still alive and perfectly usable — its scope has not ended. The inner allocation is long gone. No leak, no dangling access possible.",
+      "stack": [{"frame": "main", "vars": [{"name": "outer", "value": "ptr · len 5 · cap 5", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"outer\"", "state": "alive"}]
+    },
+    {
+      "line": 7,
+      "caption": "main's scope ends and outer is dropped. Every allocation this program made has been freed at a precisely known point. That is ownership as resource management.",
+      "note": {"kind": "ok", "text": "All resources released — zero leaks, zero double frees, no GC involved"},
+      "stack": [{"frame": "main", "state": "closing", "vars": [{"name": "outer", "value": "ptr · len 5 · cap 5", "state": "dropped"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"outer\"", "state": "freed"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): two String values are created in nested scopes; each is dropped and its heap buffer freed exactly when its own scope ends — the inner one at the inner closing brace, the outer one at the end of main. RAII ties cleanup to scope boundaries.</p>
+</div>
+
 ## Readiness Check - Ownership Mastery
 
 Use this quick rubric before moving on. Aim for at least Level 2 in each row.

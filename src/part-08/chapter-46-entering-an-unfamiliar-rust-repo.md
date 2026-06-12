@@ -130,6 +130,50 @@ The invariant is simple:
 
 you must understand the repo's declared contract before you trust your interpretation of its internals.
 
+
+Forty thousand lines of unfamiliar Rust. Step through the recon route that turns it into a map in fifteen minutes.
+
+<div class="rust-viz" data-eyebrow="Repo Recon" data-title="Reading an Unfamiliar Repo in Four Moves" data-accent="var(--valid)">
+<script type="application/json">
+{
+  "code": [
+    "$ cat Cargo.toml",
+    "$ ls src/",
+    "$ rg \"pub fn|pub struct\" src/lib.rs",
+    "$ cargo test"
+  ],
+  "columns": ["What you look at", "Your mental map"],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "Start with the manifest, not the code. The [lib]/[[bin]] sections tell you what kind of artifact this is; the dependencies tell you the domain instantly — tokio + axum is a web service, clap is a CLI, no_std hints embedded. Thirty seconds, and you know what you are standing in.",
+      "stack": [{"frame": "Cargo.toml", "vars": [{"name": "[dependencies]", "value": "tokio, axum, serde…", "state": "plain"}]}],
+      "heap": [{"id": "m1", "label": "map: project type", "value": "async web service, JSON in/out", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "The src/ layout reveals the architecture the authors intended: lib.rs vs main.rs tells you library-with-thin-binary or application; module folders (routes/, db/, config.rs) are the chapter titles of the codebase. You are reading the table of contents, not the book.",
+      "stack": [{"frame": "src/", "vars": [{"name": "main.rs", "value": "thin entry point", "state": "plain"}, {"name": "lib.rs + routes/ + db/", "value": "where the substance lives", "state": "plain"}]}],
+      "heap": [{"id": "m1", "label": "map: project type", "value": "async web service", "state": "alive"}, {"id": "m2", "label": "map: architecture", "value": "lib does the work, main.rs just boots it", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "The pub items in lib.rs are the contract — the surface the authors decided to expose and keep stable. Everything else is implementation you can largely ignore on a first pass. Read the contract before any function body; bodies change, contracts do not.",
+      "stack": [{"frame": "public API", "vars": [{"name": "pub fn serve(cfg)", "value": "the front door", "state": "plain"}, {"name": "pub struct Config", "value": "what callers control", "state": "plain"}]}],
+      "heap": [{"id": "m3", "label": "map: the contract", "value": "two entry points — every path starts at serve()", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "Finally, run the tests. Green means you have a verified baseline: any breakage from here on is yours, and the test names themselves are executable documentation of intended behavior. Manifest, layout, contract, baseline — you now navigate this repo by map instead of by grep.",
+      "note": {"kind": "ok", "text": "recon order: what is it → how is it shaped → what does it promise → does it work. Code bodies come last, not first."},
+      "stack": [{"frame": "cargo test", "vars": [{"name": "87 tests", "value": "all green — verified baseline", "state": "plain"}]}],
+      "heap": [{"id": "m4", "label": "map: complete", "value": "ready to make a change without fear", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): the four-move recon route through an unfamiliar repo — manifest for project type, src/ layout for architecture, pub items for the API contract, and a green test run as the verified baseline.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

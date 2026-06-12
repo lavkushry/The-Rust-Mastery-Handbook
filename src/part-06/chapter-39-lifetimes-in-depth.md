@@ -113,6 +113,48 @@ The invariant is:
 
 the callee must not smuggle in a borrow tied to one specific captured lifetime when the API promises it works for all caller-provided lifetimes.
 
+
+Step through a higher-ranked bound and watch one closure satisfy two different lifetimes.
+
+<div class="rust-viz" data-eyebrow="Lifetime Explorer" data-title="for&lt;'a&gt;: A Bound Over Every Lifetime" data-accent="var(--lifetime)">
+<script type="application/json">
+{
+  "code": [
+    "fn apply<F>(f: F)",
+    "where",
+    "    F: for<'a> Fn(&'a str) -> &'a str,",
+    "{",
+    "    let a = String::from(\"hello\");",
+    "    let b = String::from(\"world\");",
+    "    assert_eq!(f(&a), \"hello\");",
+    "    assert_eq!(f(&b), \"world\");",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 3,
+      "caption": "Read for<'a> as \"for every lifetime 'a\". An ordinary generic lifetime would be chosen once, by the caller, for the whole function. This bound is stronger: f must work for any lifetime apply ever throws at it — including lifetimes for locals that do not exist yet.",
+      "stack": [{"frame": "apply", "vars": [{"name": "f", "value": "closure: for<'a> Fn(&'a str) -> &'a str", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 7,
+      "caption": "First use: 'a is instantiated to a's region — a lifetime that began inside apply, after f already existed. The returned &str carries that same region: input lifetime in, same lifetime out, exactly as the bound promised.",
+      "stack": [{"frame": "apply", "vars": [{"name": "f", "value": "closure", "state": "owner"}, {"name": "a", "id": "v-a", "value": "String \"hello\"", "points": "h1", "state": "owner"}, {"name": "b", "value": "String \"world\"", "points": "h2", "state": "owner"}, {"name": "f(&a)", "value": "&'a₁ str", "points": "v-a", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "a's buffer", "value": "\"hello\"", "state": "alive"}, {"id": "h2", "label": "b's buffer", "value": "\"world\"", "state": "alive"}]
+    },
+    {
+      "line": 8,
+      "caption": "Second use: the same f, instantiated at a different lifetime — b's region. No new closure, no re-compilation, no negotiation with the caller. One value of type F, universally quantified over lifetimes. This is what makes callback APIs over borrowed data possible to express at all.",
+      "note": {"kind": "ok", "text": "HRTB: the bound holds for all 'a simultaneously — each call site picks its own instantiation"},
+      "stack": [{"frame": "apply", "vars": [{"name": "f", "value": "closure", "state": "owner"}, {"name": "a", "value": "String \"hello\"", "points": "h1", "state": "owner"}, {"name": "b", "id": "v-b", "value": "String \"world\"", "points": "h2", "state": "owner"}, {"name": "f(&b)", "value": "&'a₂ str", "points": "v-b", "state": "borrow"}]}],
+      "heap": [{"id": "h1", "label": "a's buffer", "value": "\"hello\"", "state": "alive"}, {"id": "h2", "label": "b's buffer", "value": "\"world\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a for&lt;'a&gt; higher-ranked bound means the closure must work for every lifetime, so apply can call it on two different locals — each call instantiates 'a to a different region of code, using the same closure value.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

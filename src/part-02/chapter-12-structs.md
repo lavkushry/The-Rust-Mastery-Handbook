@@ -45,6 +45,45 @@ struct User {
 - derive macros add common behavior
 - methods or constructors belong in `impl User`
 
+
+Here is a User in memory — and the difference between moving it and cloning it.
+
+<div class="rust-viz" data-eyebrow="Stack &amp; Heap Engine" data-title="A Struct in Memory: Move vs Clone" data-accent="var(--trait)">
+<script type="application/json">
+{
+  "code": [
+    "let u1 = User {",
+    "    name: String::from(\"Ada\"),",
+    "    active: true,",
+    "};",
+    "let u2 = u1.clone();",
+    "let u3 = u1;"
+  ],
+  "steps": [
+    {
+      "line": 4,
+      "caption": "u1 is one contiguous stack value: the String triple for name, then the bool. The name field owns a heap buffer. The struct owns its fields; the fields own their resources.",
+      "stack": [{"frame": "main", "vars": [{"name": "u1", "value": "name: ptr·3·3 | active: true", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "u1.name buffer", "value": "\"Ada\"", "state": "alive"}]
+    },
+    {
+      "line": 5,
+      "caption": "Because User derives Clone, .clone() performs a deep copy: a brand-new heap buffer is allocated for u2's name. Two structs, two buffers, two independent owners. This costs a real allocation — which is why Rust makes you ask for it explicitly.",
+      "stack": [{"frame": "main", "vars": [{"name": "u1", "value": "name: ptr·3·3 | active: true", "points": "h1", "state": "owner"}, {"name": "u2", "value": "name: ptr·3·3 | active: true", "points": "h2", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "u1.name buffer", "value": "\"Ada\"", "state": "alive"}, {"id": "h2", "label": "u2.name buffer (new allocation)", "value": "\"Ada\"", "state": "alive"}]
+    },
+    {
+      "line": 6,
+      "caption": "Assignment without .clone() is a move: u3 takes over u1's fields — including the same heap buffer — and u1 is invalidated. A struct containing any non-Copy field (like String) moves by default, exactly like the String itself would.",
+      "note": {"kind": "ok", "text": "move: zero allocation, old binding invalidated · clone: new allocation, both valid"},
+      "stack": [{"frame": "main", "vars": [{"name": "u1", "value": "name: ptr·3·3 | active: true", "state": "moved"}, {"name": "u2", "value": "name: ptr·3·3 | active: true", "points": "h2", "state": "owner"}, {"name": "u3", "value": "name: ptr·3·3 | active: true", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "name buffer (now owned via u3)", "value": "\"Ada\"", "state": "alive"}, {"id": "h2", "label": "u2.name buffer", "value": "\"Ada\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a User struct lives contiguously on the stack with its String field pointing at a heap buffer; .clone() allocates a second buffer for an independent copy, while plain assignment moves ownership of the original buffer and invalidates the source binding.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

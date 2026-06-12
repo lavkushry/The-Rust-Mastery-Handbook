@@ -281,6 +281,51 @@ The central invariant is:
 
 the executor may pause and resume the computation at each `.await`, but the future's internal state must remain valid across those pauses.
 
+
+The most important fact about async Rust, animated: calling an async function runs none of its body.
+
+<div class="rust-viz" data-eyebrow="Async Runtime Simulator" data-title="Futures Are Inert Until Polled" data-accent="var(--async)">
+<script type="application/json">
+{
+  "code": [
+    "async fn answer() -> u32 {",
+    "    42",
+    "}",
+    "let future = answer();",
+    "drop(future);"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "The compiler rewrites this async fn into a state machine type — a struct that remembers where execution paused. Defining it generates code but runs nothing.",
+      "stack": [{"frame": "main", "vars": []}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "Calling answer() does NOT run the body. It constructs a state machine value in its initial state and hands it to you as an ordinary stack value. The 42 has not been computed. Nothing is scheduled. A future is a plan, not a promise in flight.",
+      "stack": [{"frame": "main", "vars": [{"name": "future", "value": "AnswerFuture { state: Start }", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 5,
+      "caption": "Dropping the future destroys the plan — the body never executes and the 42 never exists. No warning, no background work leaked: there was never any background work.",
+      "note": {"kind": "info", "text": "no executor, no execution: futures do nothing unless something calls poll()"},
+      "stack": [{"frame": "main", "vars": [{"name": "future", "value": "AnswerFuture — destroyed unpolled", "state": "dropped"}]}],
+      "heap": []
+    },
+    {
+      "line": 4,
+      "caption": "What was missing: an executor. block_on(answer()) or .await inside a runtime would call poll() on the state machine, the body would run to its end, and poll would return Poll::Ready(42). The executor's poll loop is the engine; the future is just the gearbox.",
+      "note": {"kind": "ok", "text": "executor calls poll(future) → body runs → Poll::Ready(42)"},
+      "stack": [{"frame": "executor (e.g. tokio)", "vars": [{"name": "poll(future)", "value": "→ Poll::Ready(42)", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): calling an async fn merely constructs a paused state machine — the body runs only when an executor polls it; dropping the unpolled future means the body never executes at all.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

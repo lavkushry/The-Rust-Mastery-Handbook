@@ -154,4 +154,42 @@
   <figcaption class="visual-figure__caption">“Zero-cost” is not magic language marketing. It is a demand that expressive, generic code should still compile to machine behavior competitive with the hand-written low-level equivalent.</figcaption>
 </figure>
 
+
+"Zero-cost abstraction" is a claim about what the compiler generates. Watch the claim get cashed out.
+
+<div class="rust-viz" data-eyebrow="Monomorphization Engine" data-title="Zero-Cost: The Abstraction That Vanishes" data-accent="var(--perf)">
+<script type="application/json">
+{
+  "code": [
+    "let total: i32 = values.iter()",
+    "    .map(|x| x * 2)",
+    "    .filter(|x| *x > 10)",
+    "    .sum();"
+  ],
+  "columns": ["What you wrote", "What the compiler generated"],
+  "steps": [
+    {
+      "line": 4,
+      "caption": "Four layers of abstraction stacked up: an iterator, a map adapter, a filter adapter, a sum consumer. Each is a real struct with a real next() method. In most languages, this style costs allocations, closures on the heap, and virtual calls per element.",
+      "stack": [{"frame": "abstraction stack", "vars": [{"name": "Sum", "value": "drives the chain", "state": "plain"}, {"name": "Filter", "value": "wraps Map", "state": "plain"}, {"name": "Map", "value": "wraps Iter", "state": "plain"}, {"name": "Iter", "value": "cursor over values", "state": "plain"}]}],
+      "heap": [{"id": "g1", "label": "generated code", "value": "(nothing yet — adapters are inert structs, fully known at compile time)", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "Because every layer's concrete type is known, the compiler monomorphizes and inlines the entire chain. The structs evaporate. What remains is one tight loop: load, double, compare, conditionally add. No allocations, no function calls, no iterator objects at runtime.",
+      "stack": [{"frame": "after inlining", "vars": [{"name": "one loop", "value": "load → ×2 → >10? → add", "state": "plain"}]}],
+      "heap": [{"id": "g1", "label": "generated code", "value": "loop { t = v[i] * 2; if t > 10 { total += t } }", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "The result is the same machine code a careful C programmer would write by hand — often better, because LLVM can vectorize the loop to process multiple elements per instruction. This is the philosophy in one sentence: you may write at the level you think, and pay only for what the machine must do.",
+      "note": {"kind": "ok", "text": "what you can express ≠ what you must pay for — abstractions are erased at compile time, not interpreted at runtime"},
+      "stack": [{"frame": "after optimization", "vars": [{"name": "vectorized loop", "value": "SIMD: 4–8 elements per instruction", "state": "plain"}]}],
+      "heap": [{"id": "g1", "label": "generated code", "value": "equivalent to — often faster than — the hand-written C loop", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): an iterator chain of map, filter, and sum is monomorphized and inlined into a single tight loop — frequently vectorized — producing the same machine code as a hand-written loop, which is what “zero-cost abstraction” means concretely.</p>
+</div>
 ## Step 1 - The Problem

@@ -217,6 +217,56 @@ let s2 = s1;
 2. `s2 = s1` is a move.
 3. `s1` is invalidated because two live `String` owners would double-drop the same heap buffer.
 
+Now watch both transfers happen in memory. Step through the simulation: the same `let y = x;` syntax does two completely different things depending on whether the type owns a heap resource.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="Copy vs Move: What Actually Happens in Memory" data-accent="var(--move)">
+<script type="application/json">
+{
+  "code": [
+    "let x = 5i32;",
+    "let y = x;",
+    "let s1 = String::from(\"hi\");",
+    "let s2 = s1;",
+    "println!(\"{s1}\");"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "x is an i32 — four bytes of plain data. The entire value lives in main's stack frame. Nothing touches the heap.",
+      "stack": [{"frame": "main", "vars": [{"name": "x", "value": "5", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "i32 implements Copy, so `let y = x;` duplicates the bits. Both x and y stay valid — duplicating an integer creates no ownership ambiguity.",
+      "stack": [{"frame": "main", "vars": [{"name": "x", "value": "5", "state": "owner"}, {"name": "y", "value": "5", "state": "copy"}]}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "String is different: the stack holds only the owner triple (pointer, length, capacity). The actual bytes live in a heap buffer that s1 owns.",
+      "stack": [{"frame": "main", "vars": [{"name": "x", "value": "5", "state": "owner"}, {"name": "y", "value": "5", "state": "copy"}, {"name": "s1", "value": "ptr · len 2 · cap 2", "points": "buf", "state": "owner"}]}],
+      "heap": [{"id": "buf", "label": "String buffer", "value": "\"hi\"", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "`let s2 = s1;` is a move. The triple is copied to s2, s1 is invalidated, and the heap buffer is untouched — no deep copy happens. Exactly one owner remains.",
+      "stack": [{"frame": "main", "vars": [{"name": "x", "value": "5", "state": "owner"}, {"name": "y", "value": "5", "state": "copy"}, {"name": "s1", "value": "ptr · len 2 · cap 2", "state": "moved"}, {"name": "s2", "value": "ptr · len 2 · cap 2", "points": "buf", "state": "owner"}]}],
+      "heap": [{"id": "buf", "label": "String buffer", "value": "\"hi\"", "state": "alive"}]
+    },
+    {
+      "line": 5,
+      "caption": "Using s1 after the move is rejected. If both s1 and s2 were valid, both would free the same buffer at scope end — a double free. The move rule makes that impossible.",
+      "note": {"kind": "error", "text": "error[E0382]: borrow of moved value: `s1` — value moved on the previous line"},
+      "stack": [{"frame": "main", "vars": [{"name": "x", "value": "5", "state": "owner"}, {"name": "y", "value": "5", "state": "copy"}, {"name": "s1", "value": "ptr · len 2 · cap 2", "state": "error"}, {"name": "s2", "value": "ptr · len 2 · cap 2", "points": "buf", "state": "owner"}]}],
+      "heap": [{"id": "buf", "label": "String buffer", "value": "\"hi\"", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): copying an i32 leaves both bindings valid, while assigning a String moves the pointer/length/capacity triple to the new owner, invalidates the old binding, and leaves the heap buffer untouched. Using the moved-from binding fails with E0382.</p>
+</div>
+
 ## Step 6 - Three-Level Explanation
 
 ### Level 1 - Beginner

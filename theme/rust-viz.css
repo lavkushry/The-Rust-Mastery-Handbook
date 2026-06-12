@@ -1,0 +1,477 @@
+/* Rust Memory Visualization Engine — companion styles for theme/rust-viz.js */
+
+.rust-viz {
+  --viz-accent: var(--compiler);
+  --viz-bg: #0f172a;
+  --viz-panel: #0b1020;
+  --viz-border: rgba(255, 255, 255, 0.1);
+  --viz-text: #f8fafc;
+  --viz-muted: rgba(248, 250, 252, 0.65);
+  position: relative;
+  margin: 2.5rem 0;
+  border: 1px solid var(--viz-border);
+  border-radius: 1.25rem;
+  background: var(--viz-bg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  padding: 1.15rem 1.25rem 1.25rem;
+  color: var(--viz-text);
+}
+
+.rust-viz:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--viz-accent) 70%, white 30%);
+  outline-offset: 3px;
+}
+
+.rust-viz__eyebrow {
+  color: var(--viz-accent);
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.rust-viz__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1.8vw, 1.45rem);
+  font-weight: 700;
+  margin: 0.3rem 0 0.9rem;
+  color: var(--viz-text);
+}
+
+.rust-viz__body {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 1rem;
+}
+
+@media (max-width: 760px) {
+  .rust-viz__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ── Code panel ──────────────────────────────────────── */
+
+.rust-viz__code {
+  background: var(--viz-panel);
+  border: 1px solid var(--viz-border);
+  border-radius: 0.85rem;
+  padding: 0.85rem 0.5rem;
+  overflow-x: auto;
+}
+
+.rust-viz__code-lines {
+  margin: 0;
+  padding: 0 0 0 2.4rem;
+  counter-reset: viz-line;
+  list-style: none;
+}
+
+.rust-viz__line {
+  position: relative;
+  counter-increment: viz-line;
+  font-family: var(--font-code);
+  font-size: 0.88rem;
+  line-height: 1.9;
+  margin: 0 !important;
+  border-radius: 0.4rem;
+  padding: 0 0.5rem;
+  white-space: pre;
+  transition: background-color 0.25s ease;
+}
+
+.rust-viz__line::before {
+  content: counter(viz-line);
+  position: absolute;
+  left: -1.9rem;
+  width: 1.4rem;
+  text-align: right;
+  color: rgba(248, 250, 252, 0.3);
+  font-size: 0.75rem;
+}
+
+/* High specificity needed: visual-edition.css styles `#mdbook-content main li code`
+   as a light chip, which would otherwise win over the simulator's dark code lines. */
+#mdbook-content main .rust-viz__line code,
+.rust-viz__line code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: rgba(248, 250, 252, 0.85);
+  font-family: var(--font-code);
+  font-weight: 400;
+  font-size: inherit;
+  white-space: pre;
+}
+
+#mdbook-content main .rust-viz__line--active code {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.rust-viz__line--active {
+  background: color-mix(in srgb, var(--viz-accent) 26%, transparent 74%);
+  box-shadow: inset 3px 0 0 var(--viz-accent);
+}
+
+.rust-viz__line--active code {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.rust-viz__line--error {
+  background: color-mix(in srgb, var(--error) 30%, transparent 70%);
+  box-shadow: inset 3px 0 0 var(--error);
+}
+
+/* ── Memory panel ────────────────────────────────────── */
+
+.rust-viz__memory {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  background: var(--viz-panel);
+  border: 1px solid var(--viz-border);
+  border-radius: 0.85rem;
+  padding: 0.85rem;
+  min-height: 12rem;
+}
+
+.rust-viz__col-label {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--viz-muted);
+  margin-bottom: 0.6rem;
+}
+
+.rust-viz__stack .rust-viz__col-label {
+  color: color-mix(in srgb, var(--stack) 50%, white 50%);
+}
+
+.rust-viz__heap .rust-viz__col-label {
+  color: color-mix(in srgb, var(--heap) 60%, white 40%);
+}
+
+.rust-viz__empty {
+  color: rgba(248, 250, 252, 0.35);
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  padding: 0.4rem 0.2rem;
+}
+
+.rust-viz__frame {
+  border: 1.5px solid color-mix(in srgb, var(--stack) 55%, transparent 45%);
+  border-radius: 0.7rem;
+  padding: 0.5rem 0.55rem 0.55rem;
+  margin-bottom: 0.7rem;
+  background: color-mix(in srgb, var(--stack) 12%, transparent 88%);
+  animation: rust-viz-pop 0.3s ease;
+}
+
+.rust-viz__frame--closing {
+  opacity: 0.55;
+  border-style: dashed;
+}
+
+.rust-viz__frame-name {
+  font-family: var(--font-code);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--stack) 35%, white 65%);
+  margin-bottom: 0.4rem;
+}
+
+.rust-viz__var {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  padding: 0.32rem 0.5rem;
+  margin-top: 0.35rem;
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  transition: opacity 0.3s ease;
+}
+
+.rust-viz__var-name {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.rust-viz__var-value {
+  color: rgba(248, 250, 252, 0.7);
+  font-size: 0.76rem;
+}
+
+.rust-viz__var--moved,
+.rust-viz__var--dropped {
+  opacity: 0.45;
+}
+
+.rust-viz__var--moved .rust-viz__var-name,
+.rust-viz__var--dropped .rust-viz__var-name {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+.rust-viz__var--shadowed {
+  opacity: 0.45;
+}
+
+.rust-viz__var--error {
+  border-color: var(--error);
+  background: color-mix(in srgb, var(--error) 22%, transparent 78%);
+}
+
+.rust-viz__tag {
+  margin-left: auto;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  white-space: nowrap;
+}
+
+.rust-viz__tag--owner { background: color-mix(in srgb, var(--ownership) 80%, black 20%); color: #fff; }
+.rust-viz__tag--copy { background: color-mix(in srgb, var(--copy) 75%, black 25%); color: #fff; }
+.rust-viz__tag--moved { background: color-mix(in srgb, var(--move) 70%, black 30%); color: #fff; }
+.rust-viz__tag--borrow { background: color-mix(in srgb, var(--borrow-shared) 85%, black 15%); color: #fff; }
+.rust-viz__tag--borrow-mut { background: color-mix(in srgb, var(--borrow-exclusive) 75%, black 25%); color: #fff; }
+.rust-viz__tag--dropped { background: color-mix(in srgb, var(--drop) 85%, black 15%); color: #fff; }
+.rust-viz__tag--shadowed { background: color-mix(in srgb, var(--compiler) 70%, black 30%); color: #fff; }
+.rust-viz__tag--error { background: var(--error); color: #fff; }
+.rust-viz__tag--freed { background: color-mix(in srgb, var(--drop) 85%, black 15%); color: #fff; margin-left: 0; margin-top: 0.3rem; display: inline-block; }
+
+.rust-viz__heap-block {
+  border: 1.5px solid color-mix(in srgb, var(--heap) 65%, transparent 35%);
+  border-radius: 0.7rem;
+  padding: 0.45rem 0.55rem;
+  margin-bottom: 0.6rem;
+  background: color-mix(in srgb, var(--heap) 14%, transparent 86%);
+  animation: rust-viz-pop 0.3s ease;
+}
+
+.rust-viz__heap-block--freed {
+  opacity: 0.45;
+  border-style: dashed;
+}
+
+.rust-viz__heap-block--freed .rust-viz__heap-value {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+.rust-viz__heap-label {
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--heap) 45%, white 55%);
+  margin-bottom: 0.25rem;
+}
+
+.rust-viz__heap-value {
+  font-family: var(--font-code);
+  font-size: 0.84rem;
+  color: rgba(248, 250, 252, 0.88);
+  word-break: break-word;
+}
+
+/* ── Pointer arrows ──────────────────────────────────── */
+
+.rust-viz__arrows {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.rust-viz__arrow {
+  stroke: rgba(248, 250, 252, 0.55);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 4;
+  animation: rust-viz-flow 1.2s linear infinite;
+}
+
+.rust-viz__arrow-head {
+  fill: rgba(248, 250, 252, 0.55);
+}
+
+.rust-viz__arrow--owner, .rust-viz__arrow--error { stroke: var(--ownership); }
+.rust-viz__arrow--moved { stroke: var(--move); }
+.rust-viz__arrow--copy { stroke: var(--copy); }
+.rust-viz__arrow--borrow { stroke: color-mix(in srgb, var(--borrow-shared) 60%, white 40%); }
+.rust-viz__arrow--borrow-mut { stroke: var(--borrow-exclusive); }
+.rust-viz__arrow--dropped { stroke: var(--drop); }
+
+.rust-viz__arrow-head--owner, .rust-viz__arrow-head--error { fill: var(--ownership); }
+.rust-viz__arrow-head--moved { fill: var(--move); }
+.rust-viz__arrow-head--copy { fill: var(--copy); }
+.rust-viz__arrow-head--borrow { fill: color-mix(in srgb, var(--borrow-shared) 60%, white 40%); }
+.rust-viz__arrow-head--borrow-mut { fill: var(--borrow-exclusive); }
+.rust-viz__arrow-head--dropped { fill: var(--drop); }
+
+/* ── Compiler note, caption, controls ────────────────── */
+
+.rust-viz__note[hidden] {
+  display: none;
+}
+
+.rust-viz__note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+  border-radius: 0.7rem;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.rust-viz__note--error {
+  background: color-mix(in srgb, var(--error) 18%, transparent 82%);
+  border: 1px solid color-mix(in srgb, var(--error) 60%, transparent 40%);
+}
+
+.rust-viz__note--ok {
+  background: color-mix(in srgb, var(--valid) 16%, transparent 84%);
+  border: 1px solid color-mix(in srgb, var(--valid) 55%, transparent 45%);
+}
+
+.rust-viz__note--info {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.rust-viz__note-label {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.rust-viz__note--error .rust-viz__note-label { color: #fecaca; }
+.rust-viz__note--ok .rust-viz__note-label { color: #bbf7d0; }
+.rust-viz__note--info .rust-viz__note-label { color: var(--viz-muted); }
+
+.rust-viz__note-text {
+  font-family: var(--font-code);
+  font-size: 0.84rem;
+  color: rgba(248, 250, 252, 0.92);
+}
+
+.rust-viz__caption {
+  margin: 0.9rem 0 0 !important;
+  font-size: 0.95rem !important;
+  line-height: 1.65 !important;
+  color: rgba(248, 250, 252, 0.85) !important;
+  min-height: 3.2em;
+}
+
+.rust-viz__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.rust-viz__btn {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--viz-text);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.55rem;
+  padding: 0.42rem 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.rust-viz__btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.rust-viz__btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.rust-viz__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.rust-viz__btn--next {
+  background: color-mix(in srgb, var(--viz-accent) 70%, black 30%);
+  border-color: color-mix(in srgb, var(--viz-accent) 80%, white 20%);
+}
+
+.rust-viz__btn--next:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--viz-accent) 85%, black 15%);
+}
+
+.rust-viz__counter {
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  color: var(--viz-muted);
+  min-width: 3.4rem;
+  text-align: center;
+}
+
+.rust-viz__fallback {
+  color: rgba(248, 250, 252, 0.85);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+@keyframes rust-viz-pop {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes rust-viz-flow {
+  to { stroke-dashoffset: -10; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rust-viz__frame,
+  .rust-viz__heap-block {
+    animation: none;
+  }
+  .rust-viz__arrow {
+    animation: none;
+    stroke-dasharray: none;
+  }
+  .rust-viz__line {
+    transition: none;
+  }
+}
+
+/* Print / PDF export: hide the live widget chrome, show the fallback text. */
+@media print {
+  .rust-viz__controls,
+  .rust-viz__btn {
+    display: none !important;
+  }
+  .rust-viz__fallback {
+    display: block !important;
+  }
+  .rust-viz__fallback[hidden] {
+    display: block !important;
+  }
+}

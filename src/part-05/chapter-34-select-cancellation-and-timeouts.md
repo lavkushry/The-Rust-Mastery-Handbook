@@ -117,6 +117,43 @@ Why this is safe in the example:
 
 Now imagine a future that incrementally fills an internal buffer before returning a complete frame. If it is dropped mid-way and the buffered bytes are not preserved elsewhere, cancellation may discard meaningful progress. That is a correctness problem, not a type error.
 
+
+Watch select! race two futures — and watch what happens to the loser. Cancellation in async Rust is nothing more than a drop.
+
+<div class="rust-viz" data-eyebrow="Async Runtime Simulator" data-title="select!: Race Futures, Drop the Loser" data-accent="var(--async)">
+<script type="application/json">
+{
+  "code": [
+    "tokio::select! {",
+    "    Some(msg) = rx.recv() => println!(\"got {msg}\"),",
+    "    _ = time::sleep(Duration::from_secs(5)) => println!(\"timed out\"),",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "select! constructs both branch futures and polls each one. Neither is ready yet: the channel is empty and the timer has not elapsed. Both return Poll::Pending, and the task goes to sleep until a waker fires.",
+      "stack": [{"frame": "async task", "vars": [{"name": "recv future", "value": "Poll::Pending — waiting on channel", "state": "owner"}, {"name": "sleep future", "value": "Poll::Pending — timer armed, 5s", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 2,
+      "caption": "A message arrives. The channel's waker fires, the executor re-polls the task, and this time recv returns Poll::Ready(Some(\"hi\")). The race has a winner.",
+      "stack": [{"frame": "async task", "vars": [{"name": "recv future", "value": "Poll::Ready(Some(\"hi\")) ✓", "state": "owner"}, {"name": "sleep future", "value": "Poll::Pending — 3.2s remaining", "state": "owner"}]}],
+      "heap": []
+    },
+    {
+      "line": 3,
+      "caption": "select! runs the winning arm — and drops the losing future. That drop IS the cancellation: the timer's state is torn down and it simply ceases to exist. No cancel() method, no flag to check. This is also the discipline select! demands: any future passed in must leave the world consistent if it is dropped mid-await.",
+      "note": {"kind": "info", "text": "cancellation = Drop. A future that holds half-done work must clean up in its Drop impl — \"cancellation safety\""},
+      "stack": [{"frame": "async task", "vars": [{"name": "recv future", "value": "completed → arm ran: \"got hi\"", "state": "owner"}, {"name": "sleep future", "value": "dropped — timer cancelled", "state": "dropped"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): select! polls both branch futures, sleeps until a waker fires, runs the arm of whichever future becomes ready first, and cancels the loser by simply dropping it — which is why cancellation safety matters.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

@@ -83,6 +83,52 @@ mod tests {
 
 This arrangement matters because unit tests inside the module can access private implementation details, while integration tests in `tests/` can only use the public API.
 
+
+Run the harness in slow motion: one passing test, one failing, and the machinery between them.
+
+<div class="rust-viz" data-eyebrow="Test Harness" data-title="What cargo test Actually Runs" data-accent="var(--valid)">
+<script type="application/json">
+{
+  "code": [
+    "#[test]",
+    "fn adds() { assert_eq!(add(2, 2), 4); }",
+    "#[test]",
+    "fn doubles() { assert_eq!(double(3), 9); }",
+    "$ cargo test"
+  ],
+  "columns": ["Test harness", "Results"],
+  "steps": [
+    {
+      "line": 5,
+      "caption": "cargo test compiles a separate test binary: your library plus every #[test] function plus a generated main that discovers and schedules them. Your production binary never contains test code — the cfg(test) wall keeps them apart.",
+      "stack": [{"frame": "test binary", "vars": [{"name": "your code", "value": "compiled in", "state": "plain"}, {"name": "adds, doubles", "value": "registered with the harness", "state": "plain"}]}],
+      "heap": [{"id": "res", "label": "running 2 tests", "value": "…", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "Each test runs in its own thread. adds calls the real add, and assert_eq! compares: 4 == 4, nothing happens, the function returns — that silence is what \"pass\" means.",
+      "stack": [{"frame": "thread: adds", "vars": [{"name": "assert_eq!(add(2,2), 4)", "value": "4 == 4 ✓", "state": "plain"}]}],
+      "heap": [{"id": "res", "label": "results", "value": "adds … ok", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "doubles is wrong about double(3). assert_eq! sees 6 ≠ 9 and panics with both values. The harness catches the panic at the thread boundary — one failing test cannot take down the run — and records the failure with the exact left/right diff.",
+      "note": {"kind": "error", "text": "thread 'doubles' panicked: assertion `left == right` failed — left: 6, right: 9"},
+      "stack": [{"frame": "thread: doubles", "vars": [{"name": "assert_eq!(double(3), 9)", "value": "6 ≠ 9 → panic", "state": "error"}]}, {"frame": "harness", "vars": [{"name": "catch_unwind", "value": "panic caught, run continues", "state": "plain"}]}],
+      "heap": [{"id": "res", "label": "results", "value": "adds … ok · doubles … FAILED", "state": "alive"}]
+    },
+    {
+      "line": 5,
+      "caption": "The summary reports per-test outcomes and exits nonzero so CI fails loudly. The whole loop — compile, isolate, assert, diff, report — costs one command. That is why Rust projects test relentlessly: the harness was never optional tooling you had to assemble.",
+      "note": {"kind": "ok", "text": "test result: FAILED. 1 passed; 1 failed — exit code 101, CI goes red"},
+      "stack": [{"frame": "harness", "vars": [{"name": "summary", "value": "1 passed · 1 failed", "state": "plain"}]}],
+      "heap": [{"id": "res", "label": "exit status", "value": "101 → the build pipeline stops here, not in production", "state": "alive"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): cargo test builds a dedicated test binary, runs each #[test] in its own thread, catches assertion panics at the thread boundary with a left/right diff, and reports a summary whose exit code fails CI.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

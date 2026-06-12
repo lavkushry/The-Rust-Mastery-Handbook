@@ -203,4 +203,48 @@
   <figcaption class="visual-figure__caption">Heartbleed is the right kind of case study because it makes the risk physical. The process did not “throw an exception.” It copied bytes from the wrong region of memory and sent them back across the network.</figcaption>
 </figure>
 
+
+This is the bug class that motivated Rust's existence. Step through a use-after-free in C — and notice that no compiler error ever appears.
+
+<div class="rust-viz" data-eyebrow="Unsafe Memory Laboratory" data-title="The C Use-After-Free That Rust Makes Impossible" data-accent="var(--unsafe)">
+<script type="application/json">
+{
+  "code": [
+    "char *buf = malloc(16);",
+    "strcpy(buf, \"data\");",
+    "free(buf);",
+    "printf(\"%s\", buf);"
+  ],
+  "steps": [
+    {
+      "line": 1,
+      "caption": "C: malloc hands back a raw pointer to 16 heap bytes. From this moment on, the compiler tracks nothing — it is entirely the programmer's job to remember who frees this and when.",
+      "stack": [{"frame": "main (C)", "vars": [{"name": "buf", "value": "0x7f3a…", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "malloc(16)", "value": "?? ?? ?? ??", "state": "alive"}]
+    },
+    {
+      "line": 2,
+      "caption": "The buffer is filled. So far so good — this is the happy path every C program intends.",
+      "stack": [{"frame": "main (C)", "vars": [{"name": "buf", "value": "0x7f3a…", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "malloc(16)", "value": "\"data\"", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "free returns the memory to the allocator — but buf still holds the old address. Nothing resets it. buf is now a dangling pointer, and the compiler says nothing.",
+      "note": {"kind": "info", "text": "C compiler: no warning, no error — the pointer and the allocation are unrelated concepts to it"},
+      "stack": [{"frame": "main (C)", "vars": [{"name": "buf", "value": "0x7f3a… (dangling)", "points": "h1", "state": "error"}]}],
+      "heap": [{"id": "h1", "label": "malloc(16)", "value": "\"data\"", "state": "freed"}]
+    },
+    {
+      "line": 4,
+      "caption": "Reading through the dangling pointer is undefined behavior: it may print stale data, crash, or silently corrupt whatever the allocator placed there next. This exact bug class — plus double frees and data races — is what Rust's ownership system eliminates at compile time.",
+      "note": {"kind": "error", "text": "runtime: undefined behavior — use-after-free. In Rust, this program does not compile."},
+      "stack": [{"frame": "main (C)", "vars": [{"name": "buf", "value": "0x7f3a… (dangling)", "points": "h1", "state": "error"}]}],
+      "heap": [{"id": "h1", "label": "malloc(16)", "value": "??? (reused by allocator)", "state": "freed"}]
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): a C program mallocs a buffer, frees it, then reads through the stale pointer — the compiler never objects, and the read is undefined behavior at runtime. Rust's ownership rules reject the equivalent program at compile time.</p>
+</div>
 ## Step 1 - The Problem

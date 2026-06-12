@@ -82,6 +82,51 @@ fn load(path: &str) -> Result<String, io::Error> {
 
 That is the core desugaring idea. `?` is not magical exception syntax. It is structured early return through the `Try`-style machinery around `Result` and related types.
 
+
+Follow one Result through both of its lives: unwrapped on the happy path, converted and propagated on the failure path.
+
+<div class="rust-viz" data-eyebrow="Ownership Visualizer" data-title="The ? Operator and the From Conversion Seam" data-accent="var(--valid)">
+<script type="application/json">
+{
+  "code": [
+    "fn load() -> Result<Config, AppError> {",
+    "    let text = fs::read_to_string(\"app.toml\")?;",
+    "    let cfg = parse(&text)?;",
+    "    Ok(cfg)",
+    "}"
+  ],
+  "steps": [
+    {
+      "line": 2,
+      "caption": "Happy path: read_to_string returns Ok(String). The ? unwraps it and the file contents land in text — a heap-backed String owned by this frame.",
+      "stack": [{"frame": "load", "vars": [{"name": "text", "value": "ptr · len 64 · cap 64", "points": "h1", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"[server]\\nport = 8080…\"", "state": "alive"}]
+    },
+    {
+      "line": 3,
+      "caption": "parse borrows text and succeeds; cfg now owns the parsed Config. Two fallible operations chained with no nesting, no if-err-return boilerplate — the error handling is in the type, not in the indentation.",
+      "stack": [{"frame": "load", "vars": [{"name": "text", "value": "ptr · len 64 · cap 64", "points": "h1", "state": "owner"}, {"name": "cfg", "value": "Config { port: 8080 }", "state": "owner"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"[server]\\nport = 8080…\"", "state": "alive"}]
+    },
+    {
+      "line": 4,
+      "caption": "Ok(cfg) moves the Config out to the caller. text is dropped right here — its buffer freed — because the frame is closing. Ownership cleans up the intermediate state automatically.",
+      "note": {"kind": "ok", "text": "return moves cfg out · text dropped at frame exit · no leak, no finally block"},
+      "stack": [{"frame": "load", "state": "closing", "vars": [{"name": "text", "value": "ptr · len 64 · cap 64", "state": "dropped"}, {"name": "cfg", "value": "Config → moved to caller", "state": "moved"}]}],
+      "heap": [{"id": "h1", "label": "String buffer", "value": "\"[server]\\nport = 8080…\"", "state": "freed"}]
+    },
+    {
+      "line": 2,
+      "caption": "Failure path: the file is missing, so read_to_string returns Err(io::Error). But load returns AppError — so ? quietly calls AppError::from(io_error) before early-returning. That From impl is the seam where low-level errors are translated into your domain's error type.",
+      "note": {"kind": "info", "text": "`?` desugars to: match r { Ok(v) => v, Err(e) => return Err(From::from(e)) }"},
+      "stack": [{"frame": "load", "state": "closing", "vars": [{"name": "(io::Error)", "value": "NotFound: \"app.toml\"", "state": "moved"}, {"name": "(early return)", "value": "Err(AppError::Io(…))", "state": "owner"}]}],
+      "heap": []
+    }
+  ]
+}
+</script>
+<p class="rust-viz__fallback">Interactive simulation (requires JavaScript): on success ? unwraps each Result and the function's locals are dropped cleanly when Ok(cfg) is returned; on failure ? converts the io::Error into AppError via From and early-returns it — the conversion seam that keeps domain error types clean.</p>
+</div>
 ## Step 6 - Three-Level Explanation
 
 

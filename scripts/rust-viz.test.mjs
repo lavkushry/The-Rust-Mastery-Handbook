@@ -224,6 +224,14 @@ test("rust-viz.js - caption region is an aria-live announcer", () => {
   assert.strictEqual(caption.getAttribute("aria-atomic"), "true");
 });
 
+test("rust-viz.js - code panel is a keyboard-focusable labeled region", () => {
+  const doc = renderViz(defaultWidget());
+  const codePanel = doc.querySelector(".rust-viz__code");
+  assert.strictEqual(codePanel.getAttribute("role"), "region");
+  assert.strictEqual(codePanel.tabIndex, 0);
+  assert.ok(codePanel.getAttribute("aria-label"));
+});
+
 test("chapters - every embedded rust-viz scenario parses and references valid targets", () => {
   const srcDir = path.join(projectRoot, "src");
   const chapterFiles = [];

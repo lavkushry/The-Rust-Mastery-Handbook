@@ -400,9 +400,12 @@
 
     const body = el("div", "rust-viz__body");
 
+    // Scrollable when long lines overflow (font-dependent), so it must be
+    // keyboard-focusable — same pattern as the theme's table/diagram regions.
     const codePanel = el("div", "rust-viz__code");
-    codePanel.setAttribute("role", "img");
+    codePanel.setAttribute("role", "region");
     codePanel.setAttribute("aria-label", "Source code for this simulation");
+    codePanel.tabIndex = 0;
     const codeList = el("ol", "rust-viz__code-lines");
     ctx.codeLines = scenario.code.map((line) => {
       const li = el("li", "rust-viz__line");

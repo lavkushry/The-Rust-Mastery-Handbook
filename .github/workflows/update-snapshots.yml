@@ -1,0 +1,53 @@
+name: Update Visual Snapshots
+
+# Visual-regression snapshots are pixel-exact against the ubuntu-latest runner's
+# font stack, which no local machine or container reproduces reliably. When a
+# deliberate UI change invalidates snapshots, dispatch this workflow on the
+# feature branch: it regenerates them on the same runner image CI compares
+# against and commits the result back to the branch.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-snapshots:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install mdBook
+        run: cargo install mdbook --locked
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build book
+        run: mdbook build
+
+      - name: Regenerate snapshots
+        run: npx playwright test tests/visual-regression.spec.js --update-snapshots
+
+      - name: Commit updated snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/visual-regression.spec.js-snapshots
+          if git diff --cached --quiet; then
+            echo "Snapshots already up to date."
+          else
+            git commit -m "test: regenerate visual regression snapshots on CI runner"
+            git push
+          fi

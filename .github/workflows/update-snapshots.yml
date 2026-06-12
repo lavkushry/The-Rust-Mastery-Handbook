@@ -8,6 +8,9 @@ name: Update Visual Snapshots
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - fix/ci-a11y-snapshots-and-3d # temporary: dispatch is unavailable until this file reaches main
 
 permissions:
   contents: write

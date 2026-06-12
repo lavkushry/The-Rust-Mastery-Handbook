@@ -192,6 +192,31 @@ test("rust-viz.js - ignores containers with malformed or missing JSON", () => {
   });
 });
 
+test("rust-viz.js - controls include a 3D mode toggle", () => {
+  const doc = renderViz(defaultWidget());
+  const modeBtn = doc.querySelector(".rust-viz__btn--mode");
+  assert.ok(modeBtn);
+  assert.strictEqual(modeBtn.textContent, "◆ 3D");
+  assert.match(modeBtn.getAttribute("aria-label"), /3D/);
+});
+
+test("rust-viz.js - 3D toggle degrades gracefully when renderer is unavailable", async () => {
+  const doc = renderViz(defaultWidget());
+  const viz = doc.querySelector(".rust-viz");
+  const modeBtn = viz.querySelector(".rust-viz__btn--mode");
+
+  modeBtn.click();
+  await new Promise((resolve) => setTimeout(resolve, 10));
+
+  // No RustViz3D in jsdom: the widget must stay in 2D and remain usable.
+  assert.strictEqual(modeBtn.textContent, "3D unavailable");
+  assert.strictEqual(modeBtn.disabled, false);
+  assert.notStrictEqual(viz.querySelector(".rust-viz__memory").style.display, "none");
+
+  viz.querySelector(".rust-viz__btn--next").click();
+  assert.strictEqual(viz.querySelector(".rust-viz__counter").textContent, "2 / 3");
+});
+
 test("rust-viz.js - caption region is an aria-live announcer", () => {
   const doc = renderViz(defaultWidget());
   const caption = doc.querySelector(".rust-viz__caption");

@@ -210,10 +210,85 @@
       stopPlayback(ctx);
     }
 
+    if (ctx.mode === "3d" && ctx.viz3d) {
+      ctx.viz3d.update(step);
+    }
+
     if (typeof requestAnimationFrame === "function") {
       requestAnimationFrame(() => drawArrows(ctx));
     } else {
       drawArrows(ctx);
+    }
+  }
+
+  function prefersReducedMotion() {
+    return typeof window.matchMedia === "function"
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function setMode2d(ctx) {
+    ctx.mode = "2d";
+    ctx.memoryPanel.style.display = "";
+    if (ctx.sceneEl) {
+      ctx.sceneEl.style.display = "none";
+    }
+    ctx.modeBtn.textContent = "◆ 3D";
+    ctx.modeBtn.setAttribute("aria-label", "Switch memory view to 3D");
+    try {
+      localStorage.setItem("rustviz_mode", "2d");
+    } catch { /* localStorage unavailable */ }
+    if (typeof requestAnimationFrame === "function") {
+      requestAnimationFrame(() => drawArrows(ctx));
+    }
+  }
+
+  async function setMode3d(ctx) {
+    if (!window.RustViz3D) {
+      throw new Error("3D renderer not loaded");
+    }
+    if (!ctx.sceneEl) {
+      ctx.sceneEl = el("div", "rust-viz__scene");
+      ctx.sceneEl.setAttribute("role", "img");
+      ctx.sceneEl.setAttribute("aria-label", "3D visualization of the simulation's memory state");
+      ctx.memoryPanel.insertAdjacentElement("afterend", ctx.sceneEl);
+    }
+    ctx.memoryPanel.style.display = "none";
+    ctx.sceneEl.style.display = "block";
+    if (!ctx.viz3d) {
+      ctx.viz3d = await window.RustViz3D.mount(ctx.sceneEl, ctx.scenario, {
+        reducedMotion: prefersReducedMotion(),
+      });
+    }
+    ctx.mode = "3d";
+    ctx.modeBtn.textContent = "▦ 2D";
+    ctx.modeBtn.setAttribute("aria-label", "Switch memory view to 2D");
+    try {
+      localStorage.setItem("rustviz_mode", "3d");
+    } catch { /* localStorage unavailable */ }
+    ctx.viz3d.update(ctx.scenario.steps[ctx.current]);
+  }
+
+  async function toggleMode(ctx) {
+    if (ctx.mode === "3d") {
+      setMode2d(ctx);
+      return;
+    }
+    const originalText = ctx.modeBtn.textContent;
+    ctx.modeBtn.disabled = true;
+    ctx.modeBtn.textContent = "Loading…";
+    try {
+      await setMode3d(ctx);
+    } catch {
+      ctx.memoryPanel.style.display = "";
+      if (ctx.sceneEl) {
+        ctx.sceneEl.style.display = "none";
+      }
+      ctx.modeBtn.textContent = "3D unavailable";
+      setTimeout(() => {
+        ctx.modeBtn.textContent = originalText;
+      }, 2000);
+    } finally {
+      ctx.modeBtn.disabled = false;
     }
   }
 
@@ -285,11 +360,17 @@
     ctx.counter = el("span", "rust-viz__counter");
     ctx.counter.setAttribute("aria-hidden", "true");
 
+    ctx.modeBtn = el("button", "rust-viz__btn rust-viz__btn--mode", "◆ 3D");
+    ctx.modeBtn.type = "button";
+    ctx.modeBtn.setAttribute("aria-label", "Switch memory view to 3D");
+    ctx.modeBtn.addEventListener("click", () => toggleMode(ctx));
+
     controls.appendChild(ctx.resetBtn);
     controls.appendChild(ctx.prevBtn);
     controls.appendChild(ctx.counter);
     controls.appendChild(ctx.nextBtn);
     controls.appendChild(ctx.playBtn);
+    controls.appendChild(ctx.modeBtn);
     return controls;
   }
 
@@ -375,7 +456,18 @@
 
     window.addEventListener("resize", () => drawArrows(ctx), { passive: true });
 
+    ctx.mode = "2d";
     goToStep(ctx, 0);
+
+    // Restore a previously chosen 3D preference, quietly falling back to 2D
+    // if the renderer or WebGL is unavailable.
+    try {
+      if (localStorage.getItem("rustviz_mode") === "3d" && window.RustViz3D) {
+        setTimeout(() => {
+          setMode3d(ctx).catch(() => setMode2d(ctx));
+        }, 80);
+      }
+    } catch { /* localStorage unavailable */ }
   }
 
   document.addEventListener("DOMContentLoaded", () => {

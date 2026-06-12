@@ -433,6 +433,34 @@
   text-align: center;
 }
 
+/* ── 3D scene panel ──────────────────────────────────── */
+
+.rust-viz__scene {
+  display: none;
+  position: relative;
+  height: 26rem;
+  border: 1px solid var(--viz-border);
+  border-radius: 0.85rem;
+  background: radial-gradient(ellipse at 50% -20%, #1d2a44 0%, #0b1020 55%, #05080f 100%);
+  overflow: hidden;
+}
+
+.rust-viz__scene canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.rust-viz__btn--mode {
+  margin-left: auto;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--viz-accent) 45%, #1e293b 55%), #131c30);
+  border-color: color-mix(in srgb, var(--viz-accent) 60%, white 40%);
+}
+
+.rust-viz__btn--mode:hover:not(:disabled) {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--viz-accent) 65%, #1e293b 35%), #18233a);
+}
+
 .rust-viz__fallback {
   color: rgba(248, 250, 252, 0.85);
   font-size: 0.95rem;
@@ -465,7 +493,8 @@
 /* Print / PDF export: hide the live widget chrome, show the fallback text. */
 @media print {
   .rust-viz__controls,
-  .rust-viz__btn {
+  .rust-viz__btn,
+  .rust-viz__scene {
     display: none !important;
   }
   .rust-viz__fallback {

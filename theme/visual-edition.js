@@ -480,6 +480,18 @@
         frontDiv.appendChild(indexDiv);
         frontDiv.appendChild(questionP);
 
+        const hintDiv = document.createElement("div");
+        hintDiv.className = "flashcard__hint";
+        hintDiv.setAttribute("aria-hidden", "true");
+        hintDiv.textContent = "tap to flip →";
+        frontDiv.appendChild(hintDiv);
+
+        const checkDiv = document.createElement("div");
+        checkDiv.className = "flashcard__check";
+        checkDiv.setAttribute("aria-hidden", "true");
+        checkDiv.textContent = "✓";
+        frontDiv.appendChild(checkDiv);
+
         const backDiv = document.createElement("div");
         backDiv.className = "flashcard__back";
 

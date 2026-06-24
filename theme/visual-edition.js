@@ -670,6 +670,22 @@
         const back = card.querySelector('.flashcard__back');
         if (!front || !back) return;
 
+        if (!front.querySelector('.flashcard-hint')) {
+          const hint = document.createElement('div');
+          hint.className = 'flashcard-hint';
+          hint.setAttribute('aria-hidden', 'true');
+          hint.textContent = 'tap to flip →';
+          front.appendChild(hint);
+        }
+
+        if (!front.querySelector('.flashcard-seen-icon')) {
+          const icon = document.createElement('div');
+          icon.className = 'flashcard-seen-icon';
+          icon.setAttribute('aria-hidden', 'true');
+          icon.textContent = '✓';
+          front.appendChild(icon);
+        }
+
         // Only wrap if not already wrapped
         if (!card.querySelector('.flashcard__inner')) {
           const inner = document.createElement('div');

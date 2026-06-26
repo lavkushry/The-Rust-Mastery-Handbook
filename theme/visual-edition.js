@@ -814,6 +814,7 @@
       btn.className = 'playground-btn';
       btn.textContent = 'Run';
       btn.title = 'Open in Rust Playground';
+      btn.setAttribute('aria-label', 'Run code in Rust Playground');
       btn.target = '_blank';
       btn.rel = 'noopener';
       btn.href = 'https://play.rust-lang.org/?edition=2021&code=' + encodeURIComponent(code);

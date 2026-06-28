@@ -1577,10 +1577,13 @@ html.ayu blockquote.callout--learning-objective .callout__label {
   z-index: 2;
 }
 
-.playground-btn:hover {
+.playground-btn:hover,
+.playground-btn:focus-visible {
   opacity: 1;
   text-decoration: none;
   color: #fff;
+  outline: 2px solid var(--ownership, #E63946);
+  outline-offset: 2px;
 }
 
 /* ═══ INTERACTIVE STEPPERS ═════════════════════════════ */

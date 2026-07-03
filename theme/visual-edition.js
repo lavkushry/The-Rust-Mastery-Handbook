@@ -812,6 +812,7 @@
       // Skip incomplete snippets (no fn main, just fragments)
       const btn = document.createElement('a');
       btn.className = 'playground-btn';
+      btn.setAttribute('aria-label', 'Run code in Rust Playground (opens in a new tab)');
       btn.textContent = 'Run';
       btn.title = 'Open in Rust Playground';
       btn.target = '_blank';

@@ -813,6 +813,7 @@
       const btn = document.createElement('a');
       btn.className = 'playground-btn';
       btn.textContent = 'Run';
+      btn.setAttribute('aria-label', 'Run code in Rust Playground (opens in a new tab)');
       btn.title = 'Open in Rust Playground';
       btn.target = '_blank';
       btn.rel = 'noopener';

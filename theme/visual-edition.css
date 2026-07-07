@@ -1573,14 +1573,22 @@ html.ayu blockquote.callout--learning-objective .callout__label {
   cursor: pointer;
   text-decoration: none;
   opacity: 0.75;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, outline 0.2s, outline-offset 0.2s;
   z-index: 2;
+  outline: none;
 }
 
-.playground-btn:hover {
+.playground-btn:hover,
+.playground-btn:focus-visible {
   opacity: 1;
   text-decoration: none;
   color: #fff;
+}
+
+#mdbook-content main a.playground-btn:focus-visible {
+  outline: 2px solid var(--ownership, #E63946);
+  outline-offset: 2px;
+  border-radius: 5px;
 }
 
 /* ═══ INTERACTIVE STEPPERS ═════════════════════════════ */

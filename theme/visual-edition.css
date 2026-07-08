@@ -1583,6 +1583,13 @@ html.ayu blockquote.callout--learning-objective .callout__label {
   color: #fff;
 }
 
+.playground-btn:focus-visible {
+  outline: 3px solid var(--chapter-accent, var(--compiler));
+  outline-offset: 2px;
+  opacity: 1;
+  text-decoration: none;
+}
+
 /* ═══ INTERACTIVE STEPPERS ═════════════════════════════ */
 .stepper {
   background: var(--quote-bg, rgba(0,0,0,0.03));

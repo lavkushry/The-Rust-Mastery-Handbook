@@ -817,6 +817,7 @@
       btn.target = '_blank';
       btn.rel = 'noopener';
       btn.href = 'https://play.rust-lang.org/?edition=2021&code=' + encodeURIComponent(code);
+      btn.setAttribute('aria-label', 'Run code in Rust Playground (opens in a new tab)');
       pre.style.position = 'relative';
       pre.appendChild(btn);
     });

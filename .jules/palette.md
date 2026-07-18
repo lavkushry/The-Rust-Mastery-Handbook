@@ -9,3 +9,6 @@
 ## 2024-05-20 - Unicode Symbols and Screen Readers
 **Learning:** Unicode symbols like arrows (`←`, `→`) and checkmarks (`✓`) are read literally by screen readers (e.g. "Check mark" or "North East Arrow"), which can make UI controls confusing when they repeat visible text or add noise. Adding `aria-label` to interactive elements containing these symbols overrides the inner text and fixes the issue. If the symbols are purely decorative, they should be wrapped in an element with `aria-hidden="true"`.
 **Action:** When adding or reviewing text containing Unicode symbols or emojis, always provide a clear `aria-label` for interactive elements containing them, and ensure purely decorative symbols have `aria-hidden="true"`.
+## 2024-05-18 - Improve explicit focus styles and descriptive ARIA labels
+**Learning:** For custom floating overlay buttons opening new tabs (like the 'Run' button on code blocks), explicitly define `:focus-visible` styles to match their custom border-radius/positioning. Also ensure they have a descriptive `aria-label` to supplement brief visual text.
+**Action:** Always add `aria-label` and matching `:focus-visible` styles for link-based overlay buttons.
